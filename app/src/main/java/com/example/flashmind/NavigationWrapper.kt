@@ -10,6 +10,7 @@ import com.example.flashmind.presentation.ui.addflashcard.AddFlashCardScreen
 import com.example.flashmind.presentation.ui.addlesson.AddLessonScreen
 import com.example.flashmind.presentation.ui.flashcard.FlashCardScreen
 import com.example.flashmind.presentation.ui.home.HomeScreen
+import com.example.flashmind.presentation.ui.startGame.StartLessonScreen
 
 @Composable
 fun NavigationWrapper() {
@@ -26,7 +27,7 @@ fun NavigationWrapper() {
                         AddLesson(categoryId = it)
                     )
                 },
-                navigateToFlashCard = {navController.navigate(FlashCards(lessonId = it))})
+                navigateToFlashCard = { navController.navigate(FlashCards(lessonId = it)) })
         }
 
         composable<AddCategory> {
@@ -36,20 +37,34 @@ fun NavigationWrapper() {
         composable<AddLesson> {
 
             val addLesson: AddLesson = it.toRoute()
-            AddLessonScreen(addLesson.categoryId, navigateToHome = {navController.navigate(Home)})
+            AddLessonScreen(addLesson.categoryId, navigateToHome = { navController.navigate(Home) })
         }
 
         composable<FlashCards> {
 
             val flashCard: FlashCards = it.toRoute()
-            FlashCardScreen(flashCard.lessonId, navigateToHome = {navController.navigate(Home)}, navigateToAddFlashCard = {navController.navigate(AddFlashCards(lessonId = it))})
+            FlashCardScreen(
+                flashCard.lessonId,
+                navigateToHome = { navController.navigate(Home) },
+                navigateToAddFlashCard = { navController.navigate(AddFlashCards(lessonId = it))}, navigateToStartGame = {navController.navigate(
+                    StartLesson(lessonId = it))})
         }
 
         composable<AddFlashCards> {
 
             val addFlashCard: AddFlashCards = it.toRoute()
-            AddFlashCardScreen(addFlashCard.lessonId)
+            AddFlashCardScreen(addFlashCard.lessonId, navigateToFlashCards = {
+                navController.navigate(
+                    FlashCards
+                )
+            })
 
+
+        }
+        composable<StartLesson> {
+
+            val startGame: StartLesson = it.toRoute()
+            StartLessonScreen(startGame.lessonId)
 
         }
     }

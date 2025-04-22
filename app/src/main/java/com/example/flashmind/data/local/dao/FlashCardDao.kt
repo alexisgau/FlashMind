@@ -2,6 +2,8 @@ package com.example.flashmind.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
@@ -16,6 +18,9 @@ import kotlinx.coroutines.flow.Flow
 
         @Upsert
         suspend fun insert(flashCard: FlashCardEntity)
+
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
+        suspend fun insertAll(flashcards: List<FlashCardEntity>)
 
         @Update
         suspend fun update(flashCard: FlashCardEntity)

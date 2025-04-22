@@ -16,3 +16,6 @@ data class FlashCards(val lessonId: Int)
 
 @Serializable
 data class AddFlashCards(val lessonId: Int)
+
+@Serializable
+data class StartLesson(val lessonId: Int)

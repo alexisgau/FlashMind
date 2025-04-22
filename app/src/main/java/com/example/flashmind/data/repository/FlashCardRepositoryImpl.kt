@@ -23,6 +23,10 @@ class FlashCardRepositoryImpl @Inject constructor(private val dao: FlashCardDao)
         return dao.update(flashCard.toEntity())
     }
 
+    override suspend fun saveGeneratedFlashcards(flashcards: List<FlashCard>) {
+        return dao.insertAll(flashcards.map {it.toEntity()})
+    }
+
     override fun getFlashCardsByLesson(lessonId: Int): Flow<List<FlashCard>> {
         return  dao.getFlashCardsByLesson(lessonId).map { flashCard->
             flashCard.map { it.toDomain() }

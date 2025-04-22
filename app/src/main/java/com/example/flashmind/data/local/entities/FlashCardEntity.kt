@@ -26,6 +26,6 @@ data class FlashCardEntity(
     val lessonId: Int,
 )
 
-fun FlashCard.toEntity(): FlashCardEntity = FlashCardEntity(id,question,answer,color, lessonId)
-fun FlashCardEntity.toDomain(): FlashCard = FlashCard(id,question,answer,color, lessonId)
+fun FlashCard.toEntity(): FlashCardEntity = FlashCardEntity(id = id, question = question, answer = answer, color = color, lessonId = lessonId)
+fun FlashCardEntity.toDomain(): FlashCard = FlashCard(id = id, question = question, answer = answer, color = color, lessonId =  lessonId)
 

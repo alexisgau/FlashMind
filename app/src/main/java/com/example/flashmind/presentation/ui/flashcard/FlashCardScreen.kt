@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
@@ -19,6 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.flashmind.presentation.ui.addflashcard.FlashCardItem
+import com.example.flashmind.presentation.viewmodel.FlashCardViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -26,12 +32,32 @@ import androidx.compose.ui.unit.dp
 fun FlashCardScreen(
     lessonId: Int,
     navigateToHome: () -> Unit,
-    navigateToAddFlashCard: (Int) -> Unit
+    navigateToAddFlashCard: (Int) -> Unit,
+    navigateToStartGame: (Int) -> Unit,
+    viewModel: FlashCardViewModel = hiltViewModel()
 ) {
     Log.i("FlashCardScreen", "id:$lessonId")
+    val flashCards = viewModel.flashCards.collectAsStateWithLifecycle()
+
+    viewModel.getFlashCards(lessonId)
 
     Scaffold(
-        topBar = {
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navigateToAddFlashCard(lessonId)
+                }
+            ) {
+                Icon(Icons.Filled.Add, contentDescription = "Agregar flashcard")
+            }
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -43,22 +69,28 @@ fun FlashCardScreen(
                 }
 
                 Button(onClick = {
-                    // Acción para empezar el juego
+                    navigateToStartGame(lessonId)
                 }) {
                     Text("Start")
                 }
             }
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    navigateToAddFlashCard(lessonId)
+
+            // Content extraído
+            LazyColumn(modifier = Modifier.padding(26.dp)) {
+                items(flashCards.value) { flashcard ->
+                    FlashCardItem(
+                        question = flashcard.question,
+                        answer = flashcard.answer
+                    )
                 }
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = "Agregar flashcard")
             }
         }
-    ) {
-
     }
 }
+
+
+
+
+
+
+
