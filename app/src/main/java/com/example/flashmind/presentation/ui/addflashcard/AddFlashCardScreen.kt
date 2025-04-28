@@ -1,8 +1,9 @@
 package com.example.flashmind.presentation.ui.addflashcard
 
-import android.util.Log
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +20,10 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -28,11 +32,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,21 +46,26 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.flashmind.R
 import com.example.flashmind.presentation.viewmodel.FlashCardAiState
 import com.example.flashmind.presentation.viewmodel.FlashCardViewModel
 
 @Composable
-fun AddFlashCardScreen(
+fun AddFlashCardScreenAi(
     lessonId: Int,
-    navigateToFlashCards:() -> Unit,
+    navigateToFlashCards: (Int) -> Unit,
+    navigateToEditFlashCard: (Int) -> Unit,
     viewModel: FlashCardViewModel = hiltViewModel()
 ) {
     val state by viewModel.flashCardAiState.collectAsStateWithLifecycle()
@@ -64,8 +75,18 @@ fun AddFlashCardScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally // Centramos todo
     ) {
+        // Mostrar la imagen arriba
+        Image(
+            painter = painterResource(id = R.drawable.mastanrobot),
+            contentDescription = "Robot generador de flashcards",
+            modifier = Modifier
+                .size(200.dp)
+                .padding(bottom = 16.dp)
+        )
+
         Text(
             "Generar Flashcards con IA",
             fontSize = 22.sp,
@@ -100,7 +121,8 @@ fun AddFlashCardScreen(
             Button(
                 onClick = {
                     viewModel.saveGeneratedFlashcards()
-                    Toast.makeText(context, "Flashcards guardadas con éxito", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Flashcards guardadas con éxito", Toast.LENGTH_SHORT)
+                        .show()
                 },
                 modifier = Modifier.weight(1f)
             ) {
@@ -121,28 +143,42 @@ fun AddFlashCardScreen(
             }
 
             is FlashCardAiState.Success -> {
-                val list = (state as FlashCardAiState.Success).list
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(list) { flashcard ->
-                        FlashCardItem(question = flashcard.question, answer = flashcard.answer)
+                val flashcards = viewModel.generatedFlashcards
+
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(flashcards, key = { it.question }) { flashcard ->
+                        FlashCardItem(
+                            id = flashcard.id,
+                            question = flashcard.question,
+                            answer = flashcard.answer,
+                            deleteFlashCard = { viewModel.removeFlashCard(flashcard) },
+                            editFlashCard = {navigateToEditFlashCard(flashcard.id)}
+                        )
                     }
                 }
+
             }
 
             FlashCardAiState.Saved -> {
                 Text("¡Flashcards guardadas!", color = Color.Green)
-                navigateToFlashCards()
+               navigateToFlashCards(lessonId)
             }
+
+            FlashCardAiState.Init -> null
         }
     }
 }
 
 
-
 @Composable
-fun FlashCardItem(question: String, answer: String, modifier: Modifier = Modifier) {
+fun FlashCardItem(
+    id: Int,
+    question: String,
+    answer: String,
+    deleteFlashCard: () -> Unit,
+    editFlashCard: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -152,16 +188,28 @@ fun FlashCardItem(question: String, answer: String, modifier: Modifier = Modifie
         colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+
+                Icon(Icons.Default.Delete, contentDescription = null, Modifier.clickable{ deleteFlashCard()})
+                Icon(Icons.Default.Edit, contentDescription = null, Modifier.clickable{editFlashCard(id)})
+            }
             Text("Pregunta:", fontWeight = FontWeight.Bold)
             Text(question, modifier = Modifier.padding(bottom = 8.dp))
 
-            Divider()
+//            Divider()
+            Spacer(Modifier.height(8.dp))
 
-            Text("Respuesta:", fontWeight = FontWeight.Bold, modifier = Modifier.padding(top = 8.dp))
+            Text(
+                "Respuesta:",
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 8.dp)
+            )
             Text(answer)
         }
     }
 }
+
+
 
 
 @Composable
@@ -171,7 +219,7 @@ fun AddFlashCardForm(
     answer: String,
     onAnswerChange: (String) -> Unit,
     selectedColor: String,
-    onColorSelected: (String) -> Unit
+    onColorSelected: (String) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -185,8 +233,7 @@ fun AddFlashCardForm(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
     ) {
         OutlinedTextField(
             value = question,
@@ -211,67 +258,97 @@ fun AddFlashCardForm(
 
         Text("Pick a Color", style = MaterialTheme.typography.bodyMedium)
 
-        Box(modifier = Modifier.padding(vertical = 8.dp)) {
-            OutlinedButton(
-                onClick = { expanded = true },
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color(selectedColor.toColorInt())
-                )
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .background(Color(selectedColor.toColorInt()))
+            Box(modifier = Modifier.padding(vertical = 8.dp)) {
+                OutlinedButton(
+                    onClick = { expanded = true },
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = Color(selectedColor.toColorInt())
                     )
-                    Spacer(modifier = Modifier.width(8.dp))
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(20.dp)
+                                .background(Color(selectedColor.toColorInt()))
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
 
+                    }
                 }
-            }
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                colors.forEach { color ->
-                    DropdownMenuItem(
-                        text = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .background(Color(color.toColorInt()))
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(color)
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    colors.forEach { color ->
+                        DropdownMenuItem(
+                            text = {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(20.dp)
+                                            .background(Color(color.toColorInt()))
+                                    )
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(color)
+                                }
+                            },
+                            onClick = {
+                                onColorSelected(color)
+                                expanded = false
                             }
-                        },
-                        onClick = {
-                            onColorSelected(color)
-                            expanded = false
-                        }
-                    )
+                        )
+                    }
                 }
             }
+
         }
 
         Spacer(modifier = Modifier.height(16.dp))
     }
+
+
+@Composable
+fun AddFlashCardFab(
+    onManualClick: () -> Unit,
+    onAiClick: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+        Column(
+            horizontalAlignment = Alignment.End,
+            verticalArrangement = Arrangement.Bottom,
+            modifier = Modifier.padding(16.dp)
+        ) {
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Crear manualmente") },
+                    onClick = {
+                        expanded = false
+                        onManualClick()
+                    }
+                )
+                DropdownMenuItem(
+                    text = { Text("Crear con IA") },
+                    onClick = {
+                        expanded = false
+                        onAiClick()
+                    }
+                )
+            }
+
+            FloatingActionButton(
+                onClick = { expanded = !expanded },
+
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Agregar")
+            }
+        }
+    }
 }
-
-//    Log.i("FlashCardScreen", "id:$lessonId")
-//    var question by remember { mutableStateOf("") }
-//    var answer by remember { mutableStateOf("") }
-//    var selectedColor by remember { mutableStateOf("#FF5733") }
-
-
-//    AddFlashCardForm(
-//        question = question,
-//        onQuestionChange = { question = it },
-//        answer = answer,
-//        onAnswerChange = { answer = it },
-//        selectedColor = selectedColor,
-//        onColorSelected = { selectedColor = it }
-//    )

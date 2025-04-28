@@ -32,4 +32,8 @@ class FlashCardRepositoryImpl @Inject constructor(private val dao: FlashCardDao)
             flashCard.map { it.toDomain() }
         }
     }
+
+    override suspend fun getFlashCardsById(id: Int): FlashCard {
+        return dao.getFlashCardsById(id).toDomain()
+    }
 }

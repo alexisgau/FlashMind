@@ -6,8 +6,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.example.flashmind.presentation.ui.addcategory.AddCategoryScreen
-import com.example.flashmind.presentation.ui.addflashcard.AddFlashCardScreen
+import com.example.flashmind.presentation.ui.addflashcard.AddFlashCardScreenAi
+import com.example.flashmind.presentation.ui.addflashcard.AddFlashCardsManualScreen
 import com.example.flashmind.presentation.ui.addlesson.AddLessonScreen
+import com.example.flashmind.presentation.ui.editflashcard.EditFlashCardScreen
 import com.example.flashmind.presentation.ui.flashcard.FlashCardScreen
 import com.example.flashmind.presentation.ui.home.HomeScreen
 import com.example.flashmind.presentation.ui.startGame.StartLessonScreen
@@ -46,26 +48,41 @@ fun NavigationWrapper() {
             FlashCardScreen(
                 flashCard.lessonId,
                 navigateToHome = { navController.navigate(Home) },
-                navigateToAddFlashCard = { navController.navigate(AddFlashCards(lessonId = it))}, navigateToStartGame = {navController.navigate(
-                    StartLesson(lessonId = it))})
+                navigateToAddFlashCardAi = { navController.navigate(AddFlashCardsAi(lessonId = it))}, navigateToStartGame = {navController.navigate(
+                    StartLesson(lessonId = it))}, navigateToEditFlashCard = {navController.navigate(
+                    EditFlashCard(flashcardId = it))},
+                navigateToAddFlashCardManual = {navController.navigate(AddFlashCardsManual(lessonId = it))})
         }
 
-        composable<AddFlashCards> {
+        composable<AddFlashCardsAi> {
 
-            val addFlashCard: AddFlashCards = it.toRoute()
-            AddFlashCardScreen(addFlashCard.lessonId, navigateToFlashCards = {
+            val addFlashCard: AddFlashCardsAi = it.toRoute()
+            AddFlashCardScreenAi(addFlashCard.lessonId, navigateToFlashCards = {
                 navController.navigate(
-                    FlashCards
+                    FlashCards(lessonId = it)
                 )
-            })
+            },
+                navigateToEditFlashCard = {navController.navigate(EditFlashCard(flashcardId = it))})
+        }
 
+        composable<AddFlashCardsManual> {
+            val addFlashCard: AddFlashCardsManual = it.toRoute()
+            AddFlashCardsManualScreen(addFlashCard.lessonId, navigateToFlashCards = {navController.navigate(
+                FlashCards(lessonId = it))})
 
         }
         composable<StartLesson> {
 
             val startGame: StartLesson = it.toRoute()
-            StartLessonScreen(startGame.lessonId)
+            StartLessonScreen(startGame.lessonId, navigateToFlashCardScreen = {navController.navigate(
+                FlashCards(lessonId = it))})
 
+        }
+        composable<EditFlashCard> {
+
+            val edit: EditFlashCard = it.toRoute()
+            EditFlashCardScreen(edit.flashcardId, navigateToFlashCardsScreen = {navController.navigate(
+                Home)})
         }
     }
 

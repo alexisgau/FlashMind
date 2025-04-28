@@ -16,6 +16,9 @@ import kotlinx.coroutines.flow.Flow
         @Query("SELECT * FROM flashcards WHERE lessonId = :lessonId")
         fun getFlashCardsByLesson(lessonId: Int): Flow<List<FlashCardEntity>>
 
+        @Query("SELECT * FROM flashcards WHERE id = :id")
+       suspend fun getFlashCardsById(id: Int): FlashCardEntity
+
         @Upsert
         suspend fun insert(flashCard: FlashCardEntity)
 

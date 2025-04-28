@@ -10,5 +10,6 @@ interface FlashCardRepository {
     suspend fun update(flashCard: FlashCard)
     suspend fun saveGeneratedFlashcards(flashcards: List<FlashCard>)
     fun getFlashCardsByLesson(lessonId: Int): Flow<List<FlashCard>>
+    suspend fun  getFlashCardsById(id: Int): FlashCard
 
 }

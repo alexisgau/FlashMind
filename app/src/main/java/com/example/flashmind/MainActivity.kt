@@ -176,12 +176,13 @@ fun GopayCard() {
                 )
             }
 
-            // Imagen (reemplazable por Image con painterResource o rememberImagePainter)
+
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background), // coloca tu recurso aquí
-                contentDescription = "Payment illustration",
+                painter = painterResource(id = R.drawable.mastan), // coloca tu recurso aquí
+                contentDescription = "Mastan illustration",
                 modifier = Modifier
-                    .size(100.dp)
+                    .width(200.dp)
+                    .height(500.dp)
             )
         }
     }
