@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.startGame
+package com.example.flashmind.presentation.ui.lesson
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -35,7 +35,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.presentation.viewmodel.FlashCardViewModel
 
 @Composable
-fun StartLessonScreen(lessonId: Int, navigateToFlashCardScreen:(Int)-> Unit, viewModel: FlashCardViewModel = hiltViewModel()) {
+fun StartLessonScreen(
+    lessonId: Int,
+    navigateToFlashCardScreen: (Int) -> Unit,
+    viewModel: FlashCardViewModel = hiltViewModel()
+) {
 
 
     val flashCards by viewModel.flashCards.collectAsStateWithLifecycle()
@@ -43,7 +47,7 @@ fun StartLessonScreen(lessonId: Int, navigateToFlashCardScreen:(Int)-> Unit, vie
     var currentIndex by remember { mutableIntStateOf(0) }
     var flipped by remember { mutableStateOf(false) }
 
-    viewModel.getFlashCards(lessonId)
+    viewModel.loadFlashCardsByLesson(lessonId)
 
     if (flashCards.isNotEmpty()) {
 
@@ -64,7 +68,7 @@ fun StartLessonScreen(lessonId: Int, navigateToFlashCardScreen:(Int)-> Unit, vie
                     }) {
                         Text("Volver a empezar")
                     }
-                    Button(onClick = {navigateToFlashCardScreen(lessonId)}) { Text("Finalizar") }
+                    Button(onClick = { navigateToFlashCardScreen(lessonId) }) { Text("Finalizar") }
                 }
             }
             return
@@ -138,7 +142,6 @@ fun StartLessonScreen(lessonId: Int, navigateToFlashCardScreen:(Int)-> Unit, vie
         }
 
     }
-
 
 }
 

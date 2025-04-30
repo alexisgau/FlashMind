@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.addcategory
+package com.example.flashmind.presentation.ui.category
 
 import android.util.Log
 import androidx.compose.foundation.background
@@ -40,7 +40,8 @@ import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.domain.model.Category
-import com.example.flashmind.presentation.viewmodel.AddCategoryState
+import com.example.flashmind.presentation.ui.home.AddCategoryState
+
 import com.example.flashmind.presentation.viewmodel.HomeViewModel
 
 @Composable
@@ -48,7 +49,7 @@ fun AddCategoryScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToHome: () -> Unit
 ) {
-    val editState by viewModel.uiState.collectAsStateWithLifecycle()
+    val editState by viewModel.addCategoryState.collectAsStateWithLifecycle()
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
     var selectedColor by remember { mutableStateOf("#FF5733") }
@@ -250,12 +251,5 @@ fun AddCategoryPreview() {
         onColorSelected = { selectedColor = it })
 }
 
-@Composable
-fun SelectedColor(colorHex: String) {
-    Box(
-        modifier = Modifier
-            .size(24.dp)
-            .background(Color(colorHex.toColorInt()))
-    )
-}
+
 

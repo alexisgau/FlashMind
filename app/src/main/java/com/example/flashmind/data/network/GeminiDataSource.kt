@@ -2,6 +2,7 @@ package com.example.flashmind.data.network
 
 
 import com.example.flashmind.data.local.entities.FlashCardEntity
+import com.example.flashmind.presentation.utils.API_KEY
 import com.google.ai.client.generativeai.BuildConfig
 import com.google.ai.client.generativeai.GenerativeModel
 import javax.inject.Inject
@@ -10,7 +11,7 @@ class GeminiDataSource @Inject constructor() {
 
     private val model = GenerativeModel(
         modelName = "gemini-1.5-flash",
-        apiKey = "AIzaSyBtlIkRofL3TfCe5dJwso3t-ljoLHkQIqc"
+        apiKey = API_KEY
     )
 
 

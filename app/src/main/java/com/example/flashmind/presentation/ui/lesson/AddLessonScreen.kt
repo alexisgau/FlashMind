@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.addlesson
+package com.example.flashmind.presentation.ui.lesson
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -107,6 +106,7 @@ fun AddLessonScreen(
                     viewModel.insertLesson(
                         Lesson(0, title, categoryId)
                     )
+                    navigateToHome()
                 },
                 modifier = Modifier.weight(1f),
                 enabled = title.isNotBlank()

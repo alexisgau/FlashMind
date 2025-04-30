@@ -19,8 +19,9 @@ import kotlinx.coroutines.flow.Flow
         @Query("SELECT * FROM flashcards WHERE id = :id")
        suspend fun getFlashCardsById(id: Int): FlashCardEntity
 
-        @Upsert
+        @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun insert(flashCard: FlashCardEntity)
+
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun insertAll(flashcards: List<FlashCardEntity>)

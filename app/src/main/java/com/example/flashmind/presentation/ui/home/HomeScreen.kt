@@ -1,6 +1,7 @@
 package com.example.flashmind.presentation.ui.home
 
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,12 +18,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Card
@@ -46,23 +44,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.flashmind.GopayCard
+import coil.compose.AsyncImage
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.domain.model.Lesson
-import com.example.flashmind.presentation.viewmodel.CategoryState
+import com.example.flashmind.domain.model.UserData
+
 import com.example.flashmind.presentation.viewmodel.HomeViewModel
-import com.example.flashmind.presentation.viewmodel.LessonsState
+
 
 @Composable
 fun HomeScreen(
@@ -72,12 +71,13 @@ fun HomeScreen(
     navigateToFlashCard: (lessonId: Int) -> Unit
 ) {
     val state = viewModel.categoriesState.collectAsStateWithLifecycle()
-    val lessons by viewModel.lessons.collectAsStateWithLifecycle()
+    val lessons by viewModel.lessonsState.collectAsStateWithLifecycle()
+    val userData by viewModel.userData.collectAsStateWithLifecycle()
     val selectedCategoryId = remember { mutableStateOf<Int?>(null) }
     val context = LocalContext.current
 
     Scaffold(
-        topBar = { TopBar(modifier = Modifier.padding(top = 20.dp, start = 16.dp)) },
+        topBar = { TopBar(modifier = Modifier.padding(top = 20.dp, start = 16.dp), userData) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text("New lesson") },
@@ -101,7 +101,7 @@ fun HomeScreen(
 
         ) {
 
-            GopayCard()
+            HomeCard()
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -117,16 +117,18 @@ fun HomeScreen(
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                 }
+
                 is CategoryState.Success -> {
                     CategoryLazyRow(
                         categories = categoryState.categories,
                         selectedCategoryId = selectedCategoryId,
                         onCategorySelected = { categoryId ->
                             selectedCategoryId.value = categoryId
-                            viewModel.getAllLessonByCategory(categoryId)
+                            viewModel.getAllLessonsByCategory(categoryId)
                         }
                     )
                 }
+
                 is CategoryState.Error -> {
                     Text(
                         text = "Error al cargar categorías",
@@ -156,18 +158,21 @@ fun HomeScreen(
                         modifier = Modifier.padding(16.dp)
                     )
                 }
+
                 LessonsState.IsEmpty -> {
                     Text(
                         text = "No tienes ninguna lección aún. Agrega una.",
                         modifier = Modifier.padding(16.dp)
                     )
                 }
+
                 LessonsState.Loading -> {
                     Text(
                         text = "Selecciona una categoría para ver sus lecciones",
                         modifier = Modifier.padding(16.dp)
                     )
                 }
+
                 is LessonsState.Success -> {
                     LessonItem(
                         lessons = lessonState.lessons,
@@ -206,7 +211,10 @@ fun SectionHeader(
 
 
 @Composable
-fun TopBar(modifier: Modifier) {
+fun TopBar(
+    modifier: Modifier = Modifier,
+    userData: UserData
+) {
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -214,46 +222,54 @@ fun TopBar(modifier: Modifier) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text("Hello, Name!", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-        Icon(
-            painter = painterResource(R.drawable.ic_launcher_background),
-            contentDescription = "Profile",
-            modifier = Modifier
-                .clip(CircleShape)
-                .size(40.dp)
-                .border(2.dp, Color.Gray, CircleShape)
-        )
-    }
-}
+        when (userData) {
+            is UserData.Success -> {
+                Text(
+                    text = "Hello, ${userData.name}!",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                if (userData.imageUrl.isNotEmpty()) {
+                    AsyncImage(
+                        model = userData.imageUrl,
+                        contentDescription = "Profile picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(40.dp)
+                            .border(2.dp, Color.Gray, CircleShape)
+                    )
+                } else {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_launcher_background),
+                        contentDescription = "Default Profile",
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(40.dp)
+                            .border(2.dp, Color.Gray, CircleShape)
+                    )
+                }
+            }
 
-
-@Composable
-fun CategoryItem(category: Category) {
-
-    Card(
-        colors = CardDefaults.cardColors(Color.Gray),
-        modifier = Modifier
-            .height(200.dp)
-            .width(180.dp)
-    ) {
-
-        Column(Modifier.fillMaxSize()) {
-
-            Text(
-                category.name,
-                fontSize = 20.sp,
-                fontWeight = FontWeight.ExtraBold,
-                textAlign = TextAlign.Center
-            )
-            Spacer(Modifier.height(20.dp))
-            Text(category.description, fontSize = 13.sp, fontWeight = FontWeight.ExtraBold)
-
+            is UserData.Error, UserData.Init -> {
+                Text(
+                    text = "Hello!",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Icon(
+                    painter = painterResource(R.drawable.ic_launcher_background),
+                    contentDescription = "Default Profile",
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(40.dp)
+                        .border(2.dp, Color.Gray, CircleShape)
+                )
+            }
         }
-
-
     }
-
 }
+
 
 @Preview(showBackground = true)
 @Composable
@@ -358,6 +374,55 @@ fun LessonItem(
         }
     }
 }
+
+@Composable
+fun HomeCard() {
+    Card(
+        modifier = Modifier
+            .padding(16.dp)
+            .fillMaxWidth()
+            .height(180.dp),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)) // fondo oscuro
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Texto
+            Column(
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = "Gopay",
+                    color = Color.White.copy(alpha = 0.7f),
+                    style = MaterialTheme.typography.labelMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = "All kind Payment\nMade easy with\nGopay",
+                    color = Color.White,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+
+            Image(
+                painter = painterResource(id = R.drawable.mastan),
+                contentDescription = "Mastan illustration",
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(500.dp)
+            )
+        }
+    }
+}
+
 
 
 

@@ -2,6 +2,10 @@ package com.example.flashmind
 
 import kotlinx.serialization.Serializable
 
+
+@Serializable
+object Login
+
 @Serializable
 object Home
 

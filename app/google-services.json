@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "28956986741",
+    "project_id": "flashmind-14014",
+    "storage_bucket": "flashmind-14014.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:28956986741:android:8240ac8adf5820faad973c",
+        "android_client_info": {
+          "package_name": "com.example.flashmind"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "28956986741-np36k05d9r6nj71eph3jdmchekl4erld.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.flashmind",
+            "certificate_hash": "e46b54b1964100ffaf373c80aa3b61a3e9aad74f"
+          }
+        },
+        {
+          "client_id": "28956986741-n438d74d3v1mnd45aqreo2di4s07q8fb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCchjoIlhJKfXeoPHXsu-5KtM0F4WRPiIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "28956986741-bm3kqut0s1nvdgej0sn8l8ieinndbuga.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

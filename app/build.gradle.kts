@@ -10,6 +10,7 @@ plugins {
 
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
 
 }
 
@@ -19,7 +20,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.flashmind"
-        minSdk = 24
+        minSdk = 34
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
@@ -85,6 +86,24 @@ dependencies {
     kapt("com.google.dagger:hilt-android-compiler:2.48")
 
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")  // Si usas Jetpack Compose
+
+    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
+
+    // Manejo de credenciales (Authentication API)
+    implementation ("androidx.credentials:credentials:1.3.0-alpha05")
+    implementation ("androidx.credentials:credentials-play-services-auth:1.3.0-alpha05")
+
+// Google Identity
+    implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")
+
+    implementation("io.coil-kt:coil-compose:2.4.0")
+
+
+
 
 
     implementation(libs.generativeai)

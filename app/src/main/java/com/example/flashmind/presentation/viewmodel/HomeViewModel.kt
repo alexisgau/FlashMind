@@ -3,12 +3,17 @@ package com.example.flashmind.presentation.viewmodel
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.flashmind.data.network.AuthClient
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.domain.model.Lesson
+import com.example.flashmind.domain.model.UserData
 import com.example.flashmind.domain.usecase.GetCategoriesUseCase
 import com.example.flashmind.domain.usecase.GetLessonsUseCase
 import com.example.flashmind.domain.usecase.InsertCategoryUseCase
 import com.example.flashmind.domain.usecase.InsertLessonUseCase
+import com.example.flashmind.presentation.ui.home.AddCategoryState
+import com.example.flashmind.presentation.ui.home.CategoryState
+import com.example.flashmind.presentation.ui.home.LessonsState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,32 +28,51 @@ class HomeViewModel @Inject constructor(
     private val insertCategoryUseCase: InsertCategoryUseCase,
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getLessonsUseCase: GetLessonsUseCase,
-    private val insertLessonUseCase: InsertLessonUseCase
-) :
-    ViewModel() {
+    private val insertLessonUseCase: InsertLessonUseCase,
+    private val authClient: AuthClient
+) : ViewModel() {
 
     private val _categoriesState = MutableStateFlow<CategoryState>(CategoryState.Loading)
     val categoriesState: StateFlow<CategoryState> = _categoriesState.asStateFlow()
 
-    private val _uiState = MutableStateFlow<AddCategoryState>(AddCategoryState.Loading)
-    val uiState: StateFlow<AddCategoryState> = _uiState.asStateFlow()
+    private val _addCategoryState = MutableStateFlow<AddCategoryState>(AddCategoryState.Loading)
+    val addCategoryState: StateFlow<AddCategoryState> = _addCategoryState.asStateFlow()
 
-    private val _lessons = MutableStateFlow<LessonsState>(LessonsState.Loading)
-    val lessons: StateFlow<LessonsState> = _lessons.asStateFlow()
+    private val _lessonsState = MutableStateFlow<LessonsState>(LessonsState.Loading)
+    val lessonsState: StateFlow<LessonsState> = _lessonsState.asStateFlow()
+
+    private val _userData = MutableStateFlow<UserData>(UserData.Init)
+    val userData: StateFlow<UserData> = _userData.asStateFlow()
 
     init {
-        getAllCategories()
+        loadInitialData()
     }
 
+    private fun loadInitialData() {
+        getAllCategories()
+        getUserData()
+    }
+
+    private fun getUserData() {
+        val user = runCatching { authClient.getCurrentUser() }
+            .getOrNull()
+
+        _userData.value = when {
+            user != null -> UserData.Success(
+                name = user.displayName ?: "Usuario",
+                imageUrl = user.photoUrl?.toString().orEmpty()
+            )
+            else -> UserData.Error("Usuario no autenticado")
+        }
+    }
 
     private fun getAllCategories() {
         _categoriesState.value = CategoryState.Loading
         viewModelScope.launch {
-            getCategoriesUseCase.invoke().catch { e ->
-                _categoriesState.value = CategoryState.Error(
-                    message = e.message ?: "Error desconocido"
-                )
-            }
+            getCategoriesUseCase()
+                .catch { e ->
+                    _categoriesState.value = CategoryState.Error(e.message ?: "Error desconocido")
+                }
                 .collect { categories ->
                     _categoriesState.value = CategoryState.Success(categories)
                 }
@@ -56,79 +80,43 @@ class HomeViewModel @Inject constructor(
     }
 
     fun insertCategory(category: Category) {
-
-        _uiState.value = AddCategoryState.Loading
+        _addCategoryState.value = AddCategoryState.Loading
         viewModelScope.launch {
-
-            try {
-                insertCategoryUseCase.invoke(category)
-                _uiState.value = AddCategoryState.Success
-
-            } catch (e: Exception) {
-                Log.e("HomeViewModel", "error:$e")
-                _uiState.value = AddCategoryState.Error(e.message ?: "Error desconocido")
-            }
-
-
-        }
-    }
-
-     fun getAllLessonByCategory(categoryId: Int){
-
-        viewModelScope.launch {
-
-            try {
-                getLessonsUseCase.invoke(categoryId).collectLatest { lessons->
-
-                    if(lessons.isNotEmpty()) {
-                        _lessons.value = LessonsState.Success(lessons)
-                    }else{
-                        _lessons.value = LessonsState.IsEmpty
-                    }
+            runCatching { insertCategoryUseCase(category) }
+                .onSuccess { _addCategoryState.value = AddCategoryState.Success }
+                .onFailure { e ->
+                    Log.e("HomeViewModel", "insertCategory: $e")
+                    _addCategoryState.value = AddCategoryState.Error(e.message ?: "Error desconocido")
                 }
-            }catch (e: Exception){
-                _lessons.value = LessonsState.Error(e.message ?: "error")
-                Log.e("HomeViewModel", "getAllLessonByCategory: $e")
-            }
-
         }
-
     }
 
-    fun insertLesson(lesson: Lesson){
-
+    fun getAllLessonsByCategory(categoryId: Int) {
+        _lessonsState.value = LessonsState.Loading
         viewModelScope.launch {
-
-            try {
-                insertLessonUseCase.invoke(lesson)
-            }catch (e: Exception){
-
-                Log.e("HomeViewModel", "ERROR: $e")
+            runCatching {
+                getLessonsUseCase(categoryId)
+                    .collectLatest { lessons ->
+                        _lessonsState.value = if (lessons.isEmpty())
+                            LessonsState.IsEmpty
+                        else
+                            LessonsState.Success(lessons)
+                    }
+            }.onFailure { e ->
+                Log.e("HomeViewModel", "getAllLessonsByCategory: $e")
+                _lessonsState.value = LessonsState.Error(e.message ?: "Error desconocido")
             }
         }
-
     }
 
-
+    fun insertLesson(lesson: Lesson) {
+        viewModelScope.launch {
+            runCatching { insertLessonUseCase(lesson) }
+                .onFailure { e ->
+                    Log.e("HomeViewModel", "insertLesson: $e")
+                }
+        }
+    }
 }
 
-sealed interface CategoryState {
-    object Loading : CategoryState
-    data class Success(val categories: List<Category>) : CategoryState
-    data class Error(val message: String) : CategoryState
-}
 
-sealed interface AddCategoryState {
-    object Loading : AddCategoryState
-    object Success : AddCategoryState
-    data class Error(val message: String) : AddCategoryState
-}
-
-sealed interface LessonsState{
-
-    object  Loading: LessonsState
-    object IsEmpty: LessonsState
-    data class Success(val lessons: List<Lesson>): LessonsState
-    data class Error(val message: String) : LessonsState
-
-}
