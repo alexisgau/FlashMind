@@ -1,6 +1,7 @@
 package com.example.flashmind.presentation.ui.lesson
 
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -41,8 +42,9 @@ fun AddLessonScreen(
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
-            .fillMaxSize(),
+            .background(MaterialTheme.colorScheme.background)
+            .fillMaxSize()
+            .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -55,8 +57,9 @@ fun AddLessonScreen(
 
 
         Text(
-            text = "Crear nueva lección",
+            text = "Create new lesson",
             style = MaterialTheme.typography.titleLarge,
+            color =  MaterialTheme.colorScheme.inverseSurface,
             fontWeight = FontWeight.Bold
         )
 

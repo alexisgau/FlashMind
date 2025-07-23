@@ -2,9 +2,15 @@ package com.example.flashmind
 
 import kotlinx.serialization.Serializable
 
+@Serializable
+object Spash
 
 @Serializable
 object Login
+
+@Serializable
+object Register
+
 
 @Serializable
 object Home
@@ -29,3 +35,6 @@ data class StartLesson(val lessonId: Int)
 
 @Serializable
 data class EditFlashCard(val flashcardId: Int)
+
+@Serializable
+data class AccountSettings(val userData: String)

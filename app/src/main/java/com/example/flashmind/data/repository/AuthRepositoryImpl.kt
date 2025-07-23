@@ -7,17 +7,31 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-class AuthRepositoryImpl @Inject constructor(private val authClient: AuthClient): AuthRepository {
+class AuthRepositoryImpl @Inject constructor(private val authClient: AuthClient) : AuthRepository {
 
     override fun signInWithGoogle(): Flow<AuthResponse> {
-        return  authClient.signInWithGoogle()
+        return authClient.signInWithGoogle()
+    }
+
+    override fun signOutAccountWithGoogle(): Flow<AuthResponse> {
+        return authClient.signOutAccountWithGoogle()
     }
 
     override fun getCurrentUser(): FirebaseUser? {
         return authClient.getCurrentUser()
     }
 
-    override fun signInWithEmailAndPassword(email: String, password: String) {
-        return authClient.signInWithEmailAndPassword(email,password)
+    override suspend fun register(
+        email: String,
+        password: String
+    ): Result<String> {
+        return authClient.register(email, password)
+    }
+
+    override suspend fun login(
+        email: String,
+        password: String
+    ): Result<String> {
+        return authClient.login(email, password)
     }
 }

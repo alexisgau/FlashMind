@@ -1,11 +1,13 @@
 package com.example.flashmind.presentation.ui.flashcard
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,18 +24,18 @@ import com.example.flashmind.presentation.viewmodel.FlashCardViewModel
 @Composable
 fun EditFlashCardScreen(
     flashCardId: Int,
-    navigateToFlashCardsScreen: () -> Unit,
+    navigateToFlashCardsScreen: (Int) -> Unit,
     viewModel: FlashCardViewModel = hiltViewModel()
 ) {
 
 
-    viewModel.loadFlashCardById(flashCardId)
     val flashCardState by viewModel.flashCardState.collectAsStateWithLifecycle()
 
 
     when (flashCardState) {
         is FlashCardUiState.Loading -> {
             CircularProgressIndicator()
+            viewModel.loadFlashCardById(flashCardId)
         }
 
         is FlashCardUiState.Success -> {
@@ -45,6 +47,7 @@ fun EditFlashCardScreen(
 
             Column(
                 modifier = Modifier
+                    .background(MaterialTheme.colorScheme.background)
                     .fillMaxSize()
                     .padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
@@ -68,7 +71,7 @@ fun EditFlashCardScreen(
                             color = selectedColor
                         )
                         viewModel.editFlashCard(updatedFlashCard)
-                        navigateToFlashCardsScreen()
+                        navigateToFlashCardsScreen(updatedFlashCard.lessonId)
                     },
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 ) {

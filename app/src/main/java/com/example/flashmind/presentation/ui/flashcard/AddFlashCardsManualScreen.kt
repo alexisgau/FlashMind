@@ -1,5 +1,6 @@
 package com.example.flashmind.presentation.ui.flashcard
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -45,7 +47,6 @@ fun AddFlashCardsManualScreen(
 
 
     LaunchedEffect(addCardState) {
-        println("Estado actual: $addCardState")
         when (addCardState) {
             is FlashCardUiState.Error -> showError = true
             FlashCardUiState.Loading -> {}
@@ -56,15 +57,17 @@ fun AddFlashCardsManualScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            "Crear nueva Flashcard",
+            "Create new Flashcard",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 24.dp)
+            color =  MaterialTheme.colorScheme.inverseSurface,
+            modifier = Modifier.padding(top = 24.dp)
         )
 
         AddFlashCardForm(
@@ -80,7 +83,7 @@ fun AddFlashCardsManualScreen(
 
         if (showError) {
             Text(
-                text = "Por favor completa la pregunta y la respuesta.",
+                text = "Please complete the question and answer.",
                 color = Color.Red,
                 fontSize = 14.sp,
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -107,12 +110,12 @@ fun AddFlashCardsManualScreen(
                 .fillMaxWidth()
                 .height(56.dp),
             shape = RoundedCornerShape(12.dp),
-            enabled = addCardState != FlashCardUiState.Loading
+            enabled = true
         ) {
-            Text("Guardar", fontSize = 18.sp)
+            Text("Save", fontSize = 18.sp)
         }
 
-        Spacer(modifier = Modifier.height(32.dp)) // Para evitar que el botón quede demasiado pegado al borde inferior
+        Spacer(modifier = Modifier.height(32.dp))
     }
 }
 

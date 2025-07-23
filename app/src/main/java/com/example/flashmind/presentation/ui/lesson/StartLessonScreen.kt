@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,8 +46,9 @@ fun StartLessonScreen(
 
     val flashCards by viewModel.flashCards.collectAsStateWithLifecycle()
 
-    var currentIndex by remember { mutableIntStateOf(0) }
-    var flipped by remember { mutableStateOf(false) }
+    var currentIndex by rememberSaveable { mutableIntStateOf(0) }
+    var flipped by rememberSaveable { mutableStateOf(false) }
+
 
     viewModel.loadFlashCardsByLesson(lessonId)
 
@@ -56,11 +59,12 @@ fun StartLessonScreen(
         if (currentIndex >= flashCards.size) {
             // Fin de la lección
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("¡Has terminado la lección!", fontSize = 20.sp)
+                    Text("¡Has terminado la lección!", fontSize = 20.sp, color =  MaterialTheme.colorScheme.inverseSurface)
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
                         currentIndex = 0
@@ -84,6 +88,7 @@ fun StartLessonScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally

@@ -22,7 +22,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -64,30 +63,32 @@ fun AddFlashCardScreenAi(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
             .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally // Centramos todo
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         Image(
             painter = painterResource(id = R.drawable.mastanrobot),
             contentDescription = "Robot generador de flashcards",
             modifier = Modifier
-                .size(200.dp)
+                .size(120.dp)
                 .padding(bottom = 16.dp)
         )
 
         Text(
-            "Generar Flashcards con IA",
+            "Generate Flashcards with AI",
             fontSize = 22.sp,
             fontWeight = FontWeight.Bold,
+            color =  MaterialTheme.colorScheme.inverseSurface,
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
         OutlinedTextField(
             value = text,
             onValueChange = { text = it },
-            label = { Text("Texto de entrada") },
-            placeholder = { Text("Pegá aquí el contenido del que quieras generar flashcards") },
+            label = { Text("Input text") },
+            placeholder = { Text("Paste the content you want to generate flashcards from here") },
             modifier = Modifier
                 .fillMaxWidth()
                 .heightIn(min = 120.dp),
@@ -104,18 +105,18 @@ fun AddFlashCardScreenAi(
                 onClick = { viewModel.generateFlashCards(text, lessonId) },
                 modifier = Modifier.weight(1f)
             ) {
-                Text("GENERAR")
+                Text("GENERATE")
             }
 
             Button(
                 onClick = {
                     viewModel.saveGeneratedFlashcards()
-                    Toast.makeText(context, "Flashcards guardadas con éxito", Toast.LENGTH_SHORT)
+                    Toast.makeText(context, "Flashcards saved successfully", Toast.LENGTH_SHORT)
                         .show()
                 },
                 modifier = Modifier.weight(1f)
             ) {
-                Text("GUARDAR")
+                Text("SAVE ALL")
             }
         }
 
@@ -128,7 +129,7 @@ fun AddFlashCardScreenAi(
             }
 
             FlashCardAiState.Loading -> {
-                CircularProgressIndicator()
+                Text("Thinking of something great...\uD83E\uDD16", color = MaterialTheme.colorScheme.inverseSurface)
             }
 
             is FlashCardAiState.Success -> {
@@ -140,7 +141,7 @@ fun AddFlashCardScreenAi(
                             id = flashcard.id,
                             question = flashcard.question,
                             answer = flashcard.answer,
-                            deleteFlashCard = { viewModel.deleteFlashCard(flashcard) },
+                            deleteFlashCard = { viewModel.removeFromGenerated(flashcard) },
                             editFlashCard = { navigateToEditFlashCard(flashcard.id) }
                         )
                     }
@@ -149,7 +150,7 @@ fun AddFlashCardScreenAi(
             }
 
             FlashCardAiState.Saved -> {
-                Text("¡Flashcards guardadas!", color = Color.Green)
+                Text("¡Saved Flashcards!", color = Color.Green)
                 navigateToFlashCards(lessonId)
             }
 
@@ -203,7 +204,7 @@ fun AddFlashCardForm(
                 .padding(bottom = 16.dp)
         )
 
-        Text("Pick a Color", style = MaterialTheme.typography.bodyMedium)
+        Text("Pick a Color", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.inverseSurface)
 
         Box(modifier = Modifier.padding(vertical = 8.dp)) {
             OutlinedButton(
@@ -275,14 +276,14 @@ fun AddFlashCardFab(
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Crear manualmente") },
+                    text = { Text("Create manually") },
                     onClick = {
                         expanded = false
                         onManualClick()
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Crear con IA") },
+                    text = { Text("Create with AI") },
                     onClick = {
                         expanded = false
                         onAiClick()
@@ -294,7 +295,7 @@ fun AddFlashCardFab(
                 onClick = { expanded = !expanded },
 
                 ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar")
+                Icon(Icons.Default.Add, contentDescription = "ADD")
             }
         }
     }

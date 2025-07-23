@@ -23,6 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,6 +32,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -68,7 +71,8 @@ fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
     navigateToAddCategory: () -> Unit,
     navigateToAddLesson: (id: Int) -> Unit,
-    navigateToFlashCard: (lessonId: Int) -> Unit
+    navigateToFlashCard: (lessonId: Int) -> Unit,
+    navigateToAccountSettings:(String)->Unit
 ) {
     val state = viewModel.categoriesState.collectAsStateWithLifecycle()
     val lessons by viewModel.lessonsState.collectAsStateWithLifecycle()
@@ -77,7 +81,7 @@ fun HomeScreen(
     val context = LocalContext.current
 
     Scaffold(
-        topBar = { TopBar(modifier = Modifier.padding(top = 20.dp, start = 16.dp), userData) },
+        topBar = { TopBar(modifier = Modifier.padding(top = 20.dp, start = 16.dp), userData, navigateToAccountSettings = navigateToAccountSettings) },
         floatingActionButton = {
             ExtendedFloatingActionButton(
                 text = { Text("New lesson") },
@@ -87,7 +91,7 @@ fun HomeScreen(
                         navigateToAddLesson(id)
                     } ?: Toast.makeText(
                         context,
-                        "Debes seleccionar una categoría primero",
+                        "You must select a category first",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
@@ -106,8 +110,8 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             SectionHeader(
-                title = "CATEGORÍAS",
-                actionText = "+ Añadir",
+                title = "CATEGORIES",
+                actionText = "+ Add",
                 onActionClick = navigateToAddCategory
             )
 
@@ -125,7 +129,8 @@ fun HomeScreen(
                         onCategorySelected = { categoryId ->
                             selectedCategoryId.value = categoryId
                             viewModel.getAllLessonsByCategory(categoryId)
-                        }
+                        },
+                        onDeleteCategory = {}
                     )
                 }
 
@@ -153,7 +158,7 @@ fun HomeScreen(
             when (val lessonState = lessons) {
                 is LessonsState.Error -> {
                     Text(
-                        text = "Error cargando lecciones",
+                        text = "Error loading lessons",
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.padding(16.dp)
                     )
@@ -161,14 +166,14 @@ fun HomeScreen(
 
                 LessonsState.IsEmpty -> {
                     Text(
-                        text = "No tienes ninguna lección aún. Agrega una.",
+                        text = "You don't have any lessons yet. Add one.",
                         modifier = Modifier.padding(16.dp)
                     )
                 }
 
                 LessonsState.Loading -> {
                     Text(
-                        text = "Selecciona una categoría para ver sus lecciones",
+                        text = "Select a category to view its lessons",
                         modifier = Modifier.padding(16.dp)
                     )
                 }
@@ -213,7 +218,8 @@ fun SectionHeader(
 @Composable
 fun TopBar(
     modifier: Modifier = Modifier,
-    userData: UserData
+    userData: UserData,
+    navigateToAccountSettings:(String)->Unit
 ) {
     Row(
         modifier = modifier
@@ -230,7 +236,8 @@ fun TopBar(
                     fontWeight = FontWeight.Bold
                 )
                 if (userData.imageUrl.isNotEmpty()) {
-                    AsyncImage(
+                    IconButton(onClick = {navigateToAccountSettings(userData.imageUrl)}) {
+                        AsyncImage(
                         model = userData.imageUrl,
                         contentDescription = "Profile picture",
                         contentScale = ContentScale.Crop,
@@ -238,7 +245,8 @@ fun TopBar(
                             .clip(CircleShape)
                             .size(40.dp)
                             .border(2.dp, Color.Gray, CircleShape)
-                    )
+                    )}
+
                 } else {
                     Icon(
                         painter = painterResource(R.drawable.ic_launcher_background),
@@ -247,6 +255,7 @@ fun TopBar(
                             .clip(CircleShape)
                             .size(40.dp)
                             .border(2.dp, Color.Gray, CircleShape)
+                            .clickable{navigateToAccountSettings(userData.imageUrl)}
                     )
                 }
             }
@@ -305,36 +314,77 @@ fun CategoryLazyRowPreview() {
 fun CategoryLazyRow(
     categories: List<Category>,
     selectedCategoryId: MutableState<Int?>,
-    onCategorySelected: (Int) -> Unit
+    onCategorySelected: (Int) -> Unit,
+    onDeleteCategory: (Category) -> Unit
 ) {
+    var categoryToDelete by remember { mutableStateOf<Category?>(null) }
 
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
     ) {
-
         items(categories) { category ->
             FilterChip(
                 selected = selectedCategoryId.value == category.id,
-                colors = FilterChipDefaults.filterChipColors(Color(category.color.toColorInt())),
                 onClick = {
                     onCategorySelected(category.id)
                 },
                 label = {
-                    Text(
-                        text = category.name,
-                        fontWeight = FontWeight.ExtraBold,
-                        color = Color.Black
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = category.name,
+                            fontWeight = FontWeight.ExtraBold,
+                            color = Color.Black
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Eliminar categoría",
+                            modifier = Modifier
+                                .size(18.dp)
+                                .clickable {
+                                    categoryToDelete = category
+                                },
+                            tint = Color.Black
+                        )
+                    }
                 },
+                colors = FilterChipDefaults.filterChipColors(
+                    containerColor = Color(category.color.toColorInt())
+                ),
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
         }
     }
 
-
+    // Dialogo de confirmación
+    categoryToDelete?.let { category ->
+        AlertDialog(
+            onDismissRequest = { categoryToDelete = null },
+            title = { Text("Eliminar categoría") },
+            text = { Text("¿Desea eliminar la categoría \"${category.name}\"?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    onDeleteCategory(category)
+                    categoryToDelete = null
+                }) {
+                    Text("Sí")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    categoryToDelete = null
+                }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 }
+
 
 @Composable
 fun LessonItem(
@@ -398,13 +448,13 @@ fun HomeCard() {
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
-                    text = "Gopay",
+                    text = "FlashMind",
                     color = Color.White.copy(alpha = 0.7f),
                     style = MaterialTheme.typography.labelMedium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "All kind Payment\nMade easy with\nGopay",
+                    text = "Studying has never\nbeen easier with\nFlashMind",
                     color = Color.White,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
@@ -416,7 +466,7 @@ fun HomeCard() {
                 painter = painterResource(id = R.drawable.mastan),
                 contentDescription = "Mastan illustration",
                 modifier = Modifier
-                    .width(200.dp)
+                    .width(150.dp)
                     .height(500.dp)
             )
         }

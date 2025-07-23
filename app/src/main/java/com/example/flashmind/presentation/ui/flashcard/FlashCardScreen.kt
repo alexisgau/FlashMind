@@ -110,6 +110,11 @@ fun FlashCardScreen(
                 }
             }
 
+            if(flashCards.value.isEmpty()){
+
+                Text("Empty flashCards in lesson,add one!", modifier = Modifier.padding(26.dp))
+            }
+
 
             LazyColumn(
                 modifier = Modifier.padding(26.dp),
@@ -144,7 +149,7 @@ fun FlashCardItem(
             .wrapContentHeight(),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFE3F2FD))
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -158,14 +163,14 @@ fun FlashCardItem(
                     contentDescription = null,
                     Modifier.clickable { editFlashCard(id) })
             }
-            Text("Pregunta:", fontWeight = FontWeight.Bold)
+            Text("Question:", fontWeight = FontWeight.Bold)
             Text(question, modifier = Modifier.padding(bottom = 8.dp))
 
 
             Spacer(Modifier.height(8.dp))
 
             Text(
-                "Respuesta:",
+                "Answer:",
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 8.dp)
             )

@@ -51,11 +51,7 @@ android {
         compose = true
     }
 }
-//fun getApiKey(key: String): String {
-//    val properties = Properties()
-//    properties.load(project.rootProject.file("local.properties").inputStream())
-//    return properties.getProperty(key) ?: throw GradleException("API key $key not found.")
-//}
+
 
 dependencies {
 
@@ -77,6 +73,9 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
+
+    implementation("androidx.compose.material3:material3:1.2.1")
+
 
     implementation("androidx.room:room-runtime:2.6.1")  // Versión estable más reciente
     kapt("androidx.room:room-compiler:2.6.1")  // Procesador de anotaciones (kapt)
@@ -101,6 +100,9 @@ dependencies {
     implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")
 
     implementation("io.coil-kt:coil-compose:2.4.0")
+
+    implementation("androidx.datastore:datastore-preferences:1.1.0")
+
 
 
 

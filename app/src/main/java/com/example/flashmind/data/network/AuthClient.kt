@@ -6,31 +6,47 @@ import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.AuthResponse
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.auth.auth
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 import java.security.MessageDigest
 import java.util.UUID
 import javax.inject.Inject
 
 
-class AuthClient @Inject constructor(@ApplicationContext private val context: Context, private val auth:FirebaseAuth) {
+class AuthClient @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val auth: FirebaseAuth
+) {
 
-    fun signInWithEmailAndPassword(email: String, password: String){
-
-        auth.signInWithEmailAndPassword(email,password)
-
+    suspend fun register(email: String, password: String): Result<String> {
+        return try {
+            val authResult = auth.createUserWithEmailAndPassword(email, password).await()
+            val uid = authResult.user?.uid ?: return Result.failure(Exception("Usuario nulo"))
+            Result.success(uid)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
-
+    suspend fun login(email: String, password: String): Result<String> {
+        return try {
+            val authResult = auth.signInWithEmailAndPassword(email, password).await()
+            val uid = authResult.user?.uid ?: return Result.failure(Exception("Usuario nulo"))
+            Result.success(uid)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
     fun signInWithGoogle(): Flow<AuthResponse> = callbackFlow {
         try {
@@ -86,6 +102,34 @@ class AuthClient @Inject constructor(@ApplicationContext private val context: Co
 
     fun getCurrentUser(): FirebaseUser? {
         return auth.currentUser
+    }
+
+    fun signOutAccountWithGoogle() = callbackFlow<AuthResponse> {
+        try {
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(context.getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+
+            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+
+            googleSignInClient.signOut().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    FirebaseAuth.getInstance().signOut()
+                    trySend(AuthResponse.Success).isSuccess
+                } else {
+                    val exceptionMessage =
+                        task.exception?.localizedMessage ?: "Error al cerrar sesión con Google"
+                    trySend(AuthResponse.Error(exceptionMessage)).isSuccess
+                }
+                close()
+            }
+        } catch (e: Exception) {
+            trySend(AuthResponse.Error("Error inesperado: ${e.localizedMessage}")).isSuccess
+            close()
+        }
+
+        awaitClose()
     }
 
 

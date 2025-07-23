@@ -1,4 +1,5 @@
-package com.example.flashmind.presentation.ui.login
+package com.example.flashmind.presentation.ui.register
+
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -12,16 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,22 +32,20 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.flashmind.R
 import com.example.flashmind.domain.model.AuthResponse
 import com.example.flashmind.presentation.viewmodel.AuthViewModel
 
 @Composable
-fun LoginScreen(
+fun RegisterScreen(
     viewModel: AuthViewModel = hiltViewModel(),
-    onLoginSuccess: () -> Unit,
-    navigateToRegister: () -> Unit
+    onRegisterSuccess: () -> Unit,
+    navigateBackToLogin: () -> Unit
 ) {
     val authState by viewModel.authState.collectAsStateWithLifecycle()
     var email by remember { mutableStateOf("") }
@@ -62,7 +56,7 @@ fun LoginScreen(
 
     LaunchedEffect(authState) {
         if (authState is AuthResponse.Success) {
-            onLoginSuccess()
+            onRegisterSuccess()
         }
     }
 
@@ -81,7 +75,7 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Welcome to Flashmind!",
+                text = "Create account",
                 style = MaterialTheme.typography.headlineMedium,
                 color = MaterialTheme.colorScheme.primary
             )
@@ -100,8 +94,7 @@ fun LoginScreen(
                 keyboardActions = KeyboardActions(
                     onNext = { passwordFocusRequester.requestFocus() }
                 ),
-                modifier = Modifier
-                    .fillMaxWidth()
+                modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
@@ -124,61 +117,37 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(
-                onClick = { viewModel.loginWithEmail(email, password) },
+                onClick = {
+                    viewModel.registerWithEmail(email.trim(), password.trim())
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Sign in")
+                Text("Crear cuenta")
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                "O",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.inverseSurface
-            )
-
-            OutlinedButton(
-                onClick = { viewModel.signInWithGoogle() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.primary
+            if (authState is AuthResponse.Error) {
+                Text(
+                    text = (authState as AuthResponse.Error).message,
+                    color = Color.Red,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(top = 12.dp)
                 )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.icon_google),
-                    contentDescription = "Google Sign In",
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Sign in with Google")
             }
 
-//            if (authState is AuthResponse.Error) {
-//                Text(
-//                    text = (authState as AuthResponse.Error).message,
-//                    color = Color.Red,
-//                    style = MaterialTheme.typography.bodySmall
-//                )
-//            }
-
-            Spacer(Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(24.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(
-                    "¿Don´t have an account?",
+                    "¿Already have an account?",
                     color = MaterialTheme.colorScheme.inverseSurface
                 )
                 Text(
-                    "Create account",
+                    "Sign in",
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { navigateToRegister() }
+                    modifier = Modifier.clickable { navigateBackToLogin() }
                 )
             }
         }

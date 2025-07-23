@@ -22,6 +22,8 @@ import kotlinx.coroutines.flow.Flow
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun insert(flashCard: FlashCardEntity)
 
+        @Query("UPDATE flashcards SET color = :newColor")
+        suspend fun updateAllColors(newColor: String)
 
         @Insert(onConflict = OnConflictStrategy.REPLACE)
         suspend fun insertAll(flashcards: List<FlashCardEntity>)

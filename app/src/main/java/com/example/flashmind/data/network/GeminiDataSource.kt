@@ -43,7 +43,7 @@ class GeminiDataSource @Inject constructor() {
                     id = 0,
                     question = question,
                     answer = answer,
-                    color = "#0xFFE3F2FD",
+                    color = "#FFE3F2FD",
                     lessonId = lessonId
                 )
             )
