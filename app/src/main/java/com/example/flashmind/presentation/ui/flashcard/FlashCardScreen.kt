@@ -1,7 +1,9 @@
 package com.example.flashmind.presentation.ui.flashcard
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +27,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -32,11 +35,17 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.flashmind.R
 import com.example.flashmind.presentation.viewmodel.FlashCardViewModel
 
 
@@ -44,6 +53,7 @@ import com.example.flashmind.presentation.viewmodel.FlashCardViewModel
 fun FlashCardScreen(
     lessonId: Int,
     navigateToHome: () -> Unit,
+    onNavigateBack:()-> Unit,
     navigateToAddFlashCardAi: (Int) -> Unit,
     navigateToAddFlashCardManual: (Int) -> Unit,
     navigateToStartGame: (Int) -> Unit,
@@ -121,12 +131,12 @@ fun FlashCardScreen(
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
                 items(flashCards.value) { flashcard ->
-                    FlashCardItem(
-                        id = flashcard.id,
+                    FlashcardItem(
+                        categoryName = "a",
                         question = flashcard.question,
-                        answer = flashcard.answer,
-                        deleteFlashCard = { viewModel.deleteFlashCard(flashcard) },
-                        editFlashCard = { navigateToEditFlashCard(flashcard.id) }
+                        imagePainter = painterResource(R.drawable.icon_google),
+                        onEditClick = { navigateToEditFlashCard(flashcard.id) },
+                        onDeleteClick = { viewModel.deleteFlashCard(flashcard) },
                     )
                 }
             }
@@ -178,6 +188,138 @@ fun FlashCardItem(
         }
     }
 }
+
+@Composable
+fun FlashCardItemDeletable(
+    id: Int,
+    question: String,
+    answer: String,
+    deleteFlashCard: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Flashcard",
+                    modifier = Modifier.clickable { deleteFlashCard() }
+                )
+            }
+
+
+            Spacer(Modifier.height(4.dp))
+
+            Text("Question:", fontWeight = FontWeight.Bold)
+            Text(question, modifier = Modifier.padding(bottom = 8.dp))
+
+            Spacer(Modifier.height(8.dp))
+
+            Text(
+                "Answer:",
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            Text(answer)
+        }
+    }
+}
+
+@Composable
+fun FlashcardItem(
+    categoryName: String,
+    question: String,
+    imagePainter: Painter,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(24.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 12.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Imagen de la categoría
+            Image(
+                painter = imagePainter,
+                contentDescription = "Imagen de la categoría $categoryName",
+                modifier = Modifier
+                    .size(60.dp)
+                    .clip(RoundedCornerShape(16.dp)),
+                contentScale = ContentScale.Crop
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // Columna con el nombre de la categoría y la pregunta
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
+
+                Text(
+                    text = question,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2 // Para que no ocupe mucho espacio
+                )
+            }
+
+            // Iconos de acción
+            IconButton(onClick = onEditClick) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = "Editar tarjeta",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar tarjeta",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+// --- Preview para ver el diseño en Android Studio ---
+@Preview(showBackground = true)
+@Composable
+fun FlashcardItemPreview() {
+    MaterialTheme {
+        Box(modifier = Modifier.padding(16.dp)) {
+            FlashcardItem(
+                categoryName = "Biología",
+                question = "¿Qué es la fotosíntesis?",
+                imagePainter = painterResource(id = R.drawable.ic_launcher_background), // Usa una imagen de tu proyecto
+                onEditClick = {},
+                onDeleteClick = {}
+            )
+        }
+    }
+}
+
 
 
 

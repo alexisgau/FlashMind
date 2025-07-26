@@ -11,15 +11,23 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -31,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -53,6 +62,7 @@ fun AccountSettingsScreen(
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountScreenImpl(
     modifier: Modifier,
@@ -60,7 +70,6 @@ fun AccountScreenImpl(
     navigateToLogin: () -> Unit,
     viewModel: AuthViewModel
 ) {
-
     val signOutState by viewModel.signOutState.collectAsStateWithLifecycle()
     val isDarkMode by viewModel.isDarkMode.collectAsStateWithLifecycle()
 
@@ -70,77 +79,143 @@ fun AccountScreenImpl(
         }
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 24.dp, vertical = 32.dp),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            Text(
-                "Account settings",
-                style = MaterialTheme.typography.headlineSmall,
-                color =  MaterialTheme.colorScheme.inverseSurface,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            Spacer(Modifier.height(8.dp))
-
-            AsyncImage(
-                model = userData,
-                contentDescription = "Profile picture",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(140.dp)
-                    .border(2.dp, Color.Gray, CircleShape)
-                    .align(Alignment.CenterHorizontally)
-            )
-            Spacer(Modifier.height(32.dp))
-
-            Text("Preferences", style = MaterialTheme.typography.titleMedium, color =  MaterialTheme.colorScheme.inverseSurface,)
-            Spacer(Modifier.height(12.dp))
-
-            Row(
-                Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Info,
-                    contentDescription = "Modo oscuro",
-                    tint = MaterialTheme.colorScheme.onBackground
-                )
-                Text("DARK MODE", style = MaterialTheme.typography.titleMedium, color =  MaterialTheme.colorScheme.inverseSurface)
-                Spacer(Modifier.weight(1f))
-                Switch(checked = isDarkMode, onCheckedChange = { viewModel.setDarkMode(it) })
-            }
-
-            Spacer(Modifier.height(32.dp))
-
-            Text("Account", style = MaterialTheme.typography.titleMedium, color =  MaterialTheme.colorScheme.inverseSurface,)
-            Spacer(Modifier.height(12.dp))
-
-            Button(
-                onClick = {
-                    viewModel.signOutWithGoogle()
-
-
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "Account settings",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = MaterialTheme.colorScheme.inverseSurface,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
+                    )
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(50)
-            ) {
-                Text("Sign out")
-            }
+                navigationIcon = {
+                    IconButton(onClick = { navigateToLogin() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back to login",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+                    }
+                },
+            )
         }
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(paddingValues)
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(Modifier.height(16.dp))
 
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Versión de la app: 1.0.0", style = MaterialTheme.typography.bodySmall, color =  MaterialTheme.colorScheme.inverseSurface)
-            Spacer(Modifier.height(4.dp))
-            Text("Envíanos tu feedback", style = MaterialTheme.typography.bodySmall, color =  MaterialTheme.colorScheme.inverseSurface,)
+                AsyncImage(
+                    model = userData,
+                    contentDescription = "Profile picture",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(140.dp)
+                        .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                )
+
+                Spacer(Modifier.height(32.dp))
+
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        "Preferences",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.inverseSurface
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Info,
+                            contentDescription = "Dark mode",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
+
+                        Spacer(Modifier.width(12.dp))
+
+                        Text(
+                            "DARK MODE",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.inverseSurface
+                        )
+
+                        Spacer(Modifier.weight(1f))
+
+                        Switch(
+                            checked = isDarkMode,
+                            onCheckedChange = { viewModel.setDarkMode(it) },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
+                        )
+                    }
+
+                    Spacer(Modifier.height(32.dp))
+
+                    Text(
+                        "Account",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.inverseSurface
+                    )
+
+                    Spacer(Modifier.height(12.dp))
+
+                    Button(
+                        onClick = { viewModel.signOutWithGoogle() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        shape = RoundedCornerShape(50),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    ) {
+                        Text("Sign out")
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    "Versión de la app: 1.0.0",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.inverseSurface
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    "Envíanos tu feedback",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.inverseSurface
+                )
+                Spacer(Modifier.height(16.dp))
+            }
         }
     }
 }

@@ -18,6 +18,10 @@ object Home
 @Serializable
 object AddCategory
 
+
+@Serializable
+data class Lessons(val categoryId: Int, val categoryName: String)
+
 @Serializable
 data class AddLesson(val categoryId: Int)
 

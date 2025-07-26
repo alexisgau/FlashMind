@@ -1,8 +1,10 @@
 package com.example.flashmind.presentation.ui.flashcard
 
+import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,20 +19,33 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +56,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
@@ -49,112 +66,135 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
 import com.example.flashmind.presentation.viewmodel.FlashCardViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFlashCardScreenAi(
     lessonId: Int,
     navigateToFlashCards: (Int) -> Unit,
-    navigateToEditFlashCard: (Int) -> Unit,
     viewModel: FlashCardViewModel = hiltViewModel()
 ) {
     val state by viewModel.flashCardAiState.collectAsStateWithLifecycle()
     var text by remember { mutableStateOf("") }
     val context = LocalContext.current
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        Image(
-            painter = painterResource(id = R.drawable.mastanrobot),
-            contentDescription = "Robot generador de flashcards",
-            modifier = Modifier
-                .size(120.dp)
-                .padding(bottom = 16.dp)
-        )
-
-        Text(
-            "Generate Flashcards with AI",
-            fontSize = 22.sp,
-            fontWeight = FontWeight.Bold,
-            color =  MaterialTheme.colorScheme.inverseSurface,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        OutlinedTextField(
-            value = text,
-            onValueChange = { text = it },
-            label = { Text("Input text") },
-            placeholder = { Text("Paste the content you want to generate flashcards from here") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 120.dp),
-            maxLines = 10,
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Button(
-                onClick = { viewModel.generateFlashCards(text, lessonId) },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("GENERATE")
-            }
-
-            Button(
-                onClick = {
-                    viewModel.saveGeneratedFlashcards()
-                    Toast.makeText(context, "Flashcards saved successfully", Toast.LENGTH_SHORT)
-                        .show()
-                },
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("SAVE ALL")
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        when (state) {
-            is FlashCardAiState.Error -> {
-                val msg = (state as FlashCardAiState.Error).error
-                Text("Error: $msg", color = Color.Red)
-            }
-
-            FlashCardAiState.Loading -> {
-                Text("Thinking of something great...\uD83E\uDD16", color = MaterialTheme.colorScheme.inverseSurface)
-            }
-
-            is FlashCardAiState.Success -> {
-                val flashcards = viewModel.generatedFlashcards
-
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    items(flashcards, key = { it.question }) { flashcard ->
-                        FlashCardItem(
-                            id = flashcard.id,
-                            question = flashcard.question,
-                            answer = flashcard.answer,
-                            deleteFlashCard = { viewModel.removeFromGenerated(flashcard) },
-                            editFlashCard = { navigateToEditFlashCard(flashcard.id) }
-                        )
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {  },
+                navigationIcon = {
+                    IconButton(onClick = { navigateToFlashCards(lessonId) }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
                     }
                 }
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
 
+
+
+            Image(
+                painter = painterResource(id = R.drawable.mastanrobot),
+                contentDescription = "Robot generador de flashcards",
+                modifier = Modifier.size(120.dp)
+            )
+
+            Text(
+                "Generate Flashcards with AI",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
+
+            ScrollableOutlinedTextField(
+                text = text,
+                onTextChange = { text = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp),
+                label = "Input text",
+                placeholder = "Paste the content you want to generate flashcards from here"
+            )
+
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(vertical = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                when (val currentState = state) {
+                    is FlashCardAiState.Error -> {
+                        Text("Error: ${currentState.error}", color = MaterialTheme.colorScheme.error)
+                    }
+                    FlashCardAiState.Loading -> {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                "Thinking of something great...🧠",
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                    is FlashCardAiState.Success -> {
+                        val flashcards = viewModel.generatedFlashcards
+
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            items(flashcards, key = { it.question }) { flashcard ->
+                                FlashCardItemDeletable(
+                                    id = flashcard.id,
+                                    question = flashcard.question,
+                                    answer = flashcard.answer,
+                                    deleteFlashCard = { viewModel.removeFromGenerated(flashcard) },
+                                    modifier = Modifier.padding(8.dp)
+                                )
+                            }
+                        }
+
+                    }
+                    FlashCardAiState.Saved -> {
+                        Text("¡Flashcards guardadas!", color = Color.Green.copy(alpha = 0.8f))
+                        LaunchedEffect(Unit) {
+                            navigateToFlashCards(lessonId)
+                        }
+                    }
+                    FlashCardAiState.Init -> {
+                    }
+                }
             }
 
-            FlashCardAiState.Saved -> {
-                Text("¡Saved Flashcards!", color = Color.Green)
-                navigateToFlashCards(lessonId)
-            }
 
-            FlashCardAiState.Init -> null
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Button(
+                    onClick = { viewModel.generateFlashCards(text, lessonId) },
+                    modifier = Modifier.weight(1f),
+                    enabled = state !is FlashCardAiState.Loading
+                ) {
+                    Text("GENERATE")
+                }
+                Button(
+                    onClick = { viewModel.saveGeneratedFlashcards() },
+                    modifier = Modifier.weight(1f),
+                    enabled = state is FlashCardAiState.Success
+                ) {
+                    Text("SAVE ALL")
+                }
+            }
         }
     }
 }
@@ -300,3 +340,35 @@ fun AddFlashCardFab(
         }
     }
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ScrollableOutlinedTextField(
+    text: String,
+    onTextChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String = "",
+    placeholder: String = "",
+) {
+    val scrollState = rememberScrollState()
+
+    OutlinedTextField(
+        value = text,
+        onValueChange = onTextChange,
+        modifier = modifier
+            .verticalScroll(scrollState), // Aplicar verticalScroll aquí
+        label = { Text(label) },
+        placeholder = { Text(placeholder) },
+        textStyle = LocalTextStyle.current.copy(lineHeight = 20.sp),
+        shape = RoundedCornerShape(12.dp),
+        maxLines = Int.MAX_VALUE,
+        keyboardOptions = KeyboardOptions.Default.copy(
+            imeAction = ImeAction.Done
+        ),
+        singleLine = false,
+        visualTransformation = VisualTransformation.None
+
+    )
+}
+

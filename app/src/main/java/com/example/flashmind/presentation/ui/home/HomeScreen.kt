@@ -2,9 +2,11 @@ package com.example.flashmind.presentation.ui.home
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -24,19 +26,28 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -69,126 +80,156 @@ import com.example.flashmind.presentation.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    navigateToAddCategory: () -> Unit,
-    navigateToAddLesson: (id: Int) -> Unit,
-    navigateToFlashCard: (lessonId: Int) -> Unit,
-    navigateToAccountSettings:(String)->Unit
+    // Los parámetros de navegación cambian para reflejar el nuevo flujo
+    onNavigateToLessons: (categoryId: Int, categoryName: String) -> Unit,
+    onNavigateToAddCategory: () -> Unit,
+    onNavigateToAccountSettings: (String) -> Unit
 ) {
-    val state = viewModel.categoriesState.collectAsStateWithLifecycle()
-    val lessons by viewModel.lessonsState.collectAsStateWithLifecycle()
+    val categoryState by viewModel.categoriesState.collectAsStateWithLifecycle()
     val userData by viewModel.userData.collectAsStateWithLifecycle()
-    val selectedCategoryId = remember { mutableStateOf<Int?>(null) }
-    val context = LocalContext.current
+    var categoryToDelete by remember { mutableStateOf<Category?>(null) }
 
     Scaffold(
-        topBar = { TopBar(modifier = Modifier.padding(top = 20.dp, start = 16.dp), userData, navigateToAccountSettings = navigateToAccountSettings) },
-        floatingActionButton = {
-            ExtendedFloatingActionButton(
-                text = { Text("New lesson") },
-                icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                onClick = {
-                    selectedCategoryId.value?.let { id ->
-                        navigateToAddLesson(id)
-                    } ?: Toast.makeText(
-                        context,
-                        "You must select a category first",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }
+        topBar = {
+            TopBar(
+                modifier = Modifier.padding(top = 20.dp, start = 16.dp),
+                userData = userData,
+                navigateToAccountSettings = onNavigateToAccountSettings
             )
+        },
+        floatingActionButton = {
+            // El FAB ahora tiene una única y clara función: añadir categoría.
+            FloatingActionButton(
+                onClick = { onNavigateToAddCategory() },
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Añadir nueva categoría")
+            }
         }
     ) { innerPadding ->
-        Column(
+        // La LazyColumn reemplaza a la Column para un mejor rendimiento con listas largas
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
-
+                .fillMaxSize(),
+            contentPadding = PaddingValues(bottom = 80.dp) // Espacio para que no choque con el FAB
         ) {
-
-            HomeCard()
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            SectionHeader(
-                title = "CATEGORIES",
-                actionText = "+ Add",
-                onActionClick = navigateToAddCategory
-            )
-
-            when (val categoryState = state.value) {
-                is CategoryState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                }
-
-                is CategoryState.Success -> {
-                    CategoryLazyRow(
-                        categories = categoryState.categories,
-                        selectedCategoryId = selectedCategoryId,
-                        onCategorySelected = { categoryId ->
-                            selectedCategoryId.value = categoryId
-                            viewModel.getAllLessonsByCategory(categoryId)
-                        },
-                        onDeleteCategory = {}
-                    )
-                }
-
-                is CategoryState.Error -> {
-                    Text(
-                        text = "Error al cargar categorías",
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
+            // 1. Elementos fijos de la parte superior
+            item {
+                HomeCard()
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "MY CATEGORIES",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Sección Lecciones
-            Text(
-                text = "LESSONS",
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            when (val lessonState = lessons) {
-                is LessonsState.Error -> {
-                    Text(
-                        text = "Error loading lessons",
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(16.dp)
-                    )
+            // 2. Lógica para mostrar la lista de categorías
+            when (val state = categoryState) {
+                is CategoryState.Loading -> {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
+                    }
                 }
-
-                LessonsState.IsEmpty -> {
-                    Text(
-                        text = "You don't have any lessons yet. Add one.",
-                        modifier = Modifier.padding(16.dp)
-                    )
+                is CategoryState.Success -> {
+                    items(state.categories) { category ->
+                        CategoryItem(
+                            category = category,
+                            onClick = {
+                                onNavigateToLessons(category.id, category.name)
+                            },
+                            onDeleteRequest = { categoryToDelete = it },
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
+                        )
+                    }
                 }
-
-                LessonsState.Loading -> {
-                    Text(
-                        text = "Select a category to view its lessons",
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-
-                is LessonsState.Success -> {
-                    LessonItem(
-                        lessons = lessonState.lessons,
-                        navigateToFlashCard = navigateToFlashCard
-                    )
+                is CategoryState.Error -> {
+                    item {
+                        Text(
+                            text = "Error al cargar categorías",
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
                 }
             }
         }
     }
+
+    // El diálogo de confirmación para eliminar
+    categoryToDelete?.let { category ->
+        AlertDialog(
+            onDismissRequest = { categoryToDelete = null },
+            title = { Text("Eliminar categoría") },
+            text = { Text("¿Estás seguro de que deseas eliminar \"${category.name}\"? Se borrarán todas sus lecciones.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    {  } // Llama al ViewModel para borrar
+                    categoryToDelete = null
+                }) {
+                    Text("Eliminar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { categoryToDelete = null }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
 }
 
+// -- Composable Auxiliar para el Item de Categoría (usado arriba) --
+@Composable
+fun CategoryItem(
+    category: Category,
+    onClick: () -> Unit,
+    onDeleteRequest: (Category) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Face, // O un ícono dinámico
+                contentDescription = null,
+                modifier = Modifier.size(40.dp),
+                tint = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = category.name,
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                )
+                Text(
+                    text = "${"1" ?: 0} Lecciones", // Asumiendo que tienes un contador
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = LocalContentColor.current.copy(alpha = 0.7f)
+                )
+            }
+            IconButton(onClick = { onDeleteRequest(category) }) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Eliminar Categoría",
+                    tint = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun SectionHeader(
@@ -255,7 +296,7 @@ fun TopBar(
                             .clip(CircleShape)
                             .size(40.dp)
                             .border(2.dp, Color.Gray, CircleShape)
-                            .clickable{navigateToAccountSettings(userData.imageUrl)}
+                            .clickable { navigateToAccountSettings(userData.imageUrl) }
                     )
                 }
             }
@@ -403,23 +444,27 @@ fun LessonItem(
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = lesson.tittle,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                    )
-                    Icon(
-                        imageVector = Icons.Default.ArrowForward,
-                        contentDescription = "Ir a la lección",
-                        tint = MaterialTheme.colorScheme.primary
-                    )
-                }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = lesson.tittle,
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
+                        )
+                        IconButton(onClick = {}) {
+                            Icon(
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Ir a la lección",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    }
+
+
             }
         }
     }
@@ -472,8 +517,6 @@ fun HomeCard() {
         }
     }
 }
-
-
 
 
 
