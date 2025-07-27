@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.flashmind.data.local.entities.CategoryEntity
+import com.example.flashmind.domain.model.Category
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -19,4 +20,11 @@ interface CategoryDao {
     @Query("SELECT * FROM category")
      fun getAllCategories(): Flow<List<CategoryEntity>>
 
+     @Query("SELECT * FROM category WHERE isSynced = false AND userId = :userId")
+     fun getUnsyncedCategories(userId: String) : List<Category>
+
+
+     @Query("UPDATE category SET isSynced = true WHERE id = :categoryId")
+     fun markAsSynced(categoryId: Int)
 }
+

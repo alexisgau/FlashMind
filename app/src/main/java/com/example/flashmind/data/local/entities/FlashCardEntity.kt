@@ -24,8 +24,10 @@ data class FlashCardEntity(
     val answer: String,
     val color: String,
     val lessonId: Int,
+    val userId: String = "",
+    val isSynced: Boolean = false
 )
 
-fun FlashCard.toEntity(): FlashCardEntity = FlashCardEntity(id = id, question = question, answer = answer, color = color, lessonId = lessonId)
-fun FlashCardEntity.toDomain(): FlashCard = FlashCard(id = id, question = question, answer = answer, color = color, lessonId =  lessonId)
+fun FlashCard.toEntity(): FlashCardEntity = FlashCardEntity(id = id, question = question, answer = answer, color = color, lessonId = lessonId, userId = userId, isSynced = isSynced)
+fun FlashCardEntity.toDomain(): FlashCard = FlashCard(id = id, question = question, answer = answer, color = color, lessonId =  lessonId, userId = userId, isSynced = isSynced)
 

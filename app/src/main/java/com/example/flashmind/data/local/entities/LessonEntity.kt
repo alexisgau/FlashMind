@@ -21,8 +21,10 @@ import com.example.flashmind.domain.model.Lesson
 data class LessonEntity(
     @PrimaryKey(autoGenerate = true) val id: Int,
     val title: String,
-    val categoryId: Int
+    val categoryId: Int,
+    val userId: String = "",
+    val isSynced: Boolean = false
 )
 
-fun Lesson.toEntity(): LessonEntity = LessonEntity(id,tittle,categoryId)
-fun LessonEntity.toDomain(): Lesson = Lesson(id, title,categoryId)
+fun Lesson.toEntity(): LessonEntity = LessonEntity(id = id, title = tittle, categoryId = categoryId, userId = userId, isSynced = isSynced)
+fun LessonEntity.toDomain(): Lesson = Lesson(id = id, tittle = title, categoryId = categoryId, userId = userId, isSynced = isSynced)

@@ -9,4 +9,9 @@ interface CategoryRepository {
     suspend fun deleteCategory(category: Category)
     fun getCategories():Flow<List<Category>>
 
+    suspend fun getUnsyncedCategories(): List<Category>
+    suspend fun uploadCategoryToFirestore(category: Category)
+    suspend fun markCategoryAsSynced(categoryId: Int)
+
+
 }

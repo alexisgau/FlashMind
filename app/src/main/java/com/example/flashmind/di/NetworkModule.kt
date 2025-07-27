@@ -7,6 +7,7 @@ import com.example.flashmind.data.repository.AuthRepositoryImpl
 import com.example.flashmind.domain.reposotory.AiRepository
 import com.example.flashmind.domain.reposotory.AuthRepository
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -43,4 +44,9 @@ object NetworkModule {
     fun provideAuthRepository(authClient: AuthClient): AuthRepository {
         return AuthRepositoryImpl(authClient)
     }
+
+
+    @Provides
+    @Singleton
+    fun provideFirebaseFirestore(): FirebaseFirestore = FirebaseFirestore.getInstance()
 }

@@ -1,7 +1,9 @@
 package com.example.flashmind.di
 
 import android.content.Context
+import androidx.hilt.work.HiltWorkerFactory
 import androidx.room.Room
+import androidx.work.WorkerFactory
 import com.example.flashmind.data.local.AppDatabase
 import com.example.flashmind.data.local.dao.CategoryDao
 import com.example.flashmind.data.local.dao.FlashCardDao
@@ -12,6 +14,9 @@ import com.example.flashmind.data.repository.LessonRepositoryImpl
 import com.example.flashmind.domain.reposotory.CategoryRepository
 import com.example.flashmind.domain.reposotory.FlashCardRepository
 import com.example.flashmind.domain.reposotory.LessonRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,6 +27,7 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
+
 
     @Provides
     @Singleton
@@ -39,10 +45,13 @@ object DatabaseModule {
     }
 
     @Provides
+    @Singleton
     fun provideCategoryRepository(
-        categoryDao: CategoryDao
+        auth: FirebaseAuth,
+        categoryDao: CategoryDao,
+        firestore: FirebaseFirestore
     ): CategoryRepository {
-        return CategoryRepositoryImpl(categoryDao)
+        return CategoryRepositoryImpl(auth,categoryDao, firestore)
     }
 
 
@@ -53,9 +62,10 @@ object DatabaseModule {
 
     @Provides
     fun provideLessonRepository(
-        dao: LessonDao
+        dao: LessonDao,
+        auth: FirebaseAuth
     ): LessonRepository {
-        return LessonRepositoryImpl(dao)
+        return LessonRepositoryImpl(dao,auth)
     }
 
     @Provides
@@ -65,9 +75,10 @@ object DatabaseModule {
 
     @Provides
     fun provideFlashCardRepository(
+        auth: FirebaseAuth,
         dao: FlashCardDao
     ): FlashCardRepository {
-        return FlashCardRepositoryImpl(dao)
+        return FlashCardRepositoryImpl(auth = auth, dao = dao)
     }
 
 

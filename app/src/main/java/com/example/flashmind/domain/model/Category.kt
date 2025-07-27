@@ -5,4 +5,6 @@ data class Category(
     val name: String,
     val description: String,
     val color: String,
+    val userId: String = "",
+    val isSynced: Boolean = false
 )

@@ -1,17 +1,33 @@
 package com.example.flashmind.data.repository
 
+import android.util.Log
 import com.example.flashmind.data.local.dao.CategoryDao
 import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.local.entities.toEntity
+import com.example.flashmind.data.network.model.CategoryFirestore
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.domain.reposotory.CategoryRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class CategoryRepositoryImpl @Inject constructor(private val categoryDao: CategoryDao):CategoryRepository {
+class CategoryRepositoryImpl @Inject constructor(
+    private val auth: FirebaseAuth,
+    private val categoryDao: CategoryDao,
+    private val firestore: FirebaseFirestore,
+) : CategoryRepository {
+
+    private val userId: String
+        get() = auth.currentUser?.uid ?:  "debug-user"
+
+
+
     override suspend fun insertCategory(category: Category) {
-        return categoryDao.insertCategory(category.toEntity())
+        return categoryDao.insertCategory(category.copy(userId = userId).toEntity())
     }
 
     override suspend fun deleteCategory(category: Category) {
@@ -23,7 +39,38 @@ class CategoryRepositoryImpl @Inject constructor(private val categoryDao: Catego
             categories.map { it.toDomain() }
         }
     }
+
+    override suspend fun getUnsyncedCategories(): List<Category> {
+        Log.d("WorkManager", "userId: $userId")
+       return categoryDao.getUnsyncedCategories(userId)
+    }
+
+    override suspend fun uploadCategoryToFirestore(category: Category) {
+        val categoryFirestore = CategoryFirestore(
+            id = category.id,
+            name = category.name,
+            color = category.color
+        )
+
+        try {
+            firestore.collection("users").document(userId)
+                .collection("categories").document(category.id.toString())
+                .set(categoryFirestore).await()
+
+
+
+            Log.d("WorkManager", "Subida exitosa de categoría: ${category.name}")
+        } catch (e: Exception) {
+            Log.e("WorkManager", "Error subiendo categoría: ${category.name}", e)
+        }
+    }
+
+    override suspend fun markCategoryAsSynced(categoryId: Int) {
+        categoryDao.markAsSynced(categoryId)
+    }
 }
+
+class AuthException(message: String) : Exception(message)
 
 
 

@@ -5,14 +5,19 @@ import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.local.entities.toEntity
 import com.example.flashmind.domain.model.FlashCard
 import com.example.flashmind.domain.reposotory.FlashCardRepository
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class FlashCardRepositoryImpl @Inject constructor(private val dao: FlashCardDao):
+class FlashCardRepositoryImpl @Inject constructor(private val dao: FlashCardDao,private val auth: FirebaseAuth):
     FlashCardRepository {
+
+    private val userId: String
+        get() = auth.currentUser?.uid ?:  throw AuthException("Usuario no autenticado")
+
     override suspend fun insert(flashCard: FlashCard) {
-        return dao.insert(flashCard.toEntity())
+        return dao.insert(flashCard.copy(userId = userId ).toEntity())
     }
 
     override suspend fun delete(flashCard: FlashCard) {

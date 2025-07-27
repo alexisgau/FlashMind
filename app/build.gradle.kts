@@ -10,6 +10,7 @@ plugins {
 
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id ("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
 
 }
@@ -91,6 +92,8 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
 
+    implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
+
     // Manejo de credenciales (Authentication API)
     implementation ("androidx.credentials:credentials:1.3.0-alpha05")
     implementation ("androidx.credentials:credentials-play-services-auth:1.3.0-alpha05")
@@ -103,12 +106,14 @@ dependencies {
 
     implementation("androidx.datastore:datastore-preferences:1.1.0")
 
-
-
-
-
-
     implementation(libs.generativeai)
+
+    //workManager
+    implementation("androidx.work:work-runtime-ktx:2.10.2")
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    kapt("androidx.hilt:hilt-compiler:1.2.0")
+
+
 
 
 }

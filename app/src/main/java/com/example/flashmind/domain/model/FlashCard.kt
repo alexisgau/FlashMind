@@ -6,5 +6,7 @@ data class FlashCard(
     val color: String,
     val answer: String,
     val lessonId: Int,
+    val userId: String = "",
+    val isSynced: Boolean = false
 
 )
