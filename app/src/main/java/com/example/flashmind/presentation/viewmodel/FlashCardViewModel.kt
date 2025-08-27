@@ -51,7 +51,7 @@ class FlashCardViewModel @Inject constructor(
         viewModelScope.launch {
             getFlashCardsUseCase.invoke(lessonId)
                 .catch { e ->
-                    Log.e("FlashCardViewModel", "Error al cargar tarjetas: $e")
+                    Log.e("FlashCardViewModel", "Error loading cards: $e")
                 }
                 .collect { cards ->
                     _flashCards.value = cards
@@ -65,7 +65,7 @@ class FlashCardViewModel @Inject constructor(
                 val flashCard = getFlashCardsByIdUseCase.invoke(id)
                 _flashCardState.value = FlashCardUiState.Success(flashCard)
             } catch (e: Exception) {
-                _flashCardState.value = FlashCardUiState.Error("Error al cargar tarjeta: ${e.message}")
+                _flashCardState.value = FlashCardUiState.Error("Error loading card: ${e.message}")
             }
         }
     }
@@ -76,7 +76,7 @@ class FlashCardViewModel @Inject constructor(
             try {
                 val generatedList = generateFlashCards.invoke(text, lessonId)
                 if (generatedList.isEmpty()) {
-                    _flashCardAiState.value = FlashCardAiState.Error("La lista generada está vacía.")
+                    _flashCardAiState.value = FlashCardAiState.Error("The generated list is empty, please try again.")
                     return@launch
                 }
 
@@ -86,7 +86,7 @@ class FlashCardViewModel @Inject constructor(
                 _flashCardAiState.value = FlashCardAiState.Success(generatedList)
 
             } catch (e: Exception) {
-                _flashCardAiState.value = FlashCardAiState.Error(e.message ?: "Error desconocido.")
+                _flashCardAiState.value = FlashCardAiState.Error(e.message ?: "Unknown error.")
             }
         }
     }
@@ -107,7 +107,7 @@ class FlashCardViewModel @Inject constructor(
                 _flashCardState.value = FlashCardUiState.Success(flashCard)
 
             } catch (e: Exception) {
-                _flashCardState.value = FlashCardUiState.Error("Error al guardar: ${e.message}")
+                _flashCardState.value = FlashCardUiState.Error("Error saving card: ${e.message}")
             }
         }
     }
@@ -118,7 +118,7 @@ class FlashCardViewModel @Inject constructor(
             try {
                 editFlashCardUseCase.invoke(flashCard)
             } catch (e: Exception) {
-                Log.e("FlashCardViewModel", "Error al editar tarjeta: $e")
+                Log.e("FlashCardViewModel", "Error editing card: $e")
             }
         }
     }
@@ -128,7 +128,7 @@ class FlashCardViewModel @Inject constructor(
             try {
                 deleteFlashCardUseCase.invoke(flashCard)
             } catch (e: Exception) {
-                Log.e("FlashCardViewModel", "Error al eliminar tarjeta: $e")
+                Log.e("FlashCardViewModel", "Error deleting card: $e")
             }
         }
     }

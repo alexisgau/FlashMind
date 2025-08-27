@@ -13,5 +13,11 @@ interface CategoryRepository {
     suspend fun uploadCategoryToFirestore(category: Category)
     suspend fun markCategoryAsSynced(categoryId: Int)
 
+    suspend fun deleteCategoryFromFirestore(categoryId: Int)
+
+    suspend fun deleteCategoryLocally(categoryId: Int)
+
+    fun getLessonCountByCategory(categoryId: Int): Flow<Int>
+
 
 }

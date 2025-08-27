@@ -5,5 +5,7 @@ data class Lesson(
     val tittle: String,
     val categoryId: Int,
     val userId: String = "",
-    val isSynced: Boolean = false
+    val isSynced: Boolean = false,
+    val isDeleted: Boolean = false
+
 )

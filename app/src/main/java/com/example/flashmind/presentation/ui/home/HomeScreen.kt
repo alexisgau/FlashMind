@@ -49,6 +49,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -80,14 +81,17 @@ import com.example.flashmind.presentation.viewmodel.HomeViewModel
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    // Los parámetros de navegación cambian para reflejar el nuevo flujo
     onNavigateToLessons: (categoryId: Int, categoryName: String) -> Unit,
     onNavigateToAddCategory: () -> Unit,
     onNavigateToAccountSettings: (String) -> Unit
 ) {
     val categoryState by viewModel.categoriesState.collectAsStateWithLifecycle()
     val userData by viewModel.userData.collectAsStateWithLifecycle()
+    val lessonCounts by viewModel.lessonCounts.collectAsStateWithLifecycle()
     var categoryToDelete by remember { mutableStateOf<Category?>(null) }
+
+
+
 
     Scaffold(
         topBar = {
@@ -98,7 +102,6 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            // El FAB ahora tiene una única y clara función: añadir categoría.
             FloatingActionButton(
                 onClick = { onNavigateToAddCategory() },
                 modifier = Modifier.padding(bottom = 16.dp)
@@ -107,14 +110,12 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-        // La LazyColumn reemplaza a la Column para un mejor rendimiento con listas largas
         LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 80.dp) // Espacio para que no choque con el FAB
+            contentPadding = PaddingValues(bottom = 80.dp)
         ) {
-            // 1. Elementos fijos de la parte superior
             item {
                 HomeCard()
                 Spacer(modifier = Modifier.height(24.dp))
@@ -126,7 +127,6 @@ fun HomeScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // 2. Lógica para mostrar la lista de categorías
             when (val state = categoryState) {
                 is CategoryState.Loading -> {
                     item {
@@ -135,13 +135,20 @@ fun HomeScreen(
                         }
                     }
                 }
+
                 is CategoryState.Success -> {
                     items(state.categories) { category ->
+
+                        LaunchedEffect(category.id) {
+                            viewModel.observeLessonCount(category.id)
+                        }
                         CategoryItem(
                             category = category,
                             onClick = {
                                 onNavigateToLessons(category.id, category.name)
                             },
+
+                            countLesson = lessonCounts[category.id] ?: 0,
                             onDeleteRequest = { categoryToDelete = it },
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                         )
@@ -160,7 +167,6 @@ fun HomeScreen(
         }
     }
 
-    // El diálogo de confirmación para eliminar
     categoryToDelete?.let { category ->
         AlertDialog(
             onDismissRequest = { categoryToDelete = null },
@@ -168,7 +174,7 @@ fun HomeScreen(
             text = { Text("¿Estás seguro de que deseas eliminar \"${category.name}\"? Se borrarán todas sus lecciones.") },
             confirmButton = {
                 TextButton(onClick = {
-                    {  } // Llama al ViewModel para borrar
+                     viewModel.deleteCategory(category)
                     categoryToDelete = null
                 }) {
                     Text("Eliminar")
@@ -183,11 +189,11 @@ fun HomeScreen(
     }
 }
 
-// -- Composable Auxiliar para el Item de Categoría (usado arriba) --
 @Composable
 fun CategoryItem(
     category: Category,
     onClick: () -> Unit,
+    countLesson:Int,
     onDeleteRequest: (Category) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -203,7 +209,7 @@ fun CategoryItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
-                imageVector = Icons.Default.Face, // O un ícono dinámico
+                painter = painterResource(R.drawable.category_icon),
                 contentDescription = null,
                 modifier = Modifier.size(40.dp),
                 tint = MaterialTheme.colorScheme.primary
@@ -215,7 +221,7 @@ fun CategoryItem(
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    text = "${"1" ?: 0} Lecciones", // Asumiendo que tienes un contador
+                    text = "${countLesson ?: 0} Lecciones", // Asumiendo que tienes un contador
                     style = MaterialTheme.typography.bodyMedium,
                     color = LocalContentColor.current.copy(alpha = 0.7f)
                 )
@@ -231,29 +237,6 @@ fun CategoryItem(
     }
 }
 
-@Composable
-fun SectionHeader(
-    title: String,
-    actionText: String,
-    onActionClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold
-        )
-        TextButton(onClick = onActionClick) {
-            Text(actionText)
-        }
-    }
-}
 
 
 @Composable
@@ -289,21 +272,24 @@ fun TopBar(
                     )}
 
                 } else {
-                    Icon(
-                        painter = painterResource(R.drawable.ic_launcher_background),
-                        contentDescription = "Default Profile",
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(40.dp)
-                            .border(2.dp, Color.Gray, CircleShape)
-                            .clickable { navigateToAccountSettings(userData.imageUrl) }
-                    )
+                    IconButton(onClick = {navigateToAccountSettings(userData.imageUrl)}) {
+                        Icon(
+                            painter = painterResource(R.drawable.default_profile_ic),
+                            contentDescription = "Default Profile",
+                            tint = Color.Unspecified,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(40.dp)
+                                .border(2.dp, Color.Gray, CircleShape)
+                        )
+                    }
+
                 }
             }
 
             is UserData.Error, UserData.Init -> {
                 Text(
-                    text = "Hello!",
+                    text = "Hello user!",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )

@@ -10,7 +10,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import com.google.firebase.FirebaseNetworkException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -43,8 +47,16 @@ class AuthClient @Inject constructor(
             val authResult = auth.signInWithEmailAndPassword(email, password).await()
             val uid = authResult.user?.uid ?: return Result.failure(Exception("Usuario nulo"))
             Result.success(uid)
+        }catch (e: FirebaseAuthInvalidUserException) {
+            Result.failure(Exception("El usuario no existe"))
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Result.failure(Exception("Email o contraseña incorrectos"))
+        } catch (e: FirebaseAuthWeakPasswordException) {
+            Result.failure(Exception("La contraseña es demasiado débil"))
+        } catch (e: FirebaseNetworkException) {
+            Result.failure(Exception("No hay conexión a internet"))
         } catch (e: Exception) {
-            Result.failure(e)
+            Result.failure(Exception(e.message ?: "Error desconocido al iniciar sesión"))
         }
     }
 

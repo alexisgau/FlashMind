@@ -80,7 +80,7 @@ fun AddCategoryScreen(
 
 
             Text(
-                text = "Crear nueva categoría",
+                text = "Create new category",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -89,7 +89,7 @@ fun AddCategoryScreen(
 
 
             Text(
-                text = "Organiza tus lecciones agrupándolas por categoría",
+                text = "Organize your lessons by grouping them by category",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -117,7 +117,7 @@ fun AddCategoryScreen(
                     onClick = navigateToHome,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Volver")
+                    Text("Back")
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -131,7 +131,7 @@ fun AddCategoryScreen(
                     modifier = Modifier.weight(1f),
                     enabled = name.isNotBlank()
                 ) {
-                    Text("Agregar")
+                    Text("Add")
                 }
             }
         }
@@ -163,8 +163,8 @@ fun AddCategoryForm(
         OutlinedTextField(
             value = name,
             onValueChange = onNameChange,
-            label = { Text("Nombre de la categoría") },
-            placeholder = { Text("Introduce el nombre...") },
+            label = { Text("Category name") },
+            placeholder = { Text("Enter the name...") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -174,63 +174,15 @@ fun AddCategoryForm(
         OutlinedTextField(
             value = description,
             onValueChange = onDescriptionChange,
-            label = { Text("Descripción") },
-            placeholder = { Text("Describe esta categoría...") },
+            label = { Text("Description") },
+            placeholder = { Text("Describe this category...") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
             maxLines = 3
         )
 
-        Text(
-            text = "Elige un color",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
 
-        Box(modifier = Modifier.fillMaxWidth()) {
-            OutlinedButton(
-                onClick = { expanded = true },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color(selectedColor.toColorInt())
-                )
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .background(Color(selectedColor.toColorInt()))
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Color seleccionado", color = MaterialTheme.colorScheme.onPrimary)
-                }
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                colors.forEach { color ->
-                    DropdownMenuItem(
-                        text = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .background(Color(color.toColorInt()))
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                            }
-                        },
-                        onClick = {
-                            onColorSelected(color)
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
     }
 }
 

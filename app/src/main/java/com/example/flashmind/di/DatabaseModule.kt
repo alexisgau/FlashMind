@@ -3,6 +3,7 @@ package com.example.flashmind.di
 import android.content.Context
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.room.Room
+import androidx.work.WorkManager
 import androidx.work.WorkerFactory
 import com.example.flashmind.data.local.AppDatabase
 import com.example.flashmind.data.local.dao.CategoryDao
@@ -46,12 +47,18 @@ object DatabaseModule {
 
     @Provides
     @Singleton
+    fun provideWorkManager(@ApplicationContext context: Context): WorkManager {
+        return WorkManager.getInstance(context)
+    }
+    @Provides
+    @Singleton
     fun provideCategoryRepository(
         auth: FirebaseAuth,
         categoryDao: CategoryDao,
-        firestore: FirebaseFirestore
+        firestore: FirebaseFirestore,
+        workManager: WorkManager
     ): CategoryRepository {
-        return CategoryRepositoryImpl(auth,categoryDao, firestore)
+        return CategoryRepositoryImpl(auth,categoryDao, firestore,workManager)
     }
 
 
@@ -63,9 +70,11 @@ object DatabaseModule {
     @Provides
     fun provideLessonRepository(
         dao: LessonDao,
-        auth: FirebaseAuth
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        workManager: WorkManager
     ): LessonRepository {
-        return LessonRepositoryImpl(dao,auth)
+        return LessonRepositoryImpl(dao,auth, firestore,workManager)
     }
 
     @Provides
@@ -76,9 +85,11 @@ object DatabaseModule {
     @Provides
     fun provideFlashCardRepository(
         auth: FirebaseAuth,
-        dao: FlashCardDao
+        dao: FlashCardDao,
+        firestore: FirebaseFirestore,
+        workManager: WorkManager
     ): FlashCardRepository {
-        return FlashCardRepositoryImpl(auth = auth, dao = dao)
+        return FlashCardRepositoryImpl(auth = auth, dao = dao, firestore = firestore, workManager = workManager)
     }
 
 

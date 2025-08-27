@@ -23,8 +23,10 @@ data class LessonEntity(
     val title: String,
     val categoryId: Int,
     val userId: String = "",
-    val isSynced: Boolean = false
+    val isSynced: Boolean = false,
+    val isDeleted: Boolean = false
+
 )
 
-fun Lesson.toEntity(): LessonEntity = LessonEntity(id = id, title = tittle, categoryId = categoryId, userId = userId, isSynced = isSynced)
-fun LessonEntity.toDomain(): Lesson = Lesson(id = id, tittle = title, categoryId = categoryId, userId = userId, isSynced = isSynced)
+fun Lesson.toEntity(): LessonEntity = LessonEntity(id = id, title = tittle, categoryId = categoryId, userId = userId, isSynced = isSynced, isDeleted = isDeleted)
+fun LessonEntity.toDomain(): Lesson = Lesson(id = id, tittle = title, categoryId = categoryId, userId = userId, isSynced = isSynced,isDeleted = isDeleted)

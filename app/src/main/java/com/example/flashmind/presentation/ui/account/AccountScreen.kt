@@ -3,6 +3,7 @@ package com.example.flashmind.presentation.ui.account
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -39,12 +40,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
+import com.example.flashmind.R
 import com.example.flashmind.domain.model.AuthResponse
 import com.example.flashmind.presentation.viewmodel.AuthViewModel
 
@@ -53,11 +56,12 @@ import com.example.flashmind.presentation.viewmodel.AuthViewModel
 fun AccountSettingsScreen(
     viewModel: AuthViewModel = hiltViewModel(),
     userData: String,
-    navigateToLogin: () -> Unit
+    navigateToLogin: () -> Unit,
+    navigateToHome: () -> Unit
 ) {
 
 
-    AccountScreenImpl(modifier = Modifier, userData, navigateToLogin, viewModel)
+    AccountScreenImpl(modifier = Modifier, userData, navigateToLogin, navigateToHome,viewModel)
 
 }
 
@@ -68,6 +72,7 @@ fun AccountScreenImpl(
     modifier: Modifier,
     userData: String,
     navigateToLogin: () -> Unit,
+    navigateToHome: () -> Unit,
     viewModel: AuthViewModel
 ) {
     val signOutState by viewModel.signOutState.collectAsStateWithLifecycle()
@@ -83,16 +88,16 @@ fun AccountScreenImpl(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        "Account settings",
-                        style = MaterialTheme.typography.headlineSmall,
-                        color = MaterialTheme.colorScheme.inverseSurface,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
+                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Text(
+                            "Account settings",
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = MaterialTheme.colorScheme.inverseSurface
+                        )
+                    }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navigateToLogin() }) {
+                    IconButton(onClick = { navigateToHome() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
                             contentDescription = "Back to login",
@@ -117,15 +122,27 @@ fun AccountScreenImpl(
             ) {
                 Spacer(Modifier.height(16.dp))
 
-                AsyncImage(
-                    model = userData,
-                    contentDescription = "Profile picture",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(140.dp)
-                        .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                )
+                if (userData.isNotEmpty()) {
+                    AsyncImage(
+                        model = userData,
+                        contentDescription = "Profile picture",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(140.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    )
+                }else{
+                    Icon(
+                        painter = painterResource(R.drawable.default_profile_ic),
+                        contentDescription = "Default Profile",
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .size(140.dp)
+                            .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                    )
+                }
 
                 Spacer(Modifier.height(32.dp))
 
@@ -210,7 +227,7 @@ fun AccountScreenImpl(
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Envíanos tu feedback",
+                    "Send us your feedback",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.inverseSurface
                 )

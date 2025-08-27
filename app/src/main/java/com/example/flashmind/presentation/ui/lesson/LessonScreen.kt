@@ -5,12 +5,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -19,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,7 +23,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -56,7 +51,6 @@ fun LessonScreen(
     categoryName: String,
     onNavigateToFlashcards: (lessonId: Int) -> Unit,
     onAddLesson: () -> Unit,
-    onEditLesson: (Lesson) -> Unit,
     onNavigateBack: () -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -92,23 +86,24 @@ fun LessonScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Lecciones",
+                text = "Lessons",
                 style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(vertical = 16.dp)
             )
-            Spacer(modifier = Modifier.height(16.dp))
 
-
-            Box(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
                 when (val state = lessonsState) {
                     is LessonsState.Loading -> {
                         CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
                     is LessonsState.IsEmpty -> {
                         Text(
-                            text = "No hay lecciones. Toca el botón + para añadir una.",
+                            text = "There are no lessons. Tap the + button to add one.",
                             modifier = Modifier.align(Alignment.Center),
                             textAlign = TextAlign.Center
                         )
@@ -117,7 +112,8 @@ fun LessonScreen(
                         Text(
                             text = "Error: ${state.message}",
                             modifier = Modifier.align(Alignment.Center),
-                            color = MaterialTheme.colorScheme.error
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center
                         )
                     }
                     is LessonsState.Success -> {
@@ -128,13 +124,16 @@ fun LessonScreen(
                                 selectedLessonId = lesson.id
                                 onNavigateToFlashcards(lesson.id)
                             },
-                            onEditClick = { onEditLesson(it) },
-                            onDeleteClick = { }
+                            onDeleteClick = { lesson ->
+                                viewModel.deleteLesson(lesson)
+                            },
+                            modifier = Modifier.fillMaxSize() // ocupa el resto del espacio
                         )
                     }
                 }
             }
         }
+
     }
 }
 
@@ -143,7 +142,6 @@ fun LessonList(
     lessons: List<Lesson>,
     selectedLessonId: Int?,
     onLessonClick: (Lesson) -> Unit,
-    onEditClick: (Lesson) -> Unit,
     onDeleteClick: (Lesson) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -155,10 +153,8 @@ fun LessonList(
             LessonItem(
                 lesson = lesson,
                 isSelected = lesson.id == selectedLessonId,
-                onClick = { onLessonClick(lesson) },
-                onEditClick = { onEditClick(lesson) },
-                onDeleteClick = { onDeleteClick(lesson) }
-            )
+                onClick = { onLessonClick(lesson) }
+            ) { onDeleteClick(lesson) }
         }
     }
 }
@@ -169,7 +165,6 @@ fun LessonItem(
     lesson: Lesson,
     isSelected: Boolean,
     onClick: () -> Unit,
-    onEditClick: () -> Unit,
     onDeleteClick: () -> Unit
 ) {
     Card(
@@ -195,21 +190,10 @@ fun LessonItem(
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "${"10"} tarjetas",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = LocalContentColor.current.copy(alpha = 0.7f)
-                )
+
             }
 
-            // Iconos de acción
-            IconButton(onClick = onEditClick) {
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Editar Lección"
-                )
-            }
+
             IconButton(onClick = onDeleteClick) {
                 Icon(
                     imageVector = Icons.Default.Delete,

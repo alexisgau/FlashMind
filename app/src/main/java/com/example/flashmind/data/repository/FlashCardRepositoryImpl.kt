@@ -1,44 +1,108 @@
 package com.example.flashmind.data.repository
 
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.flashmind.data.local.dao.FlashCardDao
 import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.local.entities.toEntity
+import com.example.flashmind.data.network.model.FlashCardFirestore
 import com.example.flashmind.domain.model.FlashCard
 import com.example.flashmind.domain.reposotory.FlashCardRepository
+import com.example.flashmind.presentation.utils.FlashCardSyncWorker
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FlashCardRepositoryImpl @Inject constructor(private val dao: FlashCardDao,private val auth: FirebaseAuth):
+class FlashCardRepositoryImpl @Inject constructor(
+    private val dao: FlashCardDao,
+    private val auth: FirebaseAuth,
+    private val firestore: FirebaseFirestore,
+    private val workManager: WorkManager
+) :
     FlashCardRepository {
 
     private val userId: String
-        get() = auth.currentUser?.uid ?:  throw AuthException("Usuario no autenticado")
+        get() = auth.currentUser?.uid ?: throw AuthException("Usuario no autenticado")
 
     override suspend fun insert(flashCard: FlashCard) {
-        return dao.insert(flashCard.copy(userId = userId ).toEntity())
+        dao.insert(flashCard.copy(userId = userId).toEntity())
+        scheduleSync()
     }
 
     override suspend fun delete(flashCard: FlashCard) {
-        return dao.delete(flashCard.toEntity())
+        dao.delete(flashCard.toEntity())
+        scheduleSync()
     }
 
     override suspend fun update(flashCard: FlashCard) {
-        return dao.update(flashCard.toEntity())
+        dao.update(flashCard.toEntity())
+        scheduleSync()
     }
 
     override suspend fun saveGeneratedFlashcards(flashcards: List<FlashCard>) {
-        return dao.insertAll(flashcards.map {it.toEntity()})
+        dao.insertAll(flashcards.map { it.toEntity() })
+        scheduleSync()
+    }
+
+    private fun scheduleSync() {
+        val syncRequest = OneTimeWorkRequestBuilder<FlashCardSyncWorker>()
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
+            )
+            .build()
+
+        workManager.enqueueUniqueWork(
+            "sync_flashcards_work",
+            ExistingWorkPolicy.KEEP,
+            syncRequest
+        )
     }
 
     override fun getFlashCardsByLesson(lessonId: Int): Flow<List<FlashCard>> {
-        return  dao.getFlashCardsByLesson(lessonId).map { flashCard->
+        return dao.getFlashCardsByLesson(lessonId).map { flashCard ->
             flashCard.map { it.toDomain() }
         }
     }
 
     override suspend fun getFlashCardsById(id: Int): FlashCard {
         return dao.getFlashCardsById(id).toDomain()
+    }
+
+    override suspend fun getUnsyncedFlashcards(): List<FlashCard> {
+        return dao.getUnsyncedFlashcards(userId).map { it.toDomain() }
+    }
+
+    override suspend fun uploadFlashcardToFirestore(flashCard: FlashCard) {
+        val flashCardFirestore = FlashCardFirestore(
+            id = flashCard.id,
+            question = flashCard.question,
+            answer = flashCard.answer,
+            lessonId = flashCard.lessonId
+        )
+        firestore.collection("users").document(userId)
+            .collection("flashcards").document("FlashCard: ${flashCard.id}")
+            .set(flashCardFirestore).await()
+    }
+
+    override suspend fun deleteFlashcardFromFirestore(flashcardId: Int) {
+        firestore.collection("users").document(userId)
+            .collection("flashcards").document("FlashCard: $flashcardId")
+            .delete().await()
+    }
+
+    override suspend fun deleteFlashcardLocally(flashcardId: Int) {
+        dao.deleteFlashcardById(flashcardId)
+    }
+
+    override suspend fun markFlashcardAsSynced(flashcardId: Int) {
+      dao.markFlashcardAsSynced(flashcardId)
     }
 }

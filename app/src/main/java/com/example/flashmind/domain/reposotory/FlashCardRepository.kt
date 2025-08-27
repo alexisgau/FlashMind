@@ -11,5 +11,10 @@ interface FlashCardRepository {
     suspend fun saveGeneratedFlashcards(flashcards: List<FlashCard>)
     fun getFlashCardsByLesson(lessonId: Int): Flow<List<FlashCard>>
     suspend fun  getFlashCardsById(id: Int): FlashCard
+    suspend fun getUnsyncedFlashcards(): List<FlashCard>
+    suspend fun uploadFlashcardToFirestore(flashCard: FlashCard)
+    suspend fun deleteFlashcardFromFirestore(flashcardId: Int)
+    suspend fun deleteFlashcardLocally(flashcardId: Int)
+    suspend fun markFlashcardAsSynced(flashcardId: Int)
 
 }

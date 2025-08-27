@@ -33,5 +33,18 @@ import kotlinx.coroutines.flow.Flow
 
         @Delete
         suspend fun delete(flashCard: FlashCardEntity)
+
+
+        @Query("UPDATE flashcards SET isDeleted = 1, isSynced = 0 WHERE id = :flashcardId")
+        suspend fun markFlashcardForDeletion(flashcardId: String)
+
+        @Query("DELETE FROM flashcards WHERE id = :flashcardId")
+        suspend fun deleteFlashcardById(flashcardId: Int)
+
+        @Query("SELECT * FROM flashcards WHERE isSynced = 0 AND userId = :userId")
+        suspend fun getUnsyncedFlashcards(userId: String): List<FlashCardEntity>
+
+        @Query("UPDATE flashcards SET isSynced = 1 WHERE id = :flashcardId")
+        suspend fun markFlashcardAsSynced(flashcardId: Int)
     }
 

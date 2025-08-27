@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -53,7 +54,6 @@ import com.example.flashmind.presentation.viewmodel.FlashCardViewModel
 fun FlashCardScreen(
     lessonId: Int,
     navigateToHome: () -> Unit,
-    onNavigateBack:()-> Unit,
     navigateToAddFlashCardAi: (Int) -> Unit,
     navigateToAddFlashCardManual: (Int) -> Unit,
     navigateToStartGame: (Int) -> Unit,
@@ -105,6 +105,7 @@ fun FlashCardScreen(
                 Button(
                     onClick = { navigateToStartGame(lessonId) },
                     shape = RoundedCornerShape(12.dp),
+                    enabled = flashCards.value.isNotEmpty(),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary
@@ -128,13 +129,17 @@ fun FlashCardScreen(
 
             LazyColumn(
                 modifier = Modifier.padding(26.dp),
+                contentPadding = PaddingValues(
+                    top = 0.dp,
+                    bottom = 80.dp,
+                ),
                 verticalArrangement = Arrangement.spacedBy(15.dp)
             ) {
                 items(flashCards.value) { flashcard ->
                     FlashcardItem(
                         categoryName = "a",
                         question = flashcard.question,
-                        imagePainter = painterResource(R.drawable.icon_google),
+                        imagePainter = painterResource(R.drawable.flashcard),
                         onEditClick = { navigateToEditFlashCard(flashcard.id) },
                         onDeleteClick = { viewModel.deleteFlashCard(flashcard) },
                     )
@@ -144,50 +149,6 @@ fun FlashCardScreen(
     }
 }
 
-@Composable
-fun FlashCardItem(
-    id: Int,
-    question: String,
-    answer: String,
-    deleteFlashCard: () -> Unit,
-    editFlashCard: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-
-                Icon(
-                    Icons.Default.Delete,
-                    contentDescription = null,
-                    Modifier.clickable { deleteFlashCard() })
-                Icon(
-                    Icons.Default.Edit,
-                    contentDescription = null,
-                    Modifier.clickable { editFlashCard(id) })
-            }
-            Text("Question:", fontWeight = FontWeight.Bold)
-            Text(question, modifier = Modifier.padding(bottom = 8.dp))
-
-
-            Spacer(Modifier.height(8.dp))
-
-            Text(
-                "Answer:",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            Text(answer)
-        }
-    }
-}
 
 @Composable
 fun FlashCardItemDeletable(
@@ -262,8 +223,9 @@ fun FlashcardItem(
             Image(
                 painter = imagePainter,
                 contentDescription = "Imagen de la categoría $categoryName",
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
                 modifier = Modifier
-                    .size(60.dp)
+                    .size(50.dp)
                     .clip(RoundedCornerShape(16.dp)),
                 contentScale = ContentScale.Crop
             )
@@ -303,7 +265,7 @@ fun FlashcardItem(
     }
 }
 
-// --- Preview para ver el diseño en Android Studio ---
+
 @Preview(showBackground = true)
 @Composable
 fun FlashcardItemPreview() {

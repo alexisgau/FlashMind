@@ -84,7 +84,7 @@ fun AddFlashCardScreenAi(
                 title = {  },
                 navigationIcon = {
                     IconButton(onClick = { navigateToFlashCards(lessonId) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -163,7 +163,7 @@ fun AddFlashCardScreenAi(
 
                     }
                     FlashCardAiState.Saved -> {
-                        Text("¡Flashcards guardadas!", color = Color.Green.copy(alpha = 0.8f))
+                        Text("¡Saved Flashcards!", color = Color.Green.copy(alpha = 0.8f))
                         LaunchedEffect(Unit) {
                             navigateToFlashCards(lessonId)
                         }

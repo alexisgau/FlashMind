@@ -27,55 +27,26 @@ class FlashMindApplication : Application(), Configuration.Provider {
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
             .build()
-//
-//    override fun onCreate() {
-//        super.onCreate()
-//        Log.d("WorkManager", "onCreate ejecutado")
-//        Log.d("WorkManager", "Factory inyectada? ${::workerFactory.isInitialized}")
-//   WorkManager.initialize(this, workManagerConfiguration)
-//        val request = OneTimeWorkRequestBuilder<CategorySyncWorker>().build()
-//        WorkManager.getInstance(this).enqueue(request)
-//    }
-
 
     override fun onCreate() {
         super.onCreate()
-        Log.d("WorkManager", "oncreate")
+        Log.d("WorkManager", "Application onCreate")
 
-        val testRequest = OneTimeWorkRequestBuilder<CategorySyncWorker>()
-            .build()
-
-        WorkManager.getInstance(this).enqueue(testRequest)
-
-        scheduleCategorySync()
+        schedulePeriodicSync()
     }
 
-    private fun scheduleCategorySync() {
-        val request = OneTimeWorkRequestBuilder<CategorySyncWorker>()
-            .setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build()
-            )
-            .build()
-
-        WorkManager.getInstance(this).enqueue(request)
-
-        // Definimos las REGLAS para que el worker se ejecute
+    private fun schedulePeriodicSync() {
         val constraints = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .build()
 
-        // Creamos la petición de trabajo PERIÓDICO (ej. cada 6 horas)
-        val syncRequest = PeriodicWorkRequestBuilder<CategorySyncWorker>(2, TimeUnit.MINUTES) // Ca
+        val syncRequest = PeriodicWorkRequestBuilder<CategorySyncWorker>(6, TimeUnit.HOURS)
             .setConstraints(constraints)
             .build()
 
-        // Lo ponemos en la cola de WorkManager, asegurando que solo haya una
-        // instancia de este trabajo periódico activo a la vez.
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-            "CategorySync",
-            ExistingPeriodicWorkPolicy.KEEP, // Si ya existe uno, lo mantiene
+            "CategorySyncPeriodic",
+            ExistingPeriodicWorkPolicy.KEEP,
             syncRequest
         )
     }

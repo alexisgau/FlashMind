@@ -64,15 +64,15 @@ fun StartLessonScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text("¡Has terminado la lección!", fontSize = 20.sp, color =  MaterialTheme.colorScheme.inverseSurface)
+                    Text("You've finished the lesson!", fontSize = 20.sp, color =  MaterialTheme.colorScheme.inverseSurface)
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(onClick = {
                         currentIndex = 0
                         flipped = false
                     }) {
-                        Text("Volver a empezar")
+                        Text("Restart Lesson")
                     }
-                    Button(onClick = { navigateToFlashCardScreen(lessonId) }) { Text("Finalizar") }
+                    Button(onClick = { navigateToFlashCardScreen(lessonId) }) { Text("Finish Lesson") }
                 }
             }
             return
@@ -140,7 +140,7 @@ fun StartLessonScreen(
                         flipped = false
                     }
                 }) {
-                    Text("Siguiente")
+                    Text("Next")
                 }
 
             }

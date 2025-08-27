@@ -52,6 +52,10 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+     fun resetAuthState(){
+        _authState.value = AuthResponse.Init
+    }
+
     fun loginWithEmail(email: String, password: String) {
         viewModelScope.launch {
             val result = signIn(email, password)

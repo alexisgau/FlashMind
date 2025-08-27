@@ -7,7 +7,10 @@ import com.example.flashmind.data.network.AuthClient
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.domain.model.Lesson
 import com.example.flashmind.domain.model.UserData
+import com.example.flashmind.domain.usecase.DeleteCategoryUseCase
+import com.example.flashmind.domain.usecase.DeleteLessonUseCase
 import com.example.flashmind.domain.usecase.GetCategoriesUseCase
+import com.example.flashmind.domain.usecase.GetLessonCountByCategory
 import com.example.flashmind.domain.usecase.GetLessonsUseCase
 import com.example.flashmind.domain.usecase.InsertCategoryUseCase
 import com.example.flashmind.domain.usecase.InsertLessonUseCase
@@ -29,11 +32,17 @@ class HomeViewModel @Inject constructor(
     private val getCategoriesUseCase: GetCategoriesUseCase,
     private val getLessonsUseCase: GetLessonsUseCase,
     private val insertLessonUseCase: InsertLessonUseCase,
+    private val deleteCategoryUseCase: DeleteCategoryUseCase,
+    private val deleteLessonUseCase: DeleteLessonUseCase,
+    private val getLessonCountByCategory: GetLessonCountByCategory,
     private val authClient: AuthClient
 ) : ViewModel() {
 
     private val _categoriesState = MutableStateFlow<CategoryState>(CategoryState.Loading)
     val categoriesState: StateFlow<CategoryState> = _categoriesState.asStateFlow()
+
+    private val _lessonCounts = MutableStateFlow<Map<Int, Int>>(emptyMap())
+    val lessonCounts: StateFlow<Map<Int, Int>> = _lessonCounts
 
     private val _addCategoryState = MutableStateFlow<AddCategoryState>(AddCategoryState.Loading)
     val addCategoryState: StateFlow<AddCategoryState> = _addCategoryState.asStateFlow()
@@ -56,12 +65,14 @@ class HomeViewModel @Inject constructor(
     private fun getUserData() {
         val user = runCatching { authClient.getCurrentUser() }
             .getOrNull()
+        val name = user?.displayName?.takeIf { it.isNotBlank() } ?: "User"
 
         _userData.value = when {
             user != null -> UserData.Success(
-                name = user.displayName ?: "Usuario",
+                name = name,
                 imageUrl = user.photoUrl?.toString().orEmpty()
             )
+
             else -> UserData.Error("Usuario no autenticado")
         }
     }
@@ -74,6 +85,7 @@ class HomeViewModel @Inject constructor(
                     _categoriesState.value = CategoryState.Error(e.message ?: "Error desconocido")
                 }
                 .collect { categories ->
+                    categories.forEach { it.copy() }
                     _categoriesState.value = CategoryState.Success(categories)
                 }
         }
@@ -86,7 +98,8 @@ class HomeViewModel @Inject constructor(
                 .onSuccess { _addCategoryState.value = AddCategoryState.Success }
                 .onFailure { e ->
                     Log.e("HomeViewModel", "insertCategory: $e")
-                    _addCategoryState.value = AddCategoryState.Error(e.message ?: "Error desconocido")
+                    _addCategoryState.value =
+                        AddCategoryState.Error(e.message ?: "Error desconocido")
                 }
         }
     }
@@ -118,6 +131,37 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun deleteCategory(category: Category) {
+
+        viewModelScope.launch {
+            runCatching { deleteCategoryUseCase.invoke(category) }.onFailure { exception ->
+                Log.e("HomeViewModel", "delete category: $exception")
+            }
+
+        }
+
+    }
+
+    fun observeLessonCount(categoryId: Int) {
+        viewModelScope.launch {
+            getLessonCountByCategory(categoryId).collectLatest { count ->
+                _lessonCounts.value = _lessonCounts.value.toMutableMap().apply {
+                    this[categoryId] = count
+                }
+            }
+        }
+    }
+
+    fun deleteLesson(lesson: Lesson) {
+
+        viewModelScope.launch {
+            runCatching { deleteLessonUseCase.invoke(lesson) }.onFailure { exception ->
+                Log.e("HomeViewModel", "delete category: $exception")
+            }
+
+        }
+
+    }
 }
 
 

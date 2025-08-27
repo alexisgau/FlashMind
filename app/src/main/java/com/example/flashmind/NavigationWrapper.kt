@@ -23,7 +23,6 @@ import com.example.flashmind.presentation.ui.login.LoginScreen
 import com.example.flashmind.presentation.ui.register.RegisterScreen
 import com.example.flashmind.presentation.ui.splash.SplashScreen
 import com.example.flashmind.presentation.viewmodel.AuthViewModel
-import com.example.flashmind.presentation.viewmodel.HomeViewModel
 
 @Composable
 fun NavigationWrapper(authViewModel: AuthViewModel = hiltViewModel()) {
@@ -90,7 +89,6 @@ fun NavigationWrapper(authViewModel: AuthViewModel = hiltViewModel()) {
                 onNavigateToFlashcards = { lessonId -> navController.navigate(FlashCards(lessonId)) },
                 onAddLesson = { navController.navigate(AddLesson(args.categoryId)) },
                 onNavigateBack = { navController.popBackStack() },
-                onEditLesson = {  },
 
             )
         }
@@ -105,6 +103,7 @@ fun NavigationWrapper(authViewModel: AuthViewModel = hiltViewModel()) {
                         popUpTo(Home) { inclusive = true }
                     }
                 },
+                navigateToHome = {navController.navigate(Home)},
                 userData = args.userData
             )
         }
@@ -143,11 +142,10 @@ fun NavigationWrapper(authViewModel: AuthViewModel = hiltViewModel()) {
                         popUpTo(Home) { inclusive = true }
                     }
                 },
-                onNavigateBack = { navController.popBackStack()},
                 navigateToAddFlashCardAi = { navController.navigate(AddFlashCardsAi(it)) },
+                navigateToAddFlashCardManual = { navController.navigate(AddFlashCardsManual(it)) },
                 navigateToStartGame = { navController.navigate(StartLesson(it)) },
-                navigateToEditFlashCard = { navController.navigate(EditFlashCard(it)) },
-                navigateToAddFlashCardManual = { navController.navigate(AddFlashCardsManual(it)) }
+                navigateToEditFlashCard = { navController.navigate(EditFlashCard(it)) }
             )
         }
 

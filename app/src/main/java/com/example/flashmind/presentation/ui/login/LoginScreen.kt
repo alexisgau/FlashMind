@@ -26,6 +26,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,13 +66,22 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
 
 
+    val snackbarHostState = remember { SnackbarHostState() }
+
     LaunchedEffect(authState) {
-        if (authState is AuthResponse.Success) {
-            onLoginSuccess()
+        when (authState) {
+            is AuthResponse.Success -> onLoginSuccess()
+            is AuthResponse.Error -> {
+                snackbarHostState.showSnackbar((authState as AuthResponse.Error).message)
+                viewModel.resetAuthState()
+            }
+            else -> Unit
         }
     }
 
-    Scaffold { paddingValues ->
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { paddingValues ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -101,7 +112,7 @@ fun LoginScreen(
                 )
 
                 Text(
-                    "Inicia sesión para continuar con tus flashcards.",
+                    "Sign in to continue with your flashcards.",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
                     modifier = Modifier.padding(vertical = 8.dp)
@@ -109,7 +120,7 @@ fun LoginScreen(
 
                 Spacer(Modifier.height(24.dp))
 
-                // 📨 Email
+
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
@@ -187,7 +198,7 @@ fun LoginScreen(
 
                 Spacer(Modifier.height(32.dp))
 
-                // Pie con registro
+
                 Row {
                     Text("¿Don´t have an account?", color = Color.Gray)
                     Spacer(modifier = Modifier.width(4.dp))

@@ -40,6 +40,7 @@ fun AddLessonScreen(
 
     Log.i("AddLessonScreen", "id : $categoryId")
 
+
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -67,7 +68,7 @@ fun AddLessonScreen(
 
 
         Text(
-            text = "Escribe el nombre de tu nueva lección para comenzar",
+            text = "Enter the name of your new lesson to begin.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -76,12 +77,11 @@ fun AddLessonScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Campo para el nombre
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
-            label = { Text("Nombre de la lección") },
-            placeholder = { Text("Introduce el nombre...") },
+            label = { Text("Lesson name") },
+            placeholder = { Text("Enter the name...") },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -90,7 +90,6 @@ fun AddLessonScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Botones
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -99,7 +98,7 @@ fun AddLessonScreen(
                 onClick = navigateToHome,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Volver")
+                Text("Back")
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -114,7 +113,7 @@ fun AddLessonScreen(
                 modifier = Modifier.weight(1f),
                 enabled = title.isNotBlank()
             ) {
-                Text("Agregar")
+                Text("Add")
             }
         }
     }
