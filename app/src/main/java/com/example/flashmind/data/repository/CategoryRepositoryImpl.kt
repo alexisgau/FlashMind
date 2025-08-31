@@ -1,7 +1,6 @@
 package com.example.flashmind.data.repository
 
 import android.util.Log
-import androidx.datastore.dataStore
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -13,9 +12,8 @@ import com.example.flashmind.data.local.entities.toEntity
 import com.example.flashmind.data.network.model.CategoryFirestore
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.domain.reposotory.CategoryRepository
-import com.example.flashmind.presentation.utils.CategorySyncWorker
+import com.example.flashmind.data.worker.CategorySyncWorker
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

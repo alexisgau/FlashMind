@@ -1,7 +1,3 @@
 package com.example.flashmind.presentation.utils
 
 const val API_KEY = "AIzaSyBtlIkRofL3TfCe5dJwso3t-ljoLHkQIqc"
-//CORREGIR BOTON SAVE EN EDIT FLASH CARD SCREEN
-//MEJORAR DISEÑO EN CREAR FLASHCARD MANUALMENTE
-
-//CIERRE DE SESION Y PANTALLA DE USUARIO

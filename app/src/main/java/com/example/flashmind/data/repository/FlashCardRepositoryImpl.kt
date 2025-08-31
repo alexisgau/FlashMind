@@ -11,7 +11,7 @@ import com.example.flashmind.data.local.entities.toEntity
 import com.example.flashmind.data.network.model.FlashCardFirestore
 import com.example.flashmind.domain.model.FlashCard
 import com.example.flashmind.domain.reposotory.FlashCardRepository
-import com.example.flashmind.presentation.utils.FlashCardSyncWorker
+import com.example.flashmind.data.worker.FlashCardSyncWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow

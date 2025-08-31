@@ -42,11 +42,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.presentation.ui.home.AddCategoryState
 
-import com.example.flashmind.presentation.viewmodel.HomeViewModel
+import com.example.flashmind.presentation.ui.home.HomeViewModel
 
 @Composable
 fun AddCategoryScreen(
-    viewModel: HomeViewModel = hiltViewModel(),
+    viewModel: AddCategoryViewModel = hiltViewModel(),
     navigateToHome: () -> Unit
 ) {
     val editState by viewModel.addCategoryState.collectAsStateWithLifecycle()

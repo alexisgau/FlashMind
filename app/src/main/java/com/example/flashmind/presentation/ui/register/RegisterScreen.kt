@@ -22,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,24 +44,26 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.domain.model.AuthResponse
-import com.example.flashmind.presentation.viewmodel.AuthViewModel
+import com.example.flashmind.presentation.ui.login.LoginUiState
 
 @Composable
 fun RegisterScreen(
-    viewModel: AuthViewModel = hiltViewModel(),
+    viewModel: RegisterViewModel = hiltViewModel(),
     onRegisterSuccess: () -> Unit,
     navigateBackToLogin: () -> Unit
 ) {
-    val authState by viewModel.authState.collectAsStateWithLifecycle()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
 
     val focusManager = LocalFocusManager.current
     val passwordFocusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(authState) {
-        if (authState is AuthResponse.Success) {
-            onRegisterSuccess()
+    LaunchedEffect(uiState) {
+        when (val state = uiState) {
+            is RegisterUiState.Success -> onRegisterSuccess()
+            else -> Unit
         }
     }
 
@@ -137,9 +140,9 @@ fun RegisterScreen(
                     Text("Sign up", color = Color.White)
                 }
 
-                if (authState is AuthResponse.Error) {
+                if (uiState is RegisterUiState.Error) {
                     Text(
-                        text = (authState as AuthResponse.Error).message,
+                        text = (uiState as RegisterUiState.Error).message,
                         color = Color.Red,
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(top = 12.dp)

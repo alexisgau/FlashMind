@@ -47,18 +47,18 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
-import com.example.flashmind.presentation.viewmodel.FlashCardViewModel
+import com.example.flashmind.presentation.ui.addflashcardai.AddFlashCardFab
 
 
 @Composable
 fun FlashCardScreen(
     lessonId: Int,
-    navigateToHome: () -> Unit,
     navigateToAddFlashCardAi: (Int) -> Unit,
     navigateToAddFlashCardManual: (Int) -> Unit,
     navigateToStartGame: (Int) -> Unit,
     navigateToEditFlashCard: (Int) -> Unit,
-    viewModel: FlashCardViewModel = hiltViewModel()
+    navigateToLessons: () -> Unit,
+    viewModel: FlashCardListViewModel = hiltViewModel()
 ) {
     val flashCards = viewModel.flashCards.collectAsStateWithLifecycle()
 
@@ -87,7 +87,7 @@ fun FlashCardScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 OutlinedButton(
-                    onClick = { navigateToHome() },
+                    onClick = { navigateToLessons() },
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.primary

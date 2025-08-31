@@ -75,7 +75,7 @@ import com.example.flashmind.domain.model.Category
 import com.example.flashmind.domain.model.Lesson
 import com.example.flashmind.domain.model.UserData
 
-import com.example.flashmind.presentation.viewmodel.HomeViewModel
+import com.example.flashmind.presentation.ui.home.HomeViewModel
 
 
 @Composable
@@ -122,6 +122,7 @@ fun HomeScreen(
                 Text(
                     text = "MY CATEGORIES",
                     style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -157,7 +158,7 @@ fun HomeScreen(
                 is CategoryState.Error -> {
                     item {
                         Text(
-                            text = "Error al cargar categorías",
+                            text = "Error loading categories",
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.padding(16.dp)
                         )
@@ -170,19 +171,19 @@ fun HomeScreen(
     categoryToDelete?.let { category ->
         AlertDialog(
             onDismissRequest = { categoryToDelete = null },
-            title = { Text("Eliminar categoría") },
-            text = { Text("¿Estás seguro de que deseas eliminar \"${category.name}\"? Se borrarán todas sus lecciones.") },
+            title = { Text("Delete category") },
+            text = { Text("Are you sure you want to delete \"${category.name}\"? All your lessons will be deleted.") },
             confirmButton = {
                 TextButton(onClick = {
                      viewModel.deleteCategory(category)
                     categoryToDelete = null
                 }) {
-                    Text("Eliminar")
+                    Text("Eliminate")
                 }
             },
             dismissButton = {
                 TextButton(onClick = { categoryToDelete = null }) {
-                    Text("Cancelar")
+                    Text("Cancel")
                 }
             }
         )
@@ -221,7 +222,7 @@ fun CategoryItem(
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    text = "${countLesson ?: 0} Lecciones", // Asumiendo que tienes un contador
+                    text = "${countLesson ?: 0} Lessons",
                     style = MaterialTheme.typography.bodyMedium,
                     color = LocalContentColor.current.copy(alpha = 0.7f)
                 )

@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-// FUERA de la clase, al inicio del archivo
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
 class ThemePreferenceManager @Inject constructor(

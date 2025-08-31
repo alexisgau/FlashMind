@@ -12,7 +12,7 @@ class AiRepositoryImpl @Inject constructor(
 
     override suspend fun generateFlashcards(text: String, lessonId: Int): List<FlashCard> {
         val prompt = """
-            Extraé del siguiente texto una lista de preguntas y respuestas en forma de flashcards. Cada flashcard debe tener una pregunta clara y su respectiva respuesta corta pero completa. Formato:
+            Extraé del siguiente texto una lista de preguntas y respuestas en forma de flashcards. Cada flashcard debe tener una pregunta clara y su respectiva respuesta corta pero completa y en ingles. Formato:
 
             Flashcard 1:
             Pregunta: ¿...?

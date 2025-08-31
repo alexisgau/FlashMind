@@ -4,7 +4,7 @@
     package="com.example.flashmind">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
         android:allowBackup="true"
         android:name=".FlashMindApplication"
@@ -18,7 +18,7 @@
         tools:targetApi="31">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".presentation.ui.main.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.FlashMind">
@@ -30,7 +30,6 @@
         <meta-data
             android:name="androidx.work.WorkManagerInitializer"
             android:value="disabled" />
-        <!-- ESTA LÍNEA es clave para evitar conflicto con inicialización por defecto -->
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
@@ -41,7 +40,6 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
-
 
     </application>
 

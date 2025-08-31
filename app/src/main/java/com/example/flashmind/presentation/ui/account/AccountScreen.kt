@@ -49,12 +49,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.AuthResponse
-import com.example.flashmind.presentation.viewmodel.AuthViewModel
 
 
 @Composable
 fun AccountSettingsScreen(
-    viewModel: AuthViewModel = hiltViewModel(),
+    viewModel: AccountViewModel = hiltViewModel(),
     userData: String,
     navigateToLogin: () -> Unit,
     navigateToHome: () -> Unit
@@ -73,7 +72,7 @@ fun AccountScreenImpl(
     userData: String,
     navigateToLogin: () -> Unit,
     navigateToHome: () -> Unit,
-    viewModel: AuthViewModel
+    viewModel: AccountViewModel
 ) {
     val signOutState by viewModel.signOutState.collectAsStateWithLifecycle()
     val isDarkMode by viewModel.isDarkMode.collectAsStateWithLifecycle()
@@ -302,9 +301,9 @@ fun AccountScreenPreview() {
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Versión de la app: 1.0.0", style = MaterialTheme.typography.bodySmall)
+            Text("App version: 1.0.0", style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(4.dp))
-            Text("Envíanos tu feedback", style = MaterialTheme.typography.bodySmall)
+            Text("Send us your feedback", style = MaterialTheme.typography.bodySmall)
         }
     }
 }

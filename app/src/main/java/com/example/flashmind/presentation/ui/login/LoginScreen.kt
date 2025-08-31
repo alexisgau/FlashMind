@@ -53,27 +53,27 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.AuthResponse
-import com.example.flashmind.presentation.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
-    viewModel: AuthViewModel = hiltViewModel(),
+    viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit,
     navigateToRegister: () -> Unit
 ) {
-    val authState by viewModel.authState.collectAsStateWithLifecycle()
+
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(authState) {
-        when (authState) {
-            is AuthResponse.Success -> onLoginSuccess()
-            is AuthResponse.Error -> {
-                snackbarHostState.showSnackbar((authState as AuthResponse.Error).message)
-                viewModel.resetAuthState()
+
+    LaunchedEffect(uiState) {
+        when (val state = uiState) {
+            is LoginUiState.Success -> onLoginSuccess()
+            is LoginUiState.Error -> {
+                snackbarHostState.showSnackbar(state.message)
+                viewModel.resetState()
             }
             else -> Unit
         }

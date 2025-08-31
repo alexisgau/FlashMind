@@ -11,7 +11,7 @@ import com.example.flashmind.data.local.entities.toEntity
 import com.example.flashmind.data.network.model.LessonFirestore
 import com.example.flashmind.domain.model.Lesson
 import com.example.flashmind.domain.reposotory.LessonRepository
-import com.example.flashmind.presentation.utils.LessonSyncWorker
+import com.example.flashmind.data.worker.LessonSyncWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
