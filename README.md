@@ -17,8 +17,8 @@ FlashMind is a modern Android application designed to revolutionize the way you 
 <td align="center"><b>AI Card Generation</b></td>
 </tr>
 <tr>
-<td><img src="https://github.com/user-attachments/assets/57ef1f0c-28ad-4a2c-974c-63f7f8ff5d98" width="500"/></td>
 <td><img src="https://github.com/user-attachments/assets/4ca2e9bf-6da9-4d8f-b803-c40b2ad24aba" width="500"/></td>
+<td><img src="https://github.com/user-attachments/assets/57ef1f0c-28ad-4a2c-974c-63f7f8ff5d98" width="500"/></td>
 </tr>
 </table>
 
