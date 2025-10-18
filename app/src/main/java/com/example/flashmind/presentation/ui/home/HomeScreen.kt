@@ -1,8 +1,6 @@
 package com.example.flashmind.presentation.ui.home
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,33 +22,22 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,22 +47,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.Category
-import com.example.flashmind.domain.model.Lesson
 import com.example.flashmind.domain.model.UserData
-
-import com.example.flashmind.presentation.ui.home.HomeViewModel
 
 
 @Composable
@@ -131,7 +113,10 @@ fun HomeScreen(
             when (val state = categoryState) {
                 is CategoryState.Loading -> {
                     item {
-                        Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
                             CircularProgressIndicator()
                         }
                     }
@@ -155,6 +140,7 @@ fun HomeScreen(
                         )
                     }
                 }
+
                 is CategoryState.Error -> {
                     item {
                         Text(
@@ -175,7 +161,7 @@ fun HomeScreen(
             text = { Text("Are you sure you want to delete \"${category.name}\"? All your lessons will be deleted.") },
             confirmButton = {
                 TextButton(onClick = {
-                     viewModel.deleteCategory(category)
+                    viewModel.deleteCategory(category)
                     categoryToDelete = null
                 }) {
                     Text("Eliminate")
@@ -194,7 +180,7 @@ fun HomeScreen(
 fun CategoryItem(
     category: Category,
     onClick: () -> Unit,
-    countLesson:Int,
+    countLesson: Int,
     onDeleteRequest: (Category) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -222,7 +208,7 @@ fun CategoryItem(
                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
-                    text = "${countLesson ?: 0} Lessons",
+                    text = "$countLesson Lessons",
                     style = MaterialTheme.typography.bodyMedium,
                     color = LocalContentColor.current.copy(alpha = 0.7f)
                 )
@@ -239,12 +225,11 @@ fun CategoryItem(
 }
 
 
-
 @Composable
 fun TopBar(
     modifier: Modifier = Modifier,
     userData: UserData,
-    navigateToAccountSettings:(String)->Unit
+    navigateToAccountSettings: (String) -> Unit
 ) {
     Row(
         modifier = modifier
@@ -261,19 +246,20 @@ fun TopBar(
                     fontWeight = FontWeight.Bold
                 )
                 if (userData.imageUrl.isNotEmpty()) {
-                    IconButton(onClick = {navigateToAccountSettings(userData.imageUrl)}) {
+                    IconButton(onClick = { navigateToAccountSettings(userData.imageUrl) }) {
                         AsyncImage(
-                        model = userData.imageUrl,
-                        contentDescription = "Profile picture",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(40.dp)
-                            .border(2.dp, Color.Gray, CircleShape)
-                    )}
+                            model = userData.imageUrl,
+                            contentDescription = "Profile picture",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .clip(CircleShape)
+                                .size(40.dp)
+                                .border(2.dp, Color.Gray, CircleShape)
+                        )
+                    }
 
                 } else {
-                    IconButton(onClick = {navigateToAccountSettings(userData.imageUrl)}) {
+                    IconButton(onClick = { navigateToAccountSettings(userData.imageUrl) }) {
                         Icon(
                             painter = painterResource(R.drawable.default_profile_ic),
                             contentDescription = "Default Profile",
@@ -337,126 +323,6 @@ fun CategoryLazyRowPreview() {
         }
     }
 }
-
-@Composable
-fun CategoryLazyRow(
-    categories: List<Category>,
-    selectedCategoryId: MutableState<Int?>,
-    onCategorySelected: (Int) -> Unit,
-    onDeleteCategory: (Category) -> Unit
-) {
-    var categoryToDelete by remember { mutableStateOf<Category?>(null) }
-
-    LazyRow(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-    ) {
-        items(categories) { category ->
-            FilterChip(
-                selected = selectedCategoryId.value == category.id,
-                onClick = {
-                    onCategorySelected(category.id)
-                },
-                label = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = category.name,
-                            fontWeight = FontWeight.ExtraBold,
-                            color = Color.Black
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            imageVector = Icons.Default.Close,
-                            contentDescription = "Eliminar categoría",
-                            modifier = Modifier
-                                .size(18.dp)
-                                .clickable {
-                                    categoryToDelete = category
-                                },
-                            tint = Color.Black
-                        )
-                    }
-                },
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = Color(category.color.toColorInt())
-                ),
-                modifier = Modifier.padding(horizontal = 8.dp)
-            )
-        }
-    }
-
-    // Dialogo de confirmación
-    categoryToDelete?.let { category ->
-        AlertDialog(
-            onDismissRequest = { categoryToDelete = null },
-            title = { Text("Eliminar categoría") },
-            text = { Text("¿Desea eliminar la categoría \"${category.name}\"?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    onDeleteCategory(category)
-                    categoryToDelete = null
-                }) {
-                    Text("Sí")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = {
-                    categoryToDelete = null
-                }) {
-                    Text("Cancelar")
-                }
-            }
-        )
-    }
-}
-
-
-@Composable
-fun LessonItem(
-    lessons: List<Lesson>,
-    navigateToFlashCard: (lessonId: Int) -> Unit
-) {
-    LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(lessons) { lesson ->
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { navigateToFlashCard(lesson.id) },
-                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = lesson.tittle,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold)
-                        )
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Ir a la lección",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-
-
-            }
-        }
-    }
-}
-
 @Composable
 fun HomeCard() {
     Card(

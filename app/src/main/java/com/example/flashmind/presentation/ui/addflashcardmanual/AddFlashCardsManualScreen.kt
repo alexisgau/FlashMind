@@ -309,7 +309,7 @@ fun PreviewCreateCardScreen() {
 
 @Composable
 fun QuestionTextField(
-    modifier: Modifier = Modifier, // Hacer el modifier el primer parámetro opcional es convención
+    modifier: Modifier = Modifier,
     question: String,
     onQuestionChange: (String) -> Unit,
     label: String,
@@ -353,7 +353,7 @@ fun ColorSelector(
 
             Box(
                 modifier = Modifier
-                    .offset(y = animatedOffset) // sube el color seleccionado
+                    .offset(y = animatedOffset)
                     .size(48.dp)
                     .clip(CircleShape)
                     .background(Color(color.toColorInt()))

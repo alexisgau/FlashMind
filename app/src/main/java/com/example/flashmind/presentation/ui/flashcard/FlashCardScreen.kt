@@ -152,7 +152,6 @@ fun FlashCardScreen(
 
 @Composable
 fun FlashCardItemDeletable(
-    id: Int,
     question: String,
     answer: String,
     deleteFlashCard: () -> Unit,
@@ -246,7 +245,7 @@ fun FlashcardItem(
                 )
             }
 
-            // Iconos de acción
+
             IconButton(onClick = onEditClick) {
                 Icon(
                     imageVector = Icons.Default.Edit,

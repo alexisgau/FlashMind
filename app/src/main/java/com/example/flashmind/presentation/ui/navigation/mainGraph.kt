@@ -124,7 +124,11 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             val args = it.toRoute<StartLesson>()
             StartLessonScreen(
                 lessonId = args.lessonId,
-                navigateToFlashCardScreen = { navController.navigate(FlashCards(it)) }
+                navigateToFlashCardScreen = { navController.navigate(FlashCards(it)){
+                    popUpTo<StartLesson> {
+                        inclusive = true
+                    }
+                } }
             )
         }
 

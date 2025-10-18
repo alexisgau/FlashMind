@@ -1,9 +1,7 @@
 package com.example.flashmind.presentation.ui.category
 
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,14 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -30,19 +23,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.presentation.ui.home.AddCategoryState
-
-import com.example.flashmind.presentation.ui.home.HomeViewModel
 
 @Composable
 fun AddCategoryScreen(
@@ -103,9 +92,8 @@ fun AddCategoryScreen(
                 onNameChange = { name = it },
                 description = description,
                 onDescriptionChange = { description = it },
-                selectedColor = selectedColor,
-                onColorSelected = { selectedColor = it }
-            )
+
+                )
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -144,18 +132,9 @@ fun AddCategoryForm(
     onNameChange: (String) -> Unit,
     description: String,
     onDescriptionChange: (String) -> Unit,
-    selectedColor: String,
-    onColorSelected: (String) -> Unit
-) {
-    var expanded by remember { mutableStateOf(false) }
 
-    val colors = listOf(
-        "#FF5733", // Naranja
-        "#33FF57", // Verde
-        "#3357FF", // Azul
-        "#FF33A1", // Rosa
-        "#F3F3F3"  // Gris claro
-    )
+    ) {
+
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -192,15 +171,13 @@ fun AddCategoryForm(
 fun AddCategoryPreview() {
     var name by remember { mutableStateOf("") }
     var description by remember { mutableStateOf("") }
-    var selectedColor by remember { mutableStateOf("") }
 
     AddCategoryForm(
         name = name,
         onNameChange = { name = it },
         description = description,
-        onDescriptionChange = { description = it },
-        selectedColor = selectedColor,
-        onColorSelected = { selectedColor = it })
+        onDescriptionChange = { description = it }
+    )
 }
 
 
