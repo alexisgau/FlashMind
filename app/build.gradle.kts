@@ -21,12 +21,13 @@ plugins {
 
 android {
     namespace = "com.example.flashmind"
-    compileSdk = 35
+    compileSdk = 36
+
 
     defaultConfig {
         applicationId = "com.example.flashmind"
         minSdk = 34
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -44,9 +45,9 @@ android {
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }
 
-
-
-
+    aaptOptions {
+        noCompress.add("txt")
+    }
 
     buildTypes {
         release {
@@ -82,6 +83,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.pdf.viewer)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -107,7 +109,7 @@ dependencies {
 
     implementation("androidx.hilt:hilt-navigation-compose:1.1.0")  // Si usas Jetpack Compose
 
-    implementation(platform("com.google.firebase:firebase-bom:33.13.0"))
+    implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
 
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.android.gms:play-services-auth:21.2.0")
@@ -127,11 +129,22 @@ dependencies {
     implementation("androidx.datastore:datastore-preferences:1.1.0")
 
     implementation(libs.generativeai)
-
+//    implementation("com.google.firebase:firebase-ai")
     //workManager
     implementation("androidx.work:work-runtime-ktx:2.10.2")
     implementation("androidx.hilt:hilt-work:1.2.0")
     kapt("androidx.hilt:hilt-compiler:1.2.0")
+
+    //Upload file libraries
+    implementation("com.tom-roush:pdfbox-android:2.0.27.0")
+    implementation("org.apache.poi:poi-ooxml:5.2.5")
+    implementation("org.apache.poi:poi-scratchpad:5.2.5")
+
+    //retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0") 
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3") // O la versión que uses
+    implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
 
 
 

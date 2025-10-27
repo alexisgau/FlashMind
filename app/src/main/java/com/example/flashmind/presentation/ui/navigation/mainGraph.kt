@@ -15,10 +15,16 @@ import com.example.flashmind.presentation.ui.home.HomeScreen
 import com.example.flashmind.presentation.ui.addlesson.AddLessonScreen
 import com.example.flashmind.presentation.ui.lessons.LessonScreen
 import com.example.flashmind.presentation.ui.startlesson.StartLessonScreen
+import com.example.flashmind.presentation.ui.summary.GenerateSummaryScreen
+import com.example.flashmind.presentation.ui.summary.SummariesScreen
+import com.example.flashmind.presentation.ui.summary.SummaryViewScreen
+import com.example.flashmind.presentation.ui.test.GenerateTestScreen
+import com.example.flashmind.presentation.ui.test.QuizScreen
+import com.example.flashmind.presentation.ui.test.TestScreen
 
 fun NavGraphBuilder.mainGraph(navController: NavHostController) {
     navigation(
-        startDestination = "Home",
+        startDestination = "home", //generateTest
         route = Graph.MAIN
     ) {
 
@@ -95,7 +101,7 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
                 navigateToAddFlashCardManual = { navController.navigate(AddFlashCardsManual(it)) },
                 navigateToStartGame = { navController.navigate(StartLesson(it)) },
                 navigateToEditFlashCard = { navController.navigate(EditFlashCard(it)) },
-                navigateToLessons = {navController.popBackStack<Lessons>(inclusive = false) }
+                navigateToLessons = { navController.popBackStack<Lessons>(inclusive = false) }
             )
         }
 
@@ -124,12 +130,52 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             val args = it.toRoute<StartLesson>()
             StartLessonScreen(
                 lessonId = args.lessonId,
-                navigateToFlashCardScreen = { navController.navigate(FlashCards(it)){
-                    popUpTo<StartLesson> {
-                        inclusive = true
+                navigateToFlashCardScreen = {
+                    navController.navigate(FlashCards(it)) {
+                        popUpTo<StartLesson> {
+                            inclusive = true
+                        }
                     }
-                } }
+                }
             )
+        }
+
+        composable<GenerateTest> { backStackEntry ->
+            GenerateTestScreen(
+                navigateToTestScreen = { contentFile,tittle ->
+                    navController.navigate(Quiz(contentFile = contentFile, testTittle = tittle, testId = 1)) {
+                        popUpTo<GenerateTest> { inclusive = true }
+                    }
+                },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        composable<Quiz> {
+            val args = it.toRoute<Quiz>()
+            QuizScreen(
+                contentFile = args.contentFile,
+                testTittle = args.testTittle,
+                lessonId = 1,
+                testId = args.testId,
+                onClickBack = { navController.popBackStack() })
+
+        }
+
+        composable<Test> {
+            TestScreen(onClickTest = { testId, testTittle ->
+                navController.navigate(
+                    Quiz(
+                        contentFile = null,
+                        testTittle = testTittle,
+                        testId = testId
+                    )
+                )
+            }, navigateToNewTest = {
+                navController.navigate(
+                    GenerateTest
+                )
+            })
         }
 
         // Edit Flashcard
@@ -141,8 +187,49 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
 
                 )
         }
+
+        // Ruta para la pantalla de LISTA de Resúmenes
+        composable<SummariesRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<SummariesRoute>()
+            SummariesScreen(
+                lessonId = 1,
+                lessonTitle = "Lesson tittle",
+                onSummaryClick = { clickedSummaryId, summaryTitle ->
+                    navController.navigate(SummaryDetailRoute(summaryId = clickedSummaryId, summaryTittle = summaryTitle))
+                },
+                onAddSummaryClick = {
+                    navController.navigate(GenerateSummaryRoute(lessonId = 1))
+                },
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // Ruta para la pantalla de GENERACIÓN
+        composable<GenerateSummaryRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<GenerateSummaryRoute>()
+            GenerateSummaryScreen(
+                lessonId = args.lessonId,
+                onClickBack = {navController.popBackStack()},
+                navigateToSummaryScreen = { contentFile,summaryTitle ->
+                    navController.navigate(SummaryDetailRoute(contentFile = contentFile, summaryTittle = summaryTitle ))
+                }
+            )
+        }
+
+
+        // Ruta para la pantalla de DETALLE del Resumen
+        composable<SummaryDetailRoute> { backStackEntry ->
+            val args = backStackEntry.toRoute<SummaryDetailRoute>()
+            SummaryViewScreen(
+                summaryId = args.summaryId,
+                contentFile = args.contentFile,
+                summaryTittle = args.summaryTittle,
+                lessonId = 1,
+                onClickBack = { navController.navigate(SummariesRoute) }
+            )
+        }
     }
-
-
 }
+
+
 

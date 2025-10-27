@@ -4,36 +4,85 @@ package com.example.flashmind.data.network
 import android.util.Log
 import com.example.flashmind.BuildConfig
 import com.example.flashmind.data.local.entities.FlashCardEntity
-import com.google.ai.client.generativeai.GenerativeModel
+import com.example.flashmind.data.local.entities.MultipleChoiceQuestionEntity
+import com.example.flashmind.domain.model.GenerateContentRequest
+import com.example.flashmind.domain.model.QuizQuestionModel
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 
-class GeminiDataSource @Inject constructor() {
+class GeminiDataSource @Inject constructor(private val apiService: IaCallService) {
 
-    val apiKey = BuildConfig.GEMINI_API_KEY.ifEmpty {
-        "AIzaSyBtlIkRofL3TfCe5dJwso3t-ljoLHkQIqc"
-    }
+    val apiKey = BuildConfig.GEMINI_API_KEY
 
-    init {
-        if (apiKey.contains("Demo") || apiKey.contains("Ejemplo")) {
-            Log.w("API_KEY", "Usando clave de demostración con capacidades limitadas")
-        }
-    }
-
-    private val model = GenerativeModel(
-        modelName = "gemini-1.5-flash",
-        apiKey = apiKey
-    )
 
 
     suspend fun getFlashcardsFromText(prompt: String): String {
+        val models = apiService.listModels(apiKey)
+        Log.i("Models", "$models")
+        val requestBody = GenerateContentRequest(
+            contents = listOf(
+                GenerateContentRequest.Content(
+                    parts = listOf(GenerateContentRequest.Part(text = prompt))
+                )
+            )
+        )
+
         return try {
-            model.generateContent(prompt).text ?: ""
+            val response = apiService.generateContent(apiKey, requestBody)
+            response.getSafeText()
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.e("GeminiAPI", "Error en Retrofit (Flashcards): ${e.message}", e)
+            // Fallback: intenta con el otro modelo
+            try {
+                val response = apiService.generateContent(apiKey, requestBody)
+                response.getSafeText()
+            } catch (e2: Exception) {
+                Log.e("GeminiAPI", "Error también con v1.5: ${e2.message}")
+                ""
+            }
+        }
+    }
+
+    suspend fun getTestFromText(prompt: String): String {
+        //body de la petición
+        val requestBody = GenerateContentRequest(
+            contents = listOf(GenerateContentRequest.Content(
+                parts = listOf(GenerateContentRequest.Part(text = prompt))
+            ))
+        )
+        return try {
+            val response = apiService.generateContent(apiKey, requestBody)
+            //devuelve el texto limpio
+            response.getSafeText()
+        } catch (e: Exception) {
+            Log.e("GeminiAPI", "Error en Retrofit (GenerateTest): ${e.message}", e)
             ""
         }
     }
+
+
+    fun parseTestFromJson(jsonInput: String, testId: Int): List<MultipleChoiceQuestionEntity> {
+        val json = Json { ignoreUnknownKeys = true }
+
+        return try {
+            val dtoList = json.decodeFromString<List<QuizQuestionModel>>(jsonInput)
+            // Mapea el DTO a tu Entidad de Room
+            dtoList.map { dto ->
+                MultipleChoiceQuestionEntity(
+                    testId = testId,
+                    questionText = dto.question,
+                    options = dto.options,
+                    correctAnswerIndex = dto.correctResponseIndex
+                )
+            }
+        } catch (e: kotlinx.serialization.SerializationException) {
+            Log.e("ParseTest", "Error al parsear el JSON de Gemini. Mensaje: ${e.message}")
+            Log.e("ParseTest", "JSON inválido recibido: $jsonInput")
+            emptyList()
+        }
+    }
+
 
     fun parseFlashcardsFromText(
         input: String,
@@ -63,8 +112,25 @@ class GeminiDataSource @Inject constructor() {
                 )
             )
         }
-
         return flashcards
+    }
+
+    suspend fun getSummaryFromText(prompt: String): String {
+        // Prepara el cuerpo (body) de la petición
+        val requestBody = GenerateContentRequest(
+            contents = listOf(
+                GenerateContentRequest.Content(
+                    parts = listOf(GenerateContentRequest.Part(text = prompt))
+                )
+            )
+        )
+        return try {
+            val response = apiService.generateContent(apiKey, requestBody)
+            response.getSafeText()
+        } catch (e: Exception) {
+            Log.e("GeminiAPI", "Error en Retrofit (GenerateSummary): ${e.message}", e)
+            ""
+        }
     }
 
 

@@ -1,23 +1,26 @@
 package com.example.flashmind.di
 
 import android.content.Context
-import androidx.hilt.work.HiltWorkerFactory
 import androidx.room.Room
 import androidx.work.WorkManager
-import androidx.work.WorkerFactory
 import com.example.flashmind.data.local.AppDatabase
 import com.example.flashmind.data.local.dao.CategoryDao
 import com.example.flashmind.data.local.dao.FlashCardDao
 import com.example.flashmind.data.local.dao.LessonDao
+import com.example.flashmind.data.local.dao.QuizDao
+import com.example.flashmind.data.local.dao.SummaryDao
 import com.example.flashmind.data.repository.CategoryRepositoryImpl
 import com.example.flashmind.data.repository.FlashCardRepositoryImpl
 import com.example.flashmind.data.repository.LessonRepositoryImpl
+import com.example.flashmind.data.repository.QuizRepositoryImpl
+import com.example.flashmind.data.repository.SummaryRepositoryImpl
 import com.example.flashmind.domain.reposotory.CategoryRepository
 import com.example.flashmind.domain.reposotory.FlashCardRepository
 import com.example.flashmind.domain.reposotory.LessonRepository
+import com.example.flashmind.domain.reposotory.QuizRepository
+import com.example.flashmind.domain.reposotory.SummaryRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,7 +40,9 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "flash_mind"
-        ).build()
+        )
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
     @Provides
@@ -50,6 +55,7 @@ object DatabaseModule {
     fun provideWorkManager(@ApplicationContext context: Context): WorkManager {
         return WorkManager.getInstance(context)
     }
+
     @Provides
     @Singleton
     fun provideCategoryRepository(
@@ -58,7 +64,7 @@ object DatabaseModule {
         firestore: FirebaseFirestore,
         workManager: WorkManager
     ): CategoryRepository {
-        return CategoryRepositoryImpl(auth,categoryDao, firestore,workManager)
+        return CategoryRepositoryImpl(auth, categoryDao, firestore, workManager)
     }
 
 
@@ -74,7 +80,7 @@ object DatabaseModule {
         firestore: FirebaseFirestore,
         workManager: WorkManager
     ): LessonRepository {
-        return LessonRepositoryImpl(dao,auth, firestore,workManager)
+        return LessonRepositoryImpl(dao, auth, firestore, workManager)
     }
 
     @Provides
@@ -89,8 +95,44 @@ object DatabaseModule {
         firestore: FirebaseFirestore,
         workManager: WorkManager
     ): FlashCardRepository {
-        return FlashCardRepositoryImpl(auth = auth, dao = dao, firestore = firestore, workManager = workManager)
+        return FlashCardRepositoryImpl(
+            auth = auth,
+            dao = dao,
+            firestore = firestore,
+            workManager = workManager
+        )
     }
 
+    @Provides
+    fun provideQuizDao(database: AppDatabase): QuizDao {
+        return database.quizDao()
+    }
+
+
+    @Provides
+    fun provideQuizRepository(
+        dao: QuizDao,
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        workManager: WorkManager
+    ): QuizRepository {
+        return QuizRepositoryImpl(dao, auth, firestore, workManager)
+    }
+
+    @Provides
+    fun provideSummeryDao(database: AppDatabase): SummaryDao {
+        return database.summaryDao()
+    }
+
+    @Provides
+    fun provideSummeryRepository(
+        dao: SummaryDao,
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        workManager: WorkManager
+    ): SummaryRepository {
+
+        return SummaryRepositoryImpl(dao, auth, firestore, workManager)
+    }
 
 }
