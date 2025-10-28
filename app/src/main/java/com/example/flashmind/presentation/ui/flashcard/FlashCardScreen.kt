@@ -42,6 +42,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -64,6 +65,7 @@ fun FlashCardScreen(
 
     viewModel.loadFlashCardsByLesson(lessonId)
 
+
     Scaffold(
         floatingActionButton = {
             AddFlashCardFab(
@@ -76,8 +78,38 @@ fun FlashCardScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
+        ) {
 
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
+                Text(
+                    text = "Flashcards: Primera Guerra Mundial",
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.playing_cards),
+                        contentDescription = "Contador",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "${flashCards.value.size} Tarjetas",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
 
             Row(
                 modifier = Modifier
@@ -121,11 +153,10 @@ fun FlashCardScreen(
                 }
             }
 
-            if(flashCards.value.isEmpty()){
+            if (flashCards.value.isEmpty()) {
 
-                Text("Empty flashCards in lesson,add one!", modifier = Modifier.padding(26.dp))
+                EmptyFlashcardList()
             }
-
 
             LazyColumn(
                 modifier = Modifier.padding(26.dp),
@@ -281,6 +312,42 @@ fun FlashcardItemPreview() {
     }
 }
 
+@Composable
+fun EmptyFlashcardList(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(R.drawable.empty_flashcards),
+            contentDescription = "No hay flashcards",
+            modifier = Modifier.size(150.dp),
+            contentScale = ContentScale.Fit,
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "¡Aún no tienes flashcards!",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "Crea tu primer set de tarjetas para empezar a estudiar.",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+    }
+}
 
 
 

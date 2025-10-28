@@ -18,17 +18,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -43,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -86,29 +94,37 @@ fun StartLessonScreen(
 
             if (currentIndex >= flashCards.size) {
                 // Fin de la lección
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background)
-                        .padding(paddingValues),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            "You've finished the lesson!",
-                            fontSize = 20.sp,
-                            color = MaterialTheme.colorScheme.inverseSurface
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Button(onClick = {
-                            currentIndex = 0
-                            flipped = false
-                        }) {
-                            Text("Restart Lesson")
-                        }
-                        Button(onClick = { navigateToFlashCardScreen(lessonId) }) { Text("Finish Lesson") }
-                    }
-                }
+                LessonCompleteScreen(
+                    onRestart = {
+                        currentIndex = 0
+                        flipped = false
+                    },
+                    onFinish = {navigateToFlashCardScreen(lessonId)},
+                    onExplore = {}
+                )
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxSize()
+//                        .background(MaterialTheme.colorScheme.background)
+//                        .padding(paddingValues),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+//                        Text(
+//                            "You've finished the lesson!",
+//                            fontSize = 20.sp,
+//                            color = MaterialTheme.colorScheme.inverseSurface
+//                        )
+//                        Spacer(modifier = Modifier.height(16.dp))
+//                        Button(onClick = {
+//                            currentIndex = 0
+//                            flipped = false
+//                        }) {
+//                            Text("Restart Lesson")
+//                        }
+//                        Button(onClick = { navigateToFlashCardScreen(lessonId) }) { Text("Finish Lesson") }
+//                    }
+//                }
                 return@Scaffold
             }
 
@@ -231,6 +247,117 @@ fun StartLessonScreen(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun LessonCompleteScreen(
+    modifier: Modifier = Modifier,
+    onRestart: () -> Unit,
+    onFinish: () -> Unit,
+    onExplore: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+
+        Surface(
+            modifier = Modifier.size(100.dp),
+            shape = CircleShape,
+            color = MaterialTheme.colorScheme.primary
+        ) {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = "Completado",
+                tint = Color.White,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(20.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+
+        Text(
+            text = "¡Has terminado todas las lecciones y flashcards!",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = "¡Continúa practicando para dominar el tema!",
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(48.dp))
+
+
+        Button(
+            onClick = onRestart,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = "Volver a Empezar",
+                    fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "Volver a Empezar"
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+
+        Button(
+            onClick = onFinish,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(12.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Text(
+                text = "Finalizar Lección",
+                fontSize = 16.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        TextButton(onClick = onExplore) {
+            Text(
+                text = "Explorar otras categorías",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 }

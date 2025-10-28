@@ -1,5 +1,7 @@
 package com.example.flashmind.presentation.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,10 +25,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -34,10 +39,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -57,26 +62,26 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.Category
+import com.example.flashmind.domain.model.Lesson
 import com.example.flashmind.domain.model.UserData
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     viewModel: HomeViewModel = hiltViewModel(),
-    onNavigateToLessons: (categoryId: Int, categoryName: String) -> Unit,
+    onNavigateToLessonContent: (lessonId: Int, lessonTitle: String) -> Unit,
     onNavigateToAddCategory: () -> Unit,
-    onNavigateToAccountSettings: (String) -> Unit
+    onNavigateToAccountSettings: (String) -> Unit,
+    onNavigateToAddLesson: (categoryId: Int) -> Unit
 ) {
-    val categoryState by viewModel.categoriesState.collectAsStateWithLifecycle()
-    val userData by viewModel.userData.collectAsStateWithLifecycle()
-    val lessonCounts by viewModel.lessonCounts.collectAsStateWithLifecycle()
-    var categoryToDelete by remember { mutableStateOf<Category?>(null) }
-
-
-
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val categoryToDelete by viewModel.categoryToDelete.collectAsStateWithLifecycle()
+    val lessonToDelete by viewModel.lessonToDelete.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
+            val userData = (uiState as? HomeUiState.Success)?.userData ?: UserData.Init
             TopBar(
                 modifier = Modifier.padding(top = 20.dp, start = 16.dp),
                 userData = userData,
@@ -85,69 +90,133 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onNavigateToAddCategory() },
+                onClick = onNavigateToAddCategory,
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
                 Icon(Icons.Default.Add, contentDescription = "Añadir nueva categoría")
             }
         }
     ) { innerPadding ->
-        LazyColumn(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize(),
-            contentPadding = PaddingValues(bottom = 80.dp)
-        ) {
-            item {
-                HomeCard()
-                Spacer(modifier = Modifier.height(24.dp))
-                Text(
-                    text = "MY CATEGORIES",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Black,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+
+        when (val state = uiState) {
+            is HomeUiState.Loading -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding), contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
 
-            when (val state = categoryState) {
-                is CategoryState.Loading -> {
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxWidth(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
-                    }
+            is HomeUiState.Error -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding), contentAlignment = Alignment.Center
+                ) {
+                    Text("Error: ${state.message}", color = MaterialTheme.colorScheme.error)
                 }
+            }
 
-                is CategoryState.Success -> {
-                    items(state.categories) { category ->
-
-                        LaunchedEffect(category.id) {
-                            viewModel.observeLessonCount(category.id)
-                        }
-                        CategoryItem(
-                            category = category,
-                            onClick = {
-                                onNavigateToLessons(category.id, category.name)
-                            },
-
-                            countLesson = lessonCounts[category.id] ?: 0,
-                            onDeleteRequest = { categoryToDelete = it },
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
-                        )
-                    }
-                }
-
-                is CategoryState.Error -> {
+            is HomeUiState.Success -> {
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(innerPadding)
+                        .fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 80.dp)
+                ) {
                     item {
+                        HomeCard()
+                        Spacer(modifier = Modifier.height(24.dp))
                         Text(
-                            text = "Error loading categories",
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.padding(16.dp)
+                            text = "MIS CATEGORÍAS",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.padding(horizontal = 16.dp)
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    state.categories.forEach { category ->
+                        val isExpanded = state.expandedCategoryIds.contains(category.id)
+                        val lessons = state.lessonsMap[category.id]
+                        val lessonCount = state.lessonCounts[category.id] ?: 0
+
+                        item(key = "cat_${category.id}") {
+                            ExpandableCategoryItem(
+                                category = category,
+                                isExpanded = isExpanded,
+                                lessonCount = lessonCount,
+                                onToggleExpand = { viewModel.toggleCategoryExpansion(category.id) },
+                                onDeleteRequest = { viewModel.requestCategoryDeletion(category) },
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
+                                content = {
+                                    Column(Modifier.fillMaxWidth()) {
+                                        if (lessons == null) {
+                                            Box(
+                                                Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(vertical = 20.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                CircularProgressIndicator(
+                                                    modifier = Modifier.size(
+                                                        24.dp
+                                                    )
+                                                )
+                                            }
+                                        } else if (lessons.isEmpty()) {
+                                            Text(
+                                                "No hay lecciones en esta categoría.",
+                                                modifier = Modifier.padding(
+                                                    start = 32.dp,
+                                                    top = 8.dp,
+                                                    bottom = 16.dp
+                                                ),
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                                            )
+                                        } else {
+                                            lessons.forEach { lesson ->
+                                                LessonItem(
+                                                    lesson = lesson,
+                                                    onClick = { onNavigateToLessonContent(lesson.id, lesson.tittle) },
+                                                    onDeleteClick = {
+                                                        viewModel.requestLessonDeletion(
+                                                            lesson
+                                                        )
+                                                    },
+                                                    onEditClick = {},
+                                                    modifier = Modifier.padding(
+                                                        start = 16.dp,
+                                                        end = 16.dp,
+                                                        top = 4.dp,
+                                                        bottom = 4.dp
+                                                    )
+                                                )
+                                                Divider(modifier = Modifier.padding(horizontal = 16.dp))
+                                            }
+                                        }
+
+                                        TextButton(
+                                            onClick = { onNavigateToAddLesson(category.id) },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                        ) {
+                                            Icon(
+                                                Icons.Default.Add,
+                                                contentDescription = null,
+                                                modifier = Modifier.size(20.dp)
+                                            )
+                                            Spacer(Modifier.width(8.dp))
+                                            Text("Añadir Lección")
+                                        }
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -156,23 +225,196 @@ fun HomeScreen(
 
     categoryToDelete?.let { category ->
         AlertDialog(
-            onDismissRequest = { categoryToDelete = null },
-            title = { Text("Delete category") },
-            text = { Text("Are you sure you want to delete \"${category.name}\"? All your lessons will be deleted.") },
+            onDismissRequest = { viewModel.cancelDeletion() },
+            title = { Text("Borrar Categoría") },
+            text = { Text("¿Seguro que quieres borrar \"${category.name}\"? Todas sus lecciones también se borrarán.") },
             confirmButton = {
-                TextButton(onClick = {
-                    viewModel.deleteCategory(category)
-                    categoryToDelete = null
-                }) {
-                    Text("Eliminate")
+                TextButton(onClick = { viewModel.confirmDeleteCategory() }) {
+                    Text("Eliminar")
                 }
             },
             dismissButton = {
-                TextButton(onClick = { categoryToDelete = null }) {
-                    Text("Cancel")
+                TextButton(onClick = { viewModel.cancelDeletion() }) {
+                    Text("Cancelar")
                 }
             }
         )
+    }
+
+    lessonToDelete?.let { lesson ->
+        AlertDialog(
+            onDismissRequest = { viewModel.cancelDeletion() },
+            title = { Text("Borrar Lección") },
+            text = { Text("¿Seguro que quieres borrar la lección \"${lesson.tittle}\"?") },
+            confirmButton = {
+                TextButton(onClick = { viewModel.confirmDeleteLesson() }) {
+                    Text("Eliminar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.cancelDeletion() }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun ExpandableCategoryItem(
+    category: Category,
+    isExpanded: Boolean,
+    lessonCount: Int,
+    onToggleExpand: () -> Unit,
+    onDeleteRequest: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onToggleExpand),
+            shape = if (isExpanded) {
+                RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            } else {
+                RoundedCornerShape(16.dp)
+            },
+            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.primary),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        ) {
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.folder_icon),
+                    contentDescription = "Categoría",
+                    modifier = Modifier.size(40.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = category.name,
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    )
+                    Text(
+                        text = "$lessonCount Lecciones",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = LocalContentColor.current.copy(alpha = 0.7f)
+                    )
+                }
+                IconButton(onClick = onDeleteRequest) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Eliminar Categoría",
+                        tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+                    )
+                }
+                Icon(
+                    painter = if (isExpanded) painterResource(R.drawable.arrow_circle_up_icon) else painterResource(
+                        R.drawable.arrow_circle_down_icon
+                    ),
+                    contentDescription = if (isExpanded) "Colapsar" else "Expandir",
+                    modifier = Modifier.size(36.dp),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+
+        AnimatedVisibility(visible = isExpanded) {
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                shape = RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp)
+            ) {
+                content()
+            }
+        }
+    }
+}
+
+@Composable
+fun LessonItem(
+    lesson: Lesson,
+    onClick: () -> Unit,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.play_lesson),
+            contentDescription = "Lección",
+            modifier = Modifier.size(32.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = lesson.tittle,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+            Text(
+                text = "Toca para ver el contenido", // Puedes cambiar este subtítulo
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+
+        IconButton(
+            onClick = onEditClick,
+            modifier = Modifier.size(36.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Edit,
+                contentDescription = "Editar Lección",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
+            )
+        }
+
+        IconButton(
+            onClick = onDeleteClick,
+            modifier = Modifier.size(36.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Delete,
+                contentDescription = "Eliminar Lección",
+                tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f)
+            )
+        }
+    }
+}
+
+@Composable
+fun AddLessonButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    TextButton(
+        onClick = onClick,
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Add,
+            contentDescription = null,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text("Añadir Lección")
     }
 }
 
@@ -323,6 +565,7 @@ fun CategoryLazyRowPreview() {
         }
     }
 }
+
 @Composable
 fun HomeCard() {
     Card(
@@ -370,6 +613,7 @@ fun HomeCard() {
         }
     }
 }
+
 
 
 

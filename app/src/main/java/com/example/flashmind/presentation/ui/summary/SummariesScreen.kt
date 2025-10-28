@@ -16,7 +16,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,7 +73,7 @@ fun SummariesScreen(
                     Text("Error: ${state.error}", color = MaterialTheme.colorScheme.error)
                 }
                 is SummariesListUiState.Empty -> {
-                    EmptyTestList(tittle = "No summaries available", subtitle = "Add a new summary to get started.")
+                    EmptySummariesList(tittle = "No summaries available", subtitle = "Add a new summary to get started.")
                 }
                 is SummariesListUiState.Success -> {
                     SummariesList(
@@ -183,5 +185,46 @@ fun SummaryItem(
                 }
             }
         }
+    }
+}
+
+@Preview(showSystemUi = true)
+@Composable
+fun EmptySummariesList(
+    modifier: Modifier = Modifier,
+    tittle: String = "¡Aún no tienes resumenes!",
+    subtitle: String = "Crea un nuevo resumen para empezar a practicar"
+) {
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .padding(horizontal = 32.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.empty_summary),
+            contentDescription = "No hay resumenes",
+            modifier = Modifier.size(120.dp),
+            tint = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = tittle,
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = subtitle,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center
+        )
     }
 }

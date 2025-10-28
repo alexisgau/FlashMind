@@ -60,6 +60,7 @@ import com.example.flashmind.domain.model.TestModel
 fun TestScreen(
     viewModel: TestViewModel = hiltViewModel(),
     lessonId: Int = 1,
+    onNavigateBack:()-> Unit,
     onClickTest: (Int, String) -> Unit,
     navigateToNewTest: () -> Unit
 ) {
@@ -76,7 +77,7 @@ fun TestScreen(
                 CenterAlignedTopAppBar(
                     title = { Text("My tests") },
                     navigationIcon = {
-                        IconButton(onClick = {}) {
+                        IconButton(onClick = onNavigateBack) {
                             Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
                         }
                     }

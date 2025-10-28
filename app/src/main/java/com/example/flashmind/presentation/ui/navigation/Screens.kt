@@ -24,6 +24,9 @@ object AddCategory
 data class Lessons(val categoryId: Int, val categoryName: String)
 
 @Serializable
+data class LessonOptions(val lessonId: Int, val lessonName: String)
+
+@Serializable
 data class AddLesson(val categoryId: Int)
 
 @Serializable
@@ -39,19 +42,16 @@ data class AddFlashCardsManual(val lessonId: Int)
 data class StartLesson(val lessonId: Int)
 
 @Serializable
-@SerialName("generateTest")
-object GenerateTest
+data class GenerateTest(val lessonId: Int)
 
 @Serializable
-data class Quiz(val contentFile: String?, val testId: Int, val testTittle: String?)
+data class Quiz(val lessonId: Int,val contentFile: String?, val testId: Int, val testTittle: String?)
 
 @Serializable
-@SerialName("test")
-object Test
+data class Test(val lessonId: Int)
 
 @Serializable
-@SerialName("summaries")
- object SummariesRoute
+data class SummariesRoute(val lessonId: Int, val lessonTittle: String)
 
 
 @Serializable
@@ -61,6 +61,7 @@ data class GenerateSummaryRoute(
 
 @Serializable
 data class SummaryDetailRoute(
+    val lessonId: Int,
     val summaryId: Int? = null,
     val contentFile:String? = null,
     val summaryTittle:String? = null
