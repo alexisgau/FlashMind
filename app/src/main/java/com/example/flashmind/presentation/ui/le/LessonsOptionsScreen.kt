@@ -1,7 +1,6 @@
 package com.example.flashmind.presentation.ui.le
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -28,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -36,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,7 +44,7 @@ import com.example.flashmind.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LessonOptionsScreen(
-    lessonId:Int,
+    lessonId: Int,
     lessonTitle: String,
     onNavigateBack: () -> Unit,
     onStudyFlashcards: () -> Unit,
@@ -58,7 +57,7 @@ fun LessonOptionsScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        "Opciones de la Lección",
+                        stringResource(id = R.string.lesson_options_title),
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -66,7 +65,7 @@ fun LessonOptionsScreen(
                     IconButton(onClick = onNavigateBack) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver"
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
                 },
@@ -76,7 +75,7 @@ fun LessonOptionsScreen(
             )
         },
 
-    ) { innerPadding ->
+        ) { innerPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -86,7 +85,6 @@ fun LessonOptionsScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
-            // --- Lección Title ---
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
@@ -97,7 +95,7 @@ fun LessonOptionsScreen(
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
                     Text(
-                        text = "Lección:",
+                        text = stringResource(id = R.string.lesson_options_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -113,12 +111,11 @@ fun LessonOptionsScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // --- Opciones ---
             OptionCard(
                 painter = painterResource(R.drawable.play_lesson),
-                title = "Flashcards",
-                description = "Tarjetas interactivas para memorizar conceptos clave.",
-                buttonText = "Estudiar Set",
+                title = stringResource(id = R.string.lesson_options_flashcards_title),
+                description = stringResource(id = R.string.lesson_options_flashcards_desc),
+                buttonText = stringResource(id = R.string.lesson_options_flashcards_button),
                 onButtonClick = onStudyFlashcards
             )
 
@@ -126,9 +123,9 @@ fun LessonOptionsScreen(
 
             OptionCard(
                 painter = painterResource(R.drawable.summary_icon),
-                title = "Resumen",
-                description = "Texto generado por IA con los puntos más importantes.",
-                buttonText = "Ver Resumen",
+                title = stringResource(id = R.string.lesson_options_summary_title),
+                description = stringResource(id = R.string.lesson_options_summary_desc),
+                buttonText = stringResource(id = R.string.lesson_options_summary_button),
                 onButtonClick = onViewSummary
             )
 
@@ -136,9 +133,9 @@ fun LessonOptionsScreen(
 
             OptionCard(
                 painter = painterResource(R.drawable.test_icon),
-                title = "Tests/Quizes",
-                description = "Pon a prueba tus conocimientos con preguntas.",
-                buttonText = "Hacer Test",
+                title = stringResource(id = R.string.lesson_options_quiz_title),
+                description = stringResource(id = R.string.lesson_options_quiz_desc),
+                buttonText = stringResource(id = R.string.lesson_options_quiz_button),
                 onButtonClick = onTakeTest
             )
         }
@@ -164,7 +161,7 @@ private fun OptionCard(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // --- Icon ---
+
             Surface(
                 modifier = Modifier.size(48.dp),
                 shape = CircleShape,
@@ -180,7 +177,6 @@ private fun OptionCard(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // --- Textos ---
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center
@@ -199,15 +195,14 @@ private fun OptionCard(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // --- Botón ---
             Button(
                 onClick = onButtonClick,
                 shape = RoundedCornerShape(8.dp),
                 contentPadding = ButtonDefaults.ContentPadding,
                 modifier = Modifier.height(36.dp)
             ) {
-                // Icono para "Estudiar Set"
-                if (title == "Flashcards") {
+
+                if (title == stringResource(id = R.string.lesson_options_flashcards_title)) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
                         contentDescription = null,

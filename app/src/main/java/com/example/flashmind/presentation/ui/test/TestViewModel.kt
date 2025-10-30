@@ -3,7 +3,6 @@ package com.example.flashmind.presentation.ui.test
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.flashmind.domain.model.TestModel
 import com.example.flashmind.domain.usecase.test.DeleteTestUseCase
 import com.example.flashmind.domain.usecase.test.GetTestsForLessonUseCase
@@ -65,10 +64,9 @@ class TestViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                deleteTestUseCase(testId) // Llama al UseCase
+                deleteTestUseCase(testId)
                 Log.i("TestViewModel", "Test $testId marked for deletion.")
 
-                // Actualización optimista (quita el item de la lista actual)
                 if (currentState is TestsListUiState.Success) {
                     val updatedList = currentState.tests.filterNot { it.testId == testId }
                     _testsState.value = if (updatedList.isNotEmpty()) {

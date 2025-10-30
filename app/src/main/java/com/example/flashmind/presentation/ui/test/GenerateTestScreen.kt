@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -68,8 +69,6 @@ fun GenerateTestScreen(
 
     var testTitle by remember { mutableStateOf("") }
 
-
-    // Initialize PDFBox
     LaunchedEffect(Unit) {
         if (!PDFBoxResourceLoader.isReady()) {
             PDFBoxResourceLoader.init(context)
@@ -77,12 +76,9 @@ fun GenerateTestScreen(
     }
 
     LaunchedEffect(selectedFileUri) {
-
         if (selectedFileUri != null) {
-
             fileName = getFileNameFromUri(context, selectedFileUri!!).orEmpty()
         } else {
-
             fileName = ""
             contentFile = ""
         }
@@ -110,17 +106,19 @@ fun GenerateTestScreen(
         CenterAlignedTopAppBar(
             title = {
                 Text(
-                    "Generar Test",
+                    text = stringResource(id = R.string.quiz_generate_title),
                     fontWeight = FontWeight.Bold,
                     fontSize = 25.sp
                 )
             },
             navigationIcon = {
                 IconButton(onClick = { onNavigateBack() }) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "back")
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = stringResource(id = R.string.back)
+                    )
                 }
             }
-
         )
     }) { paddingValues ->
         Column(
@@ -138,7 +136,6 @@ fun GenerateTestScreen(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                // Botón circular "Cargar Archivo"
                 UploadFileButton(
                     modifier = Modifier.size(130.dp),
                     onClick = {
@@ -154,9 +151,7 @@ fun GenerateTestScreen(
 
                 Spacer(modifier = Modifier.width(24.dp))
 
-                // Columna para texto "PDF" "DOCX"
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    // Caja para PDF
                     Surface(
                         shape = RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.surfaceVariant
@@ -170,7 +165,6 @@ fun GenerateTestScreen(
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
-                    // Caja para DOCX
                     Surface(
                         shape = RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.surfaceVariant
@@ -188,31 +182,30 @@ fun GenerateTestScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Campo de texto para el Título
             OutlinedTextField(
                 value = testTitle,
                 onValueChange = { testTitle = it },
-                label = { Text("Título del test") },
+                label = { Text(stringResource(id = R.string.quiz_generate_input_title_label)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón "Generar Test"
             Button(
-                // Habilitado solo si hay un archivo cargado
                 enabled = fileName.isNotBlank() && testTitle.isNotBlank(),
                 onClick = { navigateToTestScreen(contentFile, testTitle) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
-                Text("Generate test", fontSize = 16.sp)
+                Text(
+                    text = stringResource(id = R.string.quiz_generate_title),
+                    fontSize = 16.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
-
 
             if (fileName.isNotEmpty()) {
                 Surface(
@@ -230,7 +223,7 @@ fun GenerateTestScreen(
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.draft),
-                            contentDescription = "File Icon",
+                            contentDescription = stringResource(id = R.string.content_description_file_icon),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
 
@@ -254,7 +247,7 @@ fun GenerateTestScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Eliminar archivo",
+                                contentDescription = stringResource(id = R.string.content_description_delete_file),
                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
@@ -328,7 +321,6 @@ fun getFileNameFromUri(context: Context, uri: Uri): String? {
     }
 
     if (name == null) {
-        // Si no tiene DISPLAY_NAME, obtenelo desde la ruta
         name = uri.path
         val cut = name?.lastIndexOf('/')
         if (cut != -1 && cut != null) {

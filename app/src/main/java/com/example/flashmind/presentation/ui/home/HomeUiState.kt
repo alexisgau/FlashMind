@@ -13,14 +13,10 @@ sealed interface HomeUiState {
         val lessonCounts: Map<Int, Int>,
         val userData: UserData
     ) : HomeUiState
+
     data class Error(val message: String) : HomeUiState
 }
 
-//sealed interface UserData {
-//    data class Success(val name: String, val imageUrl: String) : UserData
-//    data class Error(val message: String) : UserData
-//    object Init : UserData
-//}
 
 sealed interface AddCategoryState {
     object Loading : AddCategoryState
@@ -28,11 +24,11 @@ sealed interface AddCategoryState {
     data class Error(val message: String) : AddCategoryState
 }
 
-sealed interface LessonsState{
+sealed interface LessonsState {
 
-    object  Loading: LessonsState
-    object IsEmpty: LessonsState
-    data class Success(val lessons: List<Lesson>): LessonsState
+    object Loading : LessonsState
+    object IsEmpty : LessonsState
+    data class Success(val lessons: List<Lesson>) : LessonsState
     data class Error(val message: String) : LessonsState
 
 }

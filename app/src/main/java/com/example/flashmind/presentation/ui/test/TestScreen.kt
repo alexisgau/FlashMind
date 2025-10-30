@@ -1,8 +1,6 @@
 package com.example.flashmind.presentation.ui.test
 
-import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,9 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.Build
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -35,7 +30,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,14 +48,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
-import com.example.flashmind.domain.model.TestModel
+import com.example.flashmind.presentation.utils.toFormattedDateString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TestScreen(
     viewModel: TestViewModel = hiltViewModel(),
     lessonId: Int = 1,
-    onNavigateBack:()-> Unit,
+    onNavigateBack: () -> Unit,
     onClickTest: (Int, String) -> Unit,
     navigateToNewTest: () -> Unit
 ) {
@@ -69,74 +64,78 @@ fun TestScreen(
 
     LaunchedEffect(lessonId) {
         viewModel.loadTestsForLesson(lessonId)
-
     }
 
-        Scaffold(
-            topBar = {
-                CenterAlignedTopAppBar(
-                    title = { Text("My tests") },
-                    navigationIcon = {
-                        IconButton(onClick = onNavigateBack) {
-                            Icon(Icons.Default.ArrowBack, contentDescription = "Volver")
-                        }
-                    }
-                )
-            },
-            floatingActionButton = {
-                FloatingActionButton(onClick = navigateToNewTest) {
-                    Icon(Icons.Filled.Add, contentDescription = "Nuevo Test") // Añade ícono
-                }
-            }
-        ) { innerPadding ->
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentAlignment = Alignment.Center
-            ) {
-
-                when (val state = uiState) {
-                    is TestsListUiState.Loading -> {
-                        CircularProgressIndicator()
-                    }
-
-                    is TestsListUiState.Error -> {
-                        Text(
-                            "Error: ${state.error}",
-                            color = MaterialTheme.colorScheme.error
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(stringResource(id = R.string.tests_list_title)) },
+                navigationIcon = {
+                    IconButton(onClick = onNavigateBack) {
+                        Icon(
+                            Icons.Default.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
                         )
                     }
+                }
+            )
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = navigateToNewTest) {
+                Icon(
+                    Icons.Filled.Add,
+                    contentDescription = stringResource(id = R.string.tests_list_add_button)
+                )
+            }
+        }
+    ) { innerPadding ->
 
-                    is TestsListUiState.Empty -> {
-                        EmptyTestList()
-                    }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
 
-                    is TestsListUiState.Success -> {
-                        // Muestra la lista solo en caso de éxito
-                        LazyColumn(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 16.dp),
-                            contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            items(items = state.tests, key = { it.testId }) { test ->
+            when (val state = uiState) {
+                is TestsListUiState.Loading -> {
+                    CircularProgressIndicator()
+                }
 
-                                TestItem(
-                                    testId = test.testId,
-                                    title = test.title,
-                                    createdAt = "10/10/2023",
-                                    onStartClick = { onClickTest(it, test.title) },
-                                    onDeleteClick = { viewModel.deleteTest(test.testId) }
-                                )
-                            }
+                is TestsListUiState.Error -> {
+                    Text(
+                        text = "${stringResource(id = R.string.error_prefix)} ${state.error}",
+                        color = MaterialTheme.colorScheme.error
+                    )
+                }
+
+                is TestsListUiState.Empty -> {
+                    EmptyTestList()
+                }
+
+                is TestsListUiState.Success -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 16.dp),
+                        contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(items = state.tests, key = { it.testId }) { test ->
+
+                            TestItem(
+                                testId = test.testId,
+                                title = test.title,
+                                createdAt = test.creationDate.toFormattedDateString(),
+                                onStartClick = { onClickTest(test.testId, test.title) },
+                                onDeleteClick = { viewModel.deleteTest(test.testId) }
+                            )
                         }
                     }
                 }
             }
         }
+    }
 
 }
 
@@ -189,7 +188,7 @@ fun TestItem(
                 IconButton(onClick = onDeleteClick) {
                     Icon(
                         imageVector = Icons.Default.Delete,
-                        contentDescription = "Eliminar",
+                        contentDescription = stringResource(id = R.string.delete),
                         tint = MaterialTheme.colorScheme.error
                     )
                 }
@@ -229,8 +228,8 @@ fun StartButton(
 
                 Icon(
 
-                 painter = painterResource(R.drawable.play_icon),
-                    contentDescription = "Empezar",
+                    painter = painterResource(R.drawable.play_icon),
+                    contentDescription = stringResource(id = R.string.start),
                     modifier = Modifier.size(18.dp),
                     tint = colorIconoBlanco
                 )
@@ -238,9 +237,8 @@ fun StartButton(
 
             Spacer(modifier = Modifier.width(10.dp))
 
-
             Text(
-                text = "Empezar",
+                text = stringResource(id = R.string.start),
                 style = MaterialTheme.typography.bodyLarge,
                 color = colorTextoGris,
                 fontWeight = FontWeight.Medium
@@ -253,8 +251,8 @@ fun StartButton(
 @Composable
 fun EmptyTestList(
     modifier: Modifier = Modifier,
-    tittle: String = "¡Aún no tienes tests!",
-    subtitle: String = "Crea un nuevo test para empezar a practicar"
+    tittle: String = stringResource(id = R.string.tests_list_empty_title),
+    subtitle: String = stringResource(id = R.string.tests_list_empty_description)
 ) {
     Column(
         modifier = modifier
@@ -265,7 +263,7 @@ fun EmptyTestList(
     ) {
         Icon(
             painter = painterResource(R.drawable.folder_icon),
-            contentDescription = "No hay tests",
+            contentDescription = stringResource(id = R.string.tests_list_empty_title),
             modifier = Modifier.size(120.dp),
             tint = MaterialTheme.colorScheme.primary
         )

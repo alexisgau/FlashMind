@@ -40,10 +40,19 @@ class LessonRepositoryImpl @Inject constructor(
         scheduleSync()
     }
 
+    override suspend fun updateLesson(lesson: Lesson) {
+        val entity = lesson.toEntity().copy(
+            userId = userId,
+            isSynced = false,
+            isDeleted = false
+        )
+        dao.updateLesson(entity)
+        scheduleSync()
+    }
+
     override suspend fun deleteLesson(lesson: Lesson) {
         dao.markLessonForDeletion(lesson.id)
         scheduleSync()
-//        return dao.deleteLesson(lesson.toEntity())
     }
 
     private fun scheduleSync() {

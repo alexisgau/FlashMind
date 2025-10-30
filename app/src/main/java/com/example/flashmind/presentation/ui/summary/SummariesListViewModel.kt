@@ -36,9 +36,7 @@ class SummariesListViewModel @Inject constructor(
 
     private var currentLessonId: Int? = null
 
-    // Loads summaries for a given lesson
     fun loadSummaries(lessonId: Int) {
-        // Avoid reloading if already loading or showing data for the same lesson
         if (currentLessonId == lessonId && _uiState.value !is SummariesListUiState.Error) {
             Log.d("SummariesListViewModel", "Skipping load for lesson $lessonId, already loaded or loading.")
             return
@@ -74,7 +72,7 @@ class SummariesListViewModel @Inject constructor(
                 deleteSummaryUseCase(summaryId)
                 Log.i("SummariesListViewModel", "Summary $summaryId marked for deletion.")
 
-                // Option 1: Optimistically remove from current state (faster UI)
+
                 if (currentState is SummariesListUiState.Success) {
                     val updatedList = currentState.summaries.filterNot { it.summaryId == summaryId }
                     _uiState.value = if (updatedList.isNotEmpty()) {

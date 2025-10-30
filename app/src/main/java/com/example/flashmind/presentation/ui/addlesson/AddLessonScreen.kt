@@ -22,13 +22,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.flashmind.R
 import com.example.flashmind.domain.model.Lesson
-import com.example.flashmind.presentation.ui.home.HomeViewModel
 
 @Composable
 fun AddLessonScreen(
@@ -40,7 +41,6 @@ fun AddLessonScreen(
 
     Log.i("AddLessonScreen", "id : $categoryId")
 
-
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -49,26 +49,23 @@ fun AddLessonScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
-
         Text(
             text = "📚",
             fontSize = 64.sp,
             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
         )
 
-
         Text(
-            text = "Create new lesson",
+            text = stringResource(id = R.string.add_lesson_title),
             style = MaterialTheme.typography.titleLarge,
-            color =  MaterialTheme.colorScheme.inverseSurface,
+            color = MaterialTheme.colorScheme.inverseSurface,
             fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-
         Text(
-            text = "Enter the name of your new lesson to begin.",
+            text = stringResource(id = R.string.add_lesson_subtitle),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -80,8 +77,8 @@ fun AddLessonScreen(
         OutlinedTextField(
             value = title,
             onValueChange = { title = it },
-            label = { Text("Lesson name") },
-            placeholder = { Text("Enter the name...") },
+            label = { Text(stringResource(id = R.string.add_lesson_name_label)) },
+            placeholder = { Text(stringResource(id = R.string.add_lesson_name_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -98,7 +95,7 @@ fun AddLessonScreen(
                 onClick = navigateToHome,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Back")
+                Text(stringResource(id = R.string.back))
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -113,7 +110,7 @@ fun AddLessonScreen(
                 modifier = Modifier.weight(1f),
                 enabled = title.isNotBlank()
             ) {
-                Text("Add")
+                Text(stringResource(id = R.string.add))
             }
         }
     }

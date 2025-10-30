@@ -14,7 +14,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddCategoryViewModel @Inject constructor(private val insertCategoryUseCase: InsertCategoryUseCase,): ViewModel() {
+class AddCategoryViewModel @Inject constructor(private val insertCategoryUseCase: InsertCategoryUseCase) :
+    ViewModel() {
 
     private val _addCategoryState = MutableStateFlow<AddCategoryState>(AddCategoryState.Loading)
     val addCategoryState: StateFlow<AddCategoryState> = _addCategoryState.asStateFlow()

@@ -2,6 +2,8 @@ package com.example.flashmind.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.work.WorkManager
 import com.example.flashmind.data.local.AppDatabase
 import com.example.flashmind.data.local.dao.CategoryDao
@@ -32,7 +34,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
 
-
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE tests ADD COLUMN creationDate INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE summaries ADD COLUMN creationDate INTEGER NOT NULL DEFAULT 0")
+        }
+    }
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
@@ -41,7 +48,7 @@ object DatabaseModule {
             AppDatabase::class.java,
             "flash_mind"
         )
-            .fallbackToDestructiveMigration()
+            .addMigrations(MIGRATION_3_4)
             .build()
     }
 

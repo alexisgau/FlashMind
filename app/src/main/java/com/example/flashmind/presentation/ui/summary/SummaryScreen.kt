@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,8 +12,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -37,19 +34,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.SummaryModel
 import com.example.flashmind.presentation.ui.test.ErrorQuizGenerator
 import com.example.flashmind.presentation.ui.test.QuizLoadingScreen
-import com.example.flashmind.presentation.ui.test.QuizUiState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -75,17 +68,20 @@ fun SummaryViewScreen(
     LaunchedEffect(key1 = contentFile, key2 = lessonId) {
         when {
             contentFile != null && lessonId != null -> {
-                viewModel.generateAndSaveSummary(contentFile, lessonId, summaryTittle ?: "Summary generated")
+                viewModel.generateAndSaveSummary(
+                    contentFile,
+                    lessonId,
+                    summaryTittle ?: "Summary generated"
+                )
             }
 
             else -> {
                 Log.e("TestScreen", "Invalid navigation arguments")
-                // viewModel.setErrorState("Invalid arguments")
-//                viewModel.loadSummaryById(3)
                 viewModel.loadSummaryById(summaryId ?: 3)
             }
         }
     }
+
 // Efecto para observar eventos de descarga
     LaunchedEffect(Unit) {
         viewModel.downloadEvents.collectLatest { event ->
@@ -95,9 +91,13 @@ fun SummaryViewScreen(
                         snackbarHostState.showSnackbar(event.message)
                     }
                 }
+
                 is DownloadEvent.Error -> {
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar("Error: ${event.error}", duration = SnackbarDuration.Long)
+                        snackbarHostState.showSnackbar(
+                            "Error: ${event.error}",
+                            duration = SnackbarDuration.Long
+                        )
                     }
                 }
             }
@@ -110,7 +110,9 @@ fun SummaryViewScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    val title = (generationState as? SummaryGenerationState.Success)?.newSummary?.title ?: summaryTittle ?: "Resumen"
+                    val title =
+                        (generationState as? SummaryGenerationState.Success)?.newSummary?.title
+                            ?: summaryTittle ?: "Resumen"
                     Text(
                         title,
                         maxLines = 1,
@@ -131,7 +133,8 @@ fun SummaryViewScreen(
                 },
                 actions = {
                     if (generationState is SummaryGenerationState.Success) {
-                        val currentSummary = (generationState as SummaryGenerationState.Success).newSummary
+                        val currentSummary =
+                            (generationState as SummaryGenerationState.Success).newSummary
                         IconButton(onClick = {
                             viewModel.saveSummaryAsPdf(context, currentSummary)
                         }) {
@@ -146,7 +149,7 @@ fun SummaryViewScreen(
             )
         },
 
-    ) { innerPadding ->
+        ) { innerPadding ->
         Column(
             Modifier
                 .fillMaxSize()
@@ -165,6 +168,7 @@ fun SummaryViewScreen(
                     )
 
                 }
+
                 SummaryGenerationState.Loading -> {
 
                     QuizLoadingScreen(generateName = "summary", generatingName = "summary")

@@ -36,7 +36,8 @@ class SummaryRepositoryImpl @Inject constructor(
     override suspend fun createSummary(originalText: String, summaryToSave: SummaryModel): Long {
         val summaryEntity = summaryToSave.toEntity(userId = userId).copy(
             summaryId = 0,
-            originalText = originalText
+            originalText = originalText,
+            creationDate = System.currentTimeMillis()
         )
         val newId = dao.insertSummary(summaryEntity)
         scheduleSync()

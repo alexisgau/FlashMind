@@ -22,7 +22,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -36,6 +35,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -43,8 +43,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.flashmind.domain.model.AuthResponse
-import com.example.flashmind.presentation.ui.login.LoginUiState
+import com.example.flashmind.R
 
 @Composable
 fun RegisterScreen(
@@ -61,7 +60,7 @@ fun RegisterScreen(
     val passwordFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(uiState) {
-        when (val state = uiState) {
+        when (uiState) {
             is RegisterUiState.Success -> onRegisterSuccess()
             else -> Unit
         }
@@ -84,7 +83,7 @@ fun RegisterScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Create account",
+                    text = stringResource(id = R.string.auth_sign_up),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
@@ -94,7 +93,7 @@ fun RegisterScreen(
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email") },
+                    label = { Text(stringResource(id = R.string.auth_email_label)) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     keyboardOptions = KeyboardOptions.Default.copy(
@@ -110,7 +109,7 @@ fun RegisterScreen(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password") },
+                    label = { Text(stringResource(id = R.string.auth_password_label)) },
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     visualTransformation = PasswordVisualTransformation(),
@@ -137,7 +136,10 @@ fun RegisterScreen(
                         .height(50.dp),
                     shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Sign up", color = Color.White)
+                    Text(
+                        text = stringResource(id = R.string.auth_sign_up),
+                        color = Color.White
+                    )
                 }
 
                 if (uiState is RegisterUiState.Error) {
@@ -152,10 +154,13 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Row {
-                    Text("¿Already have an account?", color = Color.Gray)
+                    Text(
+                        text = stringResource(id = R.string.auth_already_have_account_prompt),
+                        color = Color.Gray
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        "Sign in",
+                        text = stringResource(id = R.string.auth_sign_in),
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.clickable { navigateBackToLogin() }

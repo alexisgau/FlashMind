@@ -36,6 +36,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -96,13 +97,13 @@ fun LoginScreen(
                 )
 
                 Text(
-                    text = "Welcome to Flashmind!",
+                    text = stringResource(id = R.string.auth_welcome_title),
                     style = MaterialTheme.typography.headlineMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
 
                 Text(
-                    "Sign in to continue with your flashcards.",
+                    text = stringResource(id = R.string.auth_sign_in_prompt),
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray,
                     modifier = Modifier.padding(vertical = 8.dp)
@@ -114,8 +115,8 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = email,
                     onValueChange = { email = it },
-                    label = { Text("Email") },
-                    placeholder = { Text("your@email.com") },
+                    label = { Text(stringResource(id = R.string.auth_email_label)) },
+                    placeholder = { Text(stringResource(id = R.string.auth_email_placeholder)) },
                     singleLine = true,
                     shape = RoundedCornerShape(8.dp),
                     modifier = Modifier.fillMaxWidth()
@@ -127,7 +128,7 @@ fun LoginScreen(
                 OutlinedTextField(
                     value = password,
                     onValueChange = { password = it },
-                    label = { Text("Password") },
+                    label = { Text(stringResource(id = R.string.auth_password_label)) },
                     visualTransformation = PasswordVisualTransformation(),
                     singleLine = true,
                     shape = RoundedCornerShape(8.dp),
@@ -145,7 +146,10 @@ fun LoginScreen(
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF475CD5))
                 ) {
-                    Text("Sign in", color = Color.White)
+                    Text(
+                        text = stringResource(id = R.string.auth_sign_in),
+                        color = Color.White
+                    )
                 }
 
                 Spacer(Modifier.height(24.dp))
@@ -161,7 +165,7 @@ fun LoginScreen(
                         color = Color.LightGray
                     )
                     Text(
-                        "  or continue with  ",
+                        text = stringResource(id = R.string.auth_or_continue_with),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.inverseSurface
                     )
@@ -174,7 +178,7 @@ fun LoginScreen(
 
                 Spacer(Modifier.height(16.dp))
 
-                // Botón Google
+
                 OutlinedButton(
                     onClick = { viewModel.signInWithGoogle() },
                     modifier = Modifier
@@ -191,17 +195,20 @@ fun LoginScreen(
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text("Google")
+                    Text(stringResource(id = R.string.auth_google))
                 }
 
                 Spacer(Modifier.height(32.dp))
 
 
                 Row {
-                    Text("¿Don´t have an account?", color = Color.Gray)
+                    Text(
+                        text = stringResource(id = R.string.auth_no_account_prompt),
+                        color = Color.Gray
+                    )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        "Create account",
+                        text = stringResource(id = R.string.auth_sign_up),
                         color = MaterialTheme.colorScheme.primary,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.clickable { navigateToRegister() }

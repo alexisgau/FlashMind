@@ -7,7 +7,8 @@ data class SummaryModel(
     val summaryId: Int,
     val lessonId: Int,
     val generatedSummary: String,
-    val title: String
+    val title: String,
+    val creationDate: Long
 )
 
 fun SummaryEntity.toDomain(): SummaryModel {
@@ -15,7 +16,8 @@ fun SummaryEntity.toDomain(): SummaryModel {
         summaryId = this.summaryId,
         lessonId = this.lessonId,
         generatedSummary = this.generatedSummary,
-        title = this.title
+        title = this.title,
+        creationDate = this.creationDate
     )
 }
 
@@ -26,6 +28,7 @@ fun SummaryModel.toEntity(userId: String): SummaryEntity {
         lessonId = this.lessonId,
         generatedSummary = this.generatedSummary,
         title = this.title,
+        creationDate = this.creationDate,
         userId = userId,
         isSynced = false,
         isDeleted = false,

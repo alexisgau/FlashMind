@@ -4,6 +4,9 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import java.security.MessageDigest
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 fun getSignatureSha1(context: Context): String? {
     try {
@@ -38,3 +41,34 @@ fun getSignatureSha1(context: Context): String? {
         return null
     }
 }
+
+fun Long.toFormattedDateString(): String {
+    val date = Date(this)
+
+
+    val pattern = "MM/dd/yyyy"
+
+
+    val sdf = SimpleDateFormat(pattern, Locale.US)
+
+    // 4. Formatea y devuelve el string
+    return sdf.format(date)
+}
+
+fun cleanMarkdownForPreview(text: String): String {
+    return text.lines() // Divide el texto en líneas
+        .map { line ->
+            // Elimina prefijos comunes de Markdown y espacios
+            line.trim()
+                .removePrefix("## ")
+                .removePrefix("### ")
+                .removePrefix("* ")
+                .removePrefix("- ")
+                .replace("**", "") // Quita negritas
+        }
+        .filter { it.isNotEmpty() } // Elimina líneas que quedaron vacías
+        .take(3) // Toma solo las primeras 3 líneas para la vista previa
+        .joinToString(" ") // Une las líneas con un espacio
+        .trim() // Limpia espacios al inicio/final
+}
+

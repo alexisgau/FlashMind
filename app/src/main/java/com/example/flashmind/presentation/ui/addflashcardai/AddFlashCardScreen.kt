@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.VisualTransformation
@@ -60,6 +61,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
 import com.example.flashmind.presentation.ui.flashcard.FlashCardAiState
 import com.example.flashmind.presentation.ui.flashcard.FlashCardItemDeletable
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,10 +76,13 @@ fun AddFlashCardScreenAi(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = {  },
+                title = { },
                 navigationIcon = {
                     IconButton(onClick = { navigateToFlashCards(lessonId) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
+                        )
                     }
                 }
             )
@@ -92,15 +97,14 @@ fun AddFlashCardScreenAi(
         ) {
 
 
-
             Image(
                 painter = painterResource(id = R.drawable.mastanrobot),
-                contentDescription = "Robot generador de flashcards",
+                contentDescription = stringResource(id = R.string.flashcards_ai_title),
                 modifier = Modifier.size(120.dp)
             )
 
             Text(
-                "Generate Flashcards with AI",
+                text = stringResource(id = R.string.flashcards_ai_subtitle),
                 fontSize = 22.sp,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
@@ -113,8 +117,8 @@ fun AddFlashCardScreenAi(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(180.dp),
-                label = "Input text",
-                placeholder = "Paste the content you want to generate flashcards from here"
+                label = stringResource(id = R.string.flashcards_ai_input_label),
+                placeholder = stringResource(id = R.string.flashcards_ai_input_placeholder)
             )
 
 
@@ -127,23 +131,28 @@ fun AddFlashCardScreenAi(
             ) {
                 when (val currentState = state) {
                     is FlashCardAiState.Error -> {
-                        Text("Error: ${currentState.error}", color = MaterialTheme.colorScheme.error)
+                        Text(
+                            text = "${stringResource(id = R.string.error_prefix)} ${currentState.error}",
+                            color = MaterialTheme.colorScheme.error
+                        )
                     }
+
                     FlashCardAiState.Loading -> {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             CircularProgressIndicator()
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                "Thinking of something great...🧠",
+                                text = stringResource(id = R.string.flashcards_ai_thinking),
                                 color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
+
                     is FlashCardAiState.Success -> {
-                        val flashcards = viewModel.generatedFlashcards
+                        val flashcardsList = currentState.list
 
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            items(flashcards.value, key = { it.question }) { flashcard ->
+                            items(flashcardsList, key = { it.question }) { flashcard ->
                                 FlashCardItemDeletable(
                                     question = flashcard.question,
                                     answer = flashcard.answer,
@@ -154,12 +163,17 @@ fun AddFlashCardScreenAi(
                         }
 
                     }
+
                     FlashCardAiState.Saved -> {
-                        Text("¡Saved Flashcards!", color = Color.Green.copy(alpha = 0.8f))
+                        Text(
+                            text = stringResource(id = R.string.flashcards_ai_saved_success),
+                            color = Color.Green.copy(alpha = 0.8f)
+                        )
                         LaunchedEffect(Unit) {
                             navigateToFlashCards(lessonId)
                         }
                     }
+
                     FlashCardAiState.Init -> {
                     }
                 }
@@ -177,14 +191,14 @@ fun AddFlashCardScreenAi(
                     modifier = Modifier.weight(1f),
                     enabled = state !is FlashCardAiState.Loading
                 ) {
-                    Text("GENERATE")
+                    Text(stringResource(id = R.string.generate))
                 }
                 Button(
                     onClick = { viewModel.saveGeneratedFlashcards() },
                     modifier = Modifier.weight(1f),
                     enabled = state is FlashCardAiState.Success
                 ) {
-                    Text("SAVE ALL")
+                    Text(stringResource(id = R.string.flashcards_ai_save_all_button))
                 }
             }
         }
@@ -204,11 +218,11 @@ fun AddFlashCardForm(
     var expanded by remember { mutableStateOf(false) }
 
     val colors = listOf(
-        "#FF5733", // Naranja
-        "#33FF57", // Verde
-        "#3357FF", // Azul
-        "#FF33A1", // Rosa
-        "#F3F3F3"  // Gris claro
+        "#FF5733",
+        "#33FF57",
+        "#3357FF",
+        "#FF33A1",
+        "#F3F3F3"
     )
 
     Column(
@@ -218,8 +232,8 @@ fun AddFlashCardForm(
         OutlinedTextField(
             value = question,
             onValueChange = onQuestionChange,
-            label = { Text("Question") },
-            placeholder = { Text("Enter your question") },
+            label = { Text(stringResource(id = R.string.flashcards_question_label)) },
+            placeholder = { Text(stringResource(id = R.string.flashcards_add_manual_question_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -229,14 +243,18 @@ fun AddFlashCardForm(
         OutlinedTextField(
             value = answer,
             onValueChange = onAnswerChange,
-            label = { Text("Answer") },
-            placeholder = { Text("Enter your answer") },
+            label = { Text(stringResource(id = R.string.flashcards_answer_label)) },
+            placeholder = { Text(stringResource(id = R.string.flashcards_add_manual_answer_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         )
 
-        Text("Pick a Color", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.inverseSurface)
+        Text(
+            text = stringResource(id = R.string.flashcards_add_manual_select_color),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.inverseSurface
+        )
 
         Box(modifier = Modifier.padding(vertical = 8.dp)) {
             OutlinedButton(
@@ -308,14 +326,14 @@ fun AddFlashCardFab(
                 onDismissRequest = { expanded = false }
             ) {
                 DropdownMenuItem(
-                    text = { Text("Create manually") },
+                    text = { Text(stringResource(id = R.string.flashcards_create_manual_tab)) },
                     onClick = {
                         expanded = false
                         onManualClick()
                     }
                 )
                 DropdownMenuItem(
-                    text = { Text("Create with AI") },
+                    text = { Text(stringResource(id = R.string.flashcards_create_ai_tab)) },
                     onClick = {
                         expanded = false
                         onAiClick()
@@ -327,7 +345,10 @@ fun AddFlashCardFab(
                 onClick = { expanded = !expanded },
 
                 ) {
-                Icon(Icons.Default.Add, contentDescription = "ADD")
+                Icon(
+                    Icons.Default.Add,
+                    contentDescription = stringResource(id = R.string.add)
+                )
             }
         }
     }
@@ -349,7 +370,7 @@ fun ScrollableOutlinedTextField(
         value = text,
         onValueChange = onTextChange,
         modifier = modifier
-            .verticalScroll(scrollState), // Aplicar verticalScroll aquí
+            .verticalScroll(scrollState),
         label = { Text(label) },
         placeholder = { Text(placeholder) },
         textStyle = LocalTextStyle.current.copy(lineHeight = 20.sp),

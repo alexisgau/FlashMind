@@ -23,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.flashmind.R
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.presentation.ui.home.AddCategoryState
 
@@ -67,18 +69,16 @@ fun AddCategoryScreen(
                 modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
             )
 
-
             Text(
-                text = "Create new category",
+                text = stringResource(id = R.string.add_category_title),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-
             Text(
-                text = "Organize your lessons by grouping them by category",
+                text = stringResource(id = R.string.add_category_subtitle),
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,
@@ -92,8 +92,7 @@ fun AddCategoryScreen(
                 onNameChange = { name = it },
                 description = description,
                 onDescriptionChange = { description = it },
-
-                )
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
@@ -105,7 +104,7 @@ fun AddCategoryScreen(
                     onClick = navigateToHome,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Back")
+                    Text(stringResource(id = R.string.back))
                 }
 
                 Spacer(modifier = Modifier.width(16.dp))
@@ -119,7 +118,7 @@ fun AddCategoryScreen(
                     modifier = Modifier.weight(1f),
                     enabled = name.isNotBlank()
                 ) {
-                    Text("Add")
+                    Text(stringResource(id = R.string.add))
                 }
             }
         }
@@ -132,18 +131,15 @@ fun AddCategoryForm(
     onNameChange: (String) -> Unit,
     description: String,
     onDescriptionChange: (String) -> Unit,
-
-    ) {
-
-
+) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
             value = name,
             onValueChange = onNameChange,
-            label = { Text("Category name") },
-            placeholder = { Text("Enter the name...") },
+            label = { Text(stringResource(id = R.string.add_category_name_label)) },
+            placeholder = { Text(stringResource(id = R.string.add_category_name_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
@@ -153,18 +149,15 @@ fun AddCategoryForm(
         OutlinedTextField(
             value = description,
             onValueChange = onDescriptionChange,
-            label = { Text("Description") },
-            placeholder = { Text("Describe this category...") },
+            label = { Text(stringResource(id = R.string.add_category_description_label)) },
+            placeholder = { Text(stringResource(id = R.string.add_category_description_placeholder)) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
             maxLines = 3
         )
-
-
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -179,6 +172,5 @@ fun AddCategoryPreview() {
         onDescriptionChange = { description = it }
     )
 }
-
 
 

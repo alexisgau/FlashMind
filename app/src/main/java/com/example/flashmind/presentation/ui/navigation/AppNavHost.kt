@@ -8,19 +8,27 @@ import androidx.navigation.compose.rememberNavController
 @Composable
 fun AppNavHost(
     isAuthenticated: Boolean,
+    isOnboardingCompleted: Boolean,
+    setOnboardingCompleted: () -> Unit,
     navController: NavHostController = rememberNavController()
 ) {
-
-    val startDestination = if (isAuthenticated) Graph.MAIN else Graph.AUTH
+    val startDestination = when {
+        !isAuthenticated -> Graph.AUTH
+        !isOnboardingCompleted -> Graph.MAIN
+        else -> Graph.MAIN
+    }
 
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-
         authGraph(navController)
 
-        mainGraph(navController)
+        mainGraph(
+            navController = navController,
+            isOnboardingCompleted = isOnboardingCompleted,
+            setOnboardingCompleted = setOnboardingCompleted
+        )
     }
 }
 

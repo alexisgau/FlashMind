@@ -1,4 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FlashMind</string>
     <string name="web_client_id">28956986741-r4gu1hijq3kfjevbm34795pjlb3lr8mm.apps.googleusercontent.com</string>
+
+    <string name="back">Back</string>
+    <string name="add">Add</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="close">Close</string>
+    <string name="start">Start</string>
+    <string name="next">Next</string>
+    <string name="loading">Loading...</string>
+    <string name="error_prefix">Error:</string>
+    <string name="error_unknown">An unknown error occurred</string>
+    <string name="error_try_again">Try Again</string>
+    <string name="go_back">Go Back</string>
+    <string name="content_description_file_icon">File icon</string>
+    <string name="content_description_delete_file">Delete file</string>
+    <string name="generate">Generate</string>
+
+
+    <string name="auth_error_null_user"> User is null. Please try again.</string>
+    <string name="auth_error_weak_password">Password is too weak (minimum 6 characters).</string>
+    <string name="auth_error_invalid_email">The email format is invalid.</string>
+    <string name="auth_error_user_collision">The email is already in use by another account.</string>
+    <string name="auth_error_no_internet">No internet connection. Please check your network.</string>
+    <string name="auth_error_unknown_register">An unknown error occurred during registration.</string>
+    <string name="auth_error_user_not_found">This user does not exist.</string>
+    <string name="auth_error_invalid_credentials">Incorrect email or password.</string>
+    <string name="auth_error_unknown_login">An unknown error occurred while signing in.</string>
+    <string name="auth_error_user_disabled">This user account has been disabled.</string>
+    <string name="auth_error_too_many_requests">Too many requests. Please try again later.</string>
+
+    <string name="onboarding_welcome_title">Welcome to FlashMind! 🚀</string>
+    <string name="onboarding_welcome_description">Transform your notes, PDFs, or any text into flashcards, tests, and summaries to study smarter.</string>
+    <string name="onboarding_welcome_image_cd">Mascot waving</string>
+    <string name="onboarding_generation_title">Automatic Generation ✨</string>
+    <string name="onboarding_generation_description">Paste text or upload files. Our AI will create flashcards, multiple-choice tests, and optimized summaries.</string>
+    <string name="onboarding_generation_image_cd">AI Generation</string>
+    <string name="onboarding_organization_title">All Organized 📚</string>
+    <string name="onboarding_organization_description">Structure your material by creating Categories (e.g., History) and Lessons (e.g., Unit 1) to find everything easily.</string>
+    <string name="onboarding_organization_image_cd">Organization</string>
+    <string name="onboarding_ready_title">All Set! ✅</string>
+    <string name="onboarding_ready_description">Start creating your first category and discover a more efficient way to learn.</string>
+    <string name="onboarding_ready_image_cd">Ready</string>
+    <string name="onboarding_start_button">Get Started!</string>
+    <string name="onboarding_skip">Skip</string>
+
+    <string name="auth_welcome_title">Welcome to Flashmind!</string>
+    <string name="auth_sign_in_prompt">Sign in to continue with your flashcards.</string>
+    <string name="auth_email_label">Email</string>
+    <string name="auth_email_placeholder">you@email.com</string>
+    <string name="auth_password_label">Password</string>
+    <string name="auth_sign_in">Sign In</string>
+    <string name="auth_sign_up">Create account</string>
+    <string name="auth_or_continue_with"> or continue with </string>
+    <string name="auth_google">Google</string>
+    <string name="auth_no_account_prompt">Don\'t have an account?</string>
+    <string name="auth_already_have_account_prompt">Already have an account?</string>
+    <string name="auth_error_login">Error signing in</string>
+    <string name="auth_error_google">Error with Google.</string>
+    <string name="auth_logout_error">Error signing out.</string>
+
+    <string name="home_greeting">Hello, %1$s!</string>
+    <string name="home_greeting_default">Hello user!</string>
+    <string name="home_main_card_title">Studying has never\nbeen easier with\nFlashMind</string>
+    <string name="home_main_card_image_cd">Mascot illustration</string>
+    <string name="home_my_categories_title">MY CATEGORIES</string>
+    <string name="home_add_category_cd">Add new category</string>
+    <string name="home_no_lessons_in_category">There are no lessons in this category.</string>
+    <string name="home_add_lesson_button">Add Lesson</string>
+    <string name="home_empty_categories_title">You don\'t have any categories yet!</string>
+    <string name="home_empty_categories_description">Create your first set to organize your studies.</string>
+    <string name="home_category_item_lessons_count">%1$d Lessons</string>
+    <string name="home_category_item_cd">Category</string>
+    <string name="home_category_delete_cd">Delete Category</string>
+    <string name="home_category_collapse_cd">Collapse</string>
+    <string name="home_category_expand_cd">Expand</string>
+    <string name="home_lesson_item_cd">Lesson</string>
+    <string name="home_lesson_item_prompt">Tap to see content</string>
+    <string name="home_lesson_edit_cd">Edit Lesson</string>
+    <string name="home_lesson_delete_cd">Delete Lesson</string>
+
+    <string name="dialog_delete_category_title">Delete Category</string>
+    <string name="dialog_delete_category_message">Are you sure you want to delete "%1$s"? All its lessons will also be deleted.</string>
+    <string name="dialog_delete_lesson_title">Delete Lesson</string>
+    <string name="dialog_delete_lesson_message">Are you sure you want to delete the lesson "%1$s"?</string>
+    <string name="dialog_edit_lesson_title">Edit Lesson</string>
+    <string name="dialog_lesson_name_label">Lesson name</string>
+
+    <string name="add_category_title">Create new category</string>
+    <string name="add_category_subtitle">Organize your lessons by grouping them by category</string>
+    <string name="add_category_name_label">Category name</string>
+    <string name="add_category_name_placeholder">Enter the name...</string>
+    <string name="add_category_description_label">Description</string>
+    <string name="add_category_description_placeholder">Describe this category...</string>
+    <string name="add_lesson_title">Create new lesson</string>
+    <string name="add_lesson_subtitle">Enter the name of your new lesson to begin.</string>
+    <string name="add_lesson_name_label">Lesson name</string>
+    <string name="add_lesson_name_placeholder">Enter the name...</string>
+
+    <string name="lesson_options_title">Lesson Options</string>
+    <string name="lesson_options_subtitle">Lesson:</string>
+    <string name="lesson_options_flashcards_title">Flashcards</string>
+    <string name="lesson_options_flashcards_desc">Interactive cards to memorize key concepts.</string>
+    <string name="lesson_options_flashcards_button">Study Set</string>
+    <string name="lesson_options_summary_title">Summary</string>
+    <string name="lesson_options_summary_desc">AI-generated text with the most important points.</string>
+    <string name="lesson_options_summary_button">View Summary</string>
+    <string name="lesson_options_quiz_title">Tests/Quizzes</string>
+    <string name="lesson_options_quiz_desc">Test your knowledge with questions.</string>
+    <string name="lesson_options_quiz_button">Take Test</string>
+
+    <string name="flashcards_title">Flashcards: %1$s</string>
+    <string name="flashcards_counter">%1$d Cards</string>
+    <string name="flashcards_delete_dialog_title">Delete Card</string>
+    <string name="flashcards_question_label">Question:</string>
+    <string name="flashcards_answer_label">Answer:</string>
+    <string name="flashcards_category_image_cd">Image for category %1$s</string>
+    <string name="flashcards_edit_card_cd">Edit card</string>
+    <string name="flashcards_delete_card_cd">Delete card</string>
+    <string name="flashcards_empty_title">You don\'t have any flashcards yet!</string>
+    <string name="flashcards_empty_description">Create your first set of cards to start studying.</string>
+    <string name="flashcards_add_manual_title">Create new Flashcard</string>
+    <string name="flashcards_add_manual_question_placeholder">Enter your question here</string>
+    <string name="flashcards_add_manual_answer_placeholder">Enter your answer here</string>
+    <string name="flashcards_add_manual_select_color">Select a color</string>
+    <string name="flashcards_add_manual_error_empty_fields">Please fill in the question and answer.</string>
+
+    <string name="flashcards_ai_title">Flashcard Generator Bot</string>
+    <string name="flashcards_ai_subtitle">Generate Flashcards with AI</string>
+    <string name="flashcards_ai_input_label">Input text</string>
+    <string name="flashcards_ai_input_placeholder">Paste the content you want to generate flashcards from here</string>
+    <string name="flashcards_ai_thinking">Thinking of something great...🧠</string>
+    <string name="flashcards_ai_saved_success">Flashcards saved!</string>
+    <string name="flashcards_ai_save_all_button">SAVE ALL</string>
+    <string name="flashcards_create_manual_tab">Create manually</string>
+    <string name="flashcards_create_ai_tab">Create with AI</string>
+
+    <string name="edit_flashcard_title">Edit Flashcard</string>
+    <string name="edit_flashcard_error_loading">Error loading card</string>
+    <string name="edit_flashcard_pick_color">Pick a color</string>
+    <string name="edit_flashcard_save_changes">SAVE CHANGES</string>
+    <string name="edit_flashcard_selected_color_cd">Selected color</string>
+
+    <string name="study_session_completed_title">Completed!</string>
+    <string name="study_session_completed_message_1">You have finished all lessons and flashcards!</string>
+    <string name="study_session_completed_message_2">Keep practicing to master the topic!</string>
+    <string name="study_session_restart_button">Restart</string>
+    <string name="study_session_finish_button">Finish Lesson</string>
+    <string name="study_session_flip_cd">Flip card</string>
+
+    <string name="summaries_list_title">My saved summaries</string>
+    <string name="summaries_list_add_button">Add Summary</string>
+    <string name="summaries_list_empty_title">You don\'t have any summaries yet!</string>
+    <string name="summaries_list_empty_description">Create a new summary to start practicing.</string>
+    <string name="summary_view_button">View Summary</string>
+    <string name="summary_delete_button">Delete Summary</string>
+    <string name="generate_summary_title">Smart Summarizer</string>
+    <string name="generate_summary_input_title_label">Summary Title</string>
+    <string name="generate_summary_button">Generate Summary</string>
+    <string name="generate_upload_file_button">Upload File</string>
+    <string name="summary_screen_title">Summary</string>
+    <string name="summary_download_pdf">Download PDF</string>
+    <string name="summary_ia_generated_default_title">AI-generated summary.</string>
+    <string name="summary_pdf_save_success">Summary saved to Downloads</string>
+    <string name="summary_pdf_save_error">Error saving PDF</string>
+
+    <string name="tests_list_title">My tests</string>
+    <string name="tests_list_add_button">New Test</string>
+    <string name="tests_list_empty_title">You don\'t have any tests yet!</string>
+    <string name="tests_list_empty_description">Create a new test to start practicing.</string>
+    <string name="quiz_generate_title">Generate Test</string>
+    <string name="quiz_generate_input_title_label">Test title</string>
+    <string name="quiz_generating_title">Generating your %1$s...</string>
+    <string name="quiz_generating_subtitle">The AI is creating\nyour %1$s...</string>
+    <string name="quiz_generating_wait_message">This may take a few moments.</string>
+    <string name="quiz_generating_step_processing">Processing data</string>
+    <string name="quiz_generating_step_completed">Completed</string>
+    <string name="quiz_generating_step_generating">Generating...</string>
+    <string name="quiz_close_button_cd">Close test</string>
+    <string name="quiz_completed_title">Quiz Complete!</string>
+    <string name="quiz_completed_score">%1$d/%2$d Correct</string>
+    <string name="quiz_completed_percentage">Your Score: %1$d%%</string>
+    <string name="quiz_completed_time">Time Elapsed: %1$s</string>
+    <string name="quiz_completed_retry">Try Again</string>
+    <string name="quiz_error_generating_title">Error Generating Test</string>
+    <string name="quiz_next_question">Next Question</string>
+    <string name="quiz_question_counter">Question %1$d of %2$d</string>
+
+    <string name="account_settings_title">Account settings</string>
+    <string name="account_back_to_login">Back to login</string>
+    <string name="account_profile_picture_cd">Profile picture</string>
+    <string name="account_default_profile_cd">Default profile</string>
+    <string name="account_preferences_section">Preferences</string>
+    <string name="account_dark_mode_label">Dark mode</string>
+    <string name="account_section">Account</string>
+    <string name="account_sign_out">Sign out</string>
+    <string name="account_app_version">App version: 1.0.0</string>
+    <string name="account_feedback">Send us your feedback</string>
+
+    <string name="file_selection_cancelled">User cancelled file selection</string>
+    <string name="file_text_extraction_error">Error extracting text</string>
 </resources>
+

@@ -17,10 +17,16 @@ fun NavGraphBuilder.authGraph(navController: NavHostController) {
             LoginScreen(
                 onLoginSuccess = {
                     navController.navigate(Graph.MAIN) {
-                        popUpTo(Graph.AUTH) { inclusive = true }
+                        popUpTo(Graph.AUTH) {
+                            inclusive = true
+                        }
+
+                        launchSingleTop = true
                     }
                 },
-                navigateToRegister = { navController.navigate(Register) }
+                navigateToRegister = {
+                    navController.navigate("register")
+                }
             )
         }
 

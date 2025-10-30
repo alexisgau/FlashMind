@@ -24,6 +24,7 @@ data class SummaryEntity(
     val originalText: String = "",
     val generatedSummary: String,
     val title: String,
+    val creationDate: Long,
 
 
     val userId: String = "",

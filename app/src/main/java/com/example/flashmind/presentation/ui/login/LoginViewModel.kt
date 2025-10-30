@@ -41,9 +41,11 @@ class LoginViewModel @Inject constructor(
             try {
 
                 signInWithGoogleUseCase().collect { response ->
-                    when(response) {
+                    when (response) {
                         is AuthResponse.Success -> _uiState.value = LoginUiState.Success
-                        is AuthResponse.Error -> _uiState.value = LoginUiState.Error(response.message)
+                        is AuthResponse.Error -> _uiState.value =
+                            LoginUiState.Error(response.message)
+
                         else -> Unit
                     }
                 }

@@ -10,8 +10,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class AddLessonViewModel @Inject constructor(private val insertLessonUseCase: InsertLessonUseCase,): ViewModel() {
-
+class AddLessonViewModel @Inject constructor(private val insertLessonUseCase: InsertLessonUseCase) :
+    ViewModel() {
 
 
     fun insertLesson(lesson: Lesson) {

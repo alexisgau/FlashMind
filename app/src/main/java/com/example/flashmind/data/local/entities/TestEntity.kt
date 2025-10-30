@@ -20,6 +20,7 @@ data class TestEntity(
     val testId: Int = 0,
     val lessonId: Int = 0,
     val title: String,
+    val creationDate: Long,
     val userId: String = "",
     val isSynced: Boolean = false,
     val isDeleted: Boolean = false

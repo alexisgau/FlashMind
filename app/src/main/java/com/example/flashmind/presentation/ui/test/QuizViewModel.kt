@@ -12,14 +12,12 @@ import com.example.flashmind.domain.usecase.test.SaveGeneratedQuestionsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class QuizViewModel @Inject constructor(
@@ -138,7 +136,8 @@ class QuizViewModel @Inject constructor(
                             )
                             startTimer()
                         } else {
-                            _quizState.value = QuizUiState.Error("Test not found or has no questions.")
+                            _quizState.value =
+                                QuizUiState.Error("Test not found or has no questions.")
                         }
                     }
             } catch (e: Exception) {

@@ -53,10 +53,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.domain.model.FlashCard
-import androidx.core.graphics.toColorInt
 import com.example.flashmind.presentation.ui.addflashcardai.ScrollableOutlinedTextField
 import kotlinx.coroutines.launch
 
@@ -89,10 +89,12 @@ fun AddFlashCardsManualScreen(
             is Resource.Loading -> {
                 isLoading = true
             }
+
             is Resource.Success -> {
                 isLoading = false
                 navigateToFlashCards(lessonId)
             }
+
             is Resource.Error -> {
                 isLoading = false
                 scope.launch {
@@ -101,6 +103,7 @@ fun AddFlashCardsManualScreen(
                     )
                 }
             }
+
             is Resource.Initial -> {
                 isLoading = false
             }
@@ -120,7 +123,7 @@ fun AddFlashCardsManualScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navigateToFlashCards(lessonId)}) {
+                    IconButton(onClick = { navigateToFlashCards(lessonId) }) {
                         Icon(
                             Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
@@ -152,7 +155,9 @@ fun AddFlashCardsManualScreen(
             ScrollableOutlinedTextField(
                 text = answer,
                 onTextChange = { answer = it },
-                modifier = Modifier.fillMaxWidth().height(150.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
                 label = "Input answer",
                 placeholder = "Insert answer for the question"
             )
@@ -211,6 +216,7 @@ fun AddFlashCardsManualScreen(
         }
     }
 }
+
 @Composable
 fun CreateCardScreenPreview() {
     Column(
@@ -349,7 +355,8 @@ fun ColorSelector(
                 targetValue = if (isSelected) (-8).dp else 0.dp,
                 label = "offsetAnimation"
             )
-            val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
+            val borderColor =
+                if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent
 
             Box(
                 modifier = Modifier

@@ -32,16 +32,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,7 +57,7 @@ fun AccountSettingsScreen(
 ) {
 
 
-    AccountScreenImpl(modifier = Modifier, userData, navigateToLogin, navigateToHome,viewModel)
+    AccountScreenImpl(modifier = Modifier, userData, navigateToLogin, navigateToHome, viewModel)
 
 }
 
@@ -89,7 +86,7 @@ fun AccountScreenImpl(
                 title = {
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         Text(
-                            "Account settings",
+                            text = stringResource(id = R.string.account_settings_title),
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.inverseSurface
                         )
@@ -99,7 +96,7 @@ fun AccountScreenImpl(
                     IconButton(onClick = { navigateToHome() }) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back to login",
+                            contentDescription = stringResource(id = R.string.back),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
                     }
@@ -124,17 +121,17 @@ fun AccountScreenImpl(
                 if (userData.isNotEmpty()) {
                     AsyncImage(
                         model = userData,
-                        contentDescription = "Profile picture",
+                        contentDescription = stringResource(id = R.string.account_profile_picture_cd),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier
                             .clip(CircleShape)
                             .size(140.dp)
                             .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
                     )
-                }else{
+                } else {
                     Icon(
                         painter = painterResource(R.drawable.default_profile_ic),
-                        contentDescription = "Default Profile",
+                        contentDescription = stringResource(id = R.string.account_default_profile_cd),
                         tint = Color.Unspecified,
                         modifier = Modifier
                             .clip(CircleShape)
@@ -150,7 +147,7 @@ fun AccountScreenImpl(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        "Preferences",
+                        text = stringResource(id = R.string.account_preferences_section),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.inverseSurface
                     )
@@ -163,14 +160,14 @@ fun AccountScreenImpl(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Info,
-                            contentDescription = "Dark mode",
+                            contentDescription = stringResource(id = R.string.account_dark_mode_label),
                             tint = MaterialTheme.colorScheme.onBackground
                         )
 
                         Spacer(Modifier.width(12.dp))
 
                         Text(
-                            "DARK MODE",
+                            text = stringResource(id = R.string.account_dark_mode_label).uppercase(),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.inverseSurface
                         )
@@ -192,7 +189,7 @@ fun AccountScreenImpl(
                     Spacer(Modifier.height(32.dp))
 
                     Text(
-                        "Account",
+                        text = stringResource(id = R.string.account_section),
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.inverseSurface
                     )
@@ -200,7 +197,7 @@ fun AccountScreenImpl(
                     Spacer(Modifier.height(12.dp))
 
                     Button(
-                        onClick = { viewModel.signOutWithGoogle() },
+                        onClick = { viewModel.signOut() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(48.dp),
@@ -210,7 +207,7 @@ fun AccountScreenImpl(
                             contentColor = MaterialTheme.colorScheme.onPrimary
                         )
                     ) {
-                        Text("Sign out")
+                        Text(stringResource(id = R.string.account_sign_out))
                     }
                 }
             }
@@ -220,13 +217,13 @@ fun AccountScreenImpl(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    "Versión de la app: 1.0.0",
+                    text = stringResource(id = R.string.account_app_version),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.inverseSurface
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "Send us your feedback",
+                    text = stringResource(id = R.string.account_feedback),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.inverseSurface
                 )
@@ -248,14 +245,14 @@ fun AccountScreenPreview() {
     ) {
         Column {
             Text(
-                "Account settings",
+                text = stringResource(id = R.string.account_settings_title),
                 style = MaterialTheme.typography.headlineSmall,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
             Spacer(Modifier.height(8.dp))
             AsyncImage(
                 model = null,
-                contentDescription = "Profile picture",
+                contentDescription = stringResource(id = R.string.account_profile_picture_cd),
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .clip(CircleShape)
@@ -265,7 +262,10 @@ fun AccountScreenPreview() {
             )
             Spacer(Modifier.height(32.dp))
 
-            Text("Preferences", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(id = R.string.account_preferences_section),
+                style = MaterialTheme.typography.titleMedium
+            )
             Spacer(Modifier.height(12.dp))
 
             Row(
@@ -276,17 +276,23 @@ fun AccountScreenPreview() {
             ) {
                 Icon(
                     imageVector = Icons.Default.Info,
-                    contentDescription = "Modo oscuro",
+                    contentDescription = stringResource(id = R.string.account_dark_mode_label),
                     tint = MaterialTheme.colorScheme.onBackground
                 )
-                Text("DARK MODE", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = stringResource(id = R.string.account_dark_mode_label).uppercase(),
+                    style = MaterialTheme.typography.titleMedium
+                )
                 Spacer(Modifier.weight(1f))
                 Switch(checked = true, onCheckedChange = { })
             }
 
             Spacer(Modifier.height(32.dp))
 
-            Text("Account", style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(id = R.string.account_section),
+                style = MaterialTheme.typography.titleMedium
+            )
             Spacer(Modifier.height(12.dp))
 
             Button(
@@ -296,17 +302,22 @@ fun AccountScreenPreview() {
                     .height(48.dp),
                 shape = RoundedCornerShape(50)
             ) {
-                Text("Sign out")
+                Text(stringResource(id = R.string.account_sign_out))
             }
         }
 
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("App version: 1.0.0", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = stringResource(id = R.string.account_app_version),
+                style = MaterialTheme.typography.bodySmall
+            )
             Spacer(Modifier.height(4.dp))
-            Text("Send us your feedback", style = MaterialTheme.typography.bodySmall)
+            Text(
+                text = stringResource(id = R.string.account_feedback),
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
-
 
 

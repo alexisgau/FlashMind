@@ -39,11 +39,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.flashmind.R
 import com.example.flashmind.domain.model.FlashCard
 import com.example.flashmind.presentation.ui.flashcard.FlashCardUiState
 
@@ -65,14 +67,17 @@ fun EditFlashCardScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "Edit Flashcard",
+                        text = stringResource(id = R.string.edit_flashcard_title),
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Volver")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(id = R.string.back)
+                        )
                     }
                 },
                 actions = {
@@ -91,11 +96,16 @@ fun EditFlashCardScreen(
                 is FlashCardUiState.Loading -> {
                     CircularProgressIndicator()
                 }
+
                 is FlashCardUiState.Error -> {
-                    Text("Error al cargar la tarjeta", color = MaterialTheme.colorScheme.error)
+                    Text(
+                        text = stringResource(id = R.string.edit_flashcard_error_loading),
+                        color = MaterialTheme.colorScheme.error
+                    )
                 }
+
                 is FlashCardUiState.Success -> {
-                   state.flashCard.lessonId
+                    state.flashCard.lessonId
                     EditFlashCardForm(
                         flashCard = state.flashCard,
                         onSaveChanges = { updatedFlashCard ->
@@ -128,7 +138,7 @@ fun EditFlashCardForm(
         OutlinedTextField(
             value = question,
             onValueChange = { question = it },
-            label = { Text("Question") },
+            label = { Text(stringResource(id = R.string.flashcards_question_label)) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             maxLines = 2
@@ -139,7 +149,7 @@ fun EditFlashCardForm(
         OutlinedTextField(
             value = answer,
             onValueChange = { answer = it },
-            label = { Text("Answer") },
+            label = { Text(stringResource(id = R.string.flashcards_answer_label)) },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
@@ -148,7 +158,10 @@ fun EditFlashCardForm(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        Text("Pick a Color", style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = stringResource(id = R.string.edit_flashcard_pick_color),
+            style = MaterialTheme.typography.titleMedium
+        )
         Spacer(modifier = Modifier.height(8.dp))
 
         ColorPickerRow(
@@ -172,7 +185,10 @@ fun EditFlashCardForm(
                 .fillMaxWidth()
                 .height(50.dp)
         ) {
-            Text("SAVE CHANGES", style = MaterialTheme.typography.bodyLarge)
+            Text(
+                text = stringResource(id = R.string.edit_flashcard_save_changes),
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
     }
 }
@@ -207,7 +223,7 @@ fun ColorPickerRow(
                 if (isSelected) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Color seleccionado",
+                        contentDescription = stringResource(id = R.string.edit_flashcard_selected_color_cd),
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }

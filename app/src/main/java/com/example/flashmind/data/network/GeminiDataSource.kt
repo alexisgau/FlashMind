@@ -33,7 +33,6 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
             response.getSafeText()
         } catch (e: Exception) {
             Log.e("GeminiAPI", "Error en Retrofit (Flashcards): ${e.message}", e)
-            // Fallback: intenta con el otro modelo
             try {
                 val response = apiService.generateContent(apiKey, requestBody)
                 response.getSafeText()
@@ -45,7 +44,6 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
     }
 
     suspend fun getTestFromText(prompt: String): String {
-        //body de la petición
         val requestBody = GenerateContentRequest(
             contents = listOf(GenerateContentRequest.Content(
                 parts = listOf(GenerateContentRequest.Part(text = prompt))
@@ -67,7 +65,6 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
 
         return try {
             val dtoList = json.decodeFromString<List<QuizQuestionModel>>(jsonInput)
-            // Mapea el DTO a tu Entidad de Room
             dtoList.map { dto ->
                 MultipleChoiceQuestionEntity(
                     testId = testId,
@@ -116,7 +113,6 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
     }
 
     suspend fun getSummaryFromText(prompt: String): String {
-        // Prepara el cuerpo (body) de la petición
         val requestBody = GenerateContentRequest(
             contents = listOf(
                 GenerateContentRequest.Content(

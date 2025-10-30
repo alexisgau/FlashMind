@@ -22,7 +22,6 @@ class AddFlashCardAiViewModel @Inject constructor(
     private val _flashCardAiState = MutableStateFlow<FlashCardAiState>(FlashCardAiState.Init)
     val flashCardAiState: StateFlow<FlashCardAiState> = _flashCardAiState.asStateFlow()
 
-
     private val _generatedFlashcards = MutableStateFlow<List<FlashCard>>(emptyList())
     val generatedFlashcards: StateFlow<List<FlashCard>> = _generatedFlashcards.asStateFlow()
 
@@ -32,7 +31,8 @@ class AddFlashCardAiViewModel @Inject constructor(
             try {
                 val generatedList = generateFlashCardsUseCase.invoke(text, lessonId)
                 if (generatedList.isEmpty()) {
-                    _flashCardAiState.value = FlashCardAiState.Error("The generated list is empty, please try again.")
+                    _flashCardAiState.value =
+                        FlashCardAiState.Error("The generated list is empty, please try again.")
                     return@launch
                 }
                 _generatedFlashcards.value = generatedList
@@ -53,6 +53,8 @@ class AddFlashCardAiViewModel @Inject constructor(
     }
 
     fun removeFromGenerated(card: FlashCard) {
-        _generatedFlashcards.value = _generatedFlashcards.value.filter { it != card }
+        val newList = _generatedFlashcards.value.filter { it != card }
+        _generatedFlashcards.value = newList
+        _flashCardAiState.value = FlashCardAiState.Success(newList)
     }
 }

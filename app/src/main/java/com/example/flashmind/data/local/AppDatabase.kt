@@ -18,7 +18,7 @@ import com.example.flashmind.data.local.entities.TestEntity
 
 @Database(
     entities = [CategoryEntity::class, LessonEntity::class, FlashCardEntity::class, TestEntity::class, MultipleChoiceQuestionEntity::class, SummaryEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)

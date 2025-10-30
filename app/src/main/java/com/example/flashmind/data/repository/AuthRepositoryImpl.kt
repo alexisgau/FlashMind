@@ -13,8 +13,8 @@ class AuthRepositoryImpl @Inject constructor(private val authClient: AuthClient)
         return authClient.signInWithGoogle()
     }
 
-    override fun signOutAccountWithGoogle(): Flow<AuthResponse> {
-        return authClient.signOutAccountWithGoogle()
+    override suspend fun signOut(): Result<Unit> {
+        return authClient.signOut()
     }
 
     override fun getCurrentUser(): FirebaseUser? {

@@ -153,7 +153,7 @@ fun GenerateSummaryScreen(
 
                 Spacer(modifier = Modifier.width(24.dp))
 
-                // Columna para texto "PDF" "DOCX"
+                // Columna para texto PDF DOCX
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     // Caja para PDF
                     Surface(
@@ -201,7 +201,7 @@ fun GenerateSummaryScreen(
             // Botón "Generar Resumen"
             Button(
                 // Habilitado solo si hay un archivo cargado
-                enabled = fileName.isNotBlank(),
+                enabled = fileName.isNotBlank() && summaryTitle.isNotBlank(),
                 onClick = { navigateToSummaryScreen(contentFile, summaryTitle) },
                 modifier = Modifier
                     .fillMaxWidth()

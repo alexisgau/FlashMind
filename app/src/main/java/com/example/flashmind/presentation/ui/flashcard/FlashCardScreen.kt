@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,6 +55,7 @@ import com.example.flashmind.presentation.ui.addflashcardai.AddFlashCardFab
 @Composable
 fun FlashCardScreen(
     lessonId: Int,
+    lessonName: String,
     navigateToAddFlashCardAi: (Int) -> Unit,
     navigateToAddFlashCardManual: (Int) -> Unit,
     navigateToStartGame: (Int) -> Unit,
@@ -64,7 +66,6 @@ fun FlashCardScreen(
     val flashCards = viewModel.flashCards.collectAsStateWithLifecycle()
 
     viewModel.loadFlashCardsByLesson(lessonId)
-
 
     Scaffold(
         floatingActionButton = {
@@ -86,7 +87,7 @@ fun FlashCardScreen(
                     .padding(horizontal = 16.dp, vertical = 16.dp)
             ) {
                 Text(
-                    text = "Flashcards: Primera Guerra Mundial",
+                    text = stringResource(id = R.string.flashcards_title, lessonName),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface
@@ -99,12 +100,12 @@ fun FlashCardScreen(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.playing_cards),
-                        contentDescription = "Contador",
+                        contentDescription = stringResource(id = R.string.flashcards_counter, flashCards.value.size),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "${flashCards.value.size} Tarjetas",
+                        text = stringResource(id = R.string.flashcards_counter, flashCards.value.size),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -127,11 +128,11 @@ fun FlashCardScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(id = R.string.back),
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(text = "Back")
+                    Text(text = stringResource(id = R.string.back))
                 }
 
                 Button(
@@ -145,16 +146,15 @@ fun FlashCardScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.PlayArrow,
-                        contentDescription = "Start",
+                        contentDescription = stringResource(id = R.string.start),
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(Modifier.width(8.dp))
-                    Text(text = "Start")
+                    Text(text = stringResource(id = R.string.start))
                 }
             }
 
             if (flashCards.value.isEmpty()) {
-
                 EmptyFlashcardList()
             }
 
@@ -180,7 +180,6 @@ fun FlashCardScreen(
     }
 }
 
-
 @Composable
 fun FlashCardItemDeletable(
     question: String,
@@ -204,21 +203,23 @@ fun FlashCardItemDeletable(
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete Flashcard",
+                    contentDescription = stringResource(id = R.string.flashcards_delete_card_cd),
                     modifier = Modifier.clickable { deleteFlashCard() }
                 )
             }
 
-
             Spacer(Modifier.height(4.dp))
 
-            Text("Question:", fontWeight = FontWeight.Bold)
+            Text(
+                text = stringResource(id = R.string.flashcards_question_label),
+                fontWeight = FontWeight.Bold
+            )
             Text(question, modifier = Modifier.padding(bottom = 8.dp))
 
             Spacer(Modifier.height(8.dp))
 
             Text(
-                "Answer:",
+                text = stringResource(id = R.string.flashcards_answer_label),
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 8.dp)
             )
@@ -249,10 +250,12 @@ fun FlashcardItem(
                 .padding(horizontal = 12.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Imagen de la categoría
             Image(
                 painter = imagePainter,
-                contentDescription = "Imagen de la categoría $categoryName",
+                contentDescription = stringResource(
+                    id = R.string.flashcards_category_image_cd,
+                    categoryName
+                ),
                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onBackground),
                 modifier = Modifier
                     .size(50.dp)
@@ -262,39 +265,35 @@ fun FlashcardItem(
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Columna con el nombre de la categoría y la pregunta
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.Center
             ) {
-
                 Text(
                     text = question,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 2 // Para que no ocupe mucho espacio
+                    maxLines = 2
                 )
             }
-
 
             IconButton(onClick = onEditClick) {
                 Icon(
                     imageVector = Icons.Default.Edit,
-                    contentDescription = "Editar tarjeta",
+                    contentDescription = stringResource(id = R.string.flashcards_edit_card_cd),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onDeleteClick) {
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Eliminar tarjeta",
+                    contentDescription = stringResource(id = R.string.flashcards_delete_card_cd),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -304,7 +303,7 @@ fun FlashcardItemPreview() {
             FlashcardItem(
                 categoryName = "Biología",
                 question = "¿Qué es la fotosíntesis?",
-                imagePainter = painterResource(id = R.drawable.ic_launcher_background), // Usa una imagen de tu proyecto
+                imagePainter = painterResource(id = R.drawable.ic_launcher_background),
                 onEditClick = {},
                 onDeleteClick = {}
             )
@@ -325,14 +324,14 @@ fun EmptyFlashcardList(
     ) {
         Image(
             painter = painterResource(R.drawable.empty_flashcards),
-            contentDescription = "No hay flashcards",
+            contentDescription = stringResource(id = R.string.flashcards_empty_title),
             modifier = Modifier.size(150.dp),
             contentScale = ContentScale.Fit,
         )
         Spacer(modifier = Modifier.height(20.dp))
 
         Text(
-            text = "¡Aún no tienes flashcards!",
+            text = stringResource(id = R.string.flashcards_empty_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -341,14 +340,13 @@ fun EmptyFlashcardList(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Crea tu primer set de tarjetas para empezar a estudiar.",
+            text = stringResource(id = R.string.flashcards_empty_description),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
     }
 }
-
 
 
 

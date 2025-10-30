@@ -35,7 +35,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,17 +46,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -68,8 +63,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.QuizQuestionModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -85,10 +78,12 @@ fun QuizScreen(
 ) {
 
     val testUiState by viewModel.quizState.collectAsStateWithLifecycle()
-
-
-    Log.i("QuizScreen", "QuizScreen - contentFile: $contentFile, lessonId: $lessonId, testId: $testId")
-
+    val defaultTitle = stringResource(id = R.string.quiz_generate_title)
+    val finalTestTitle = testTittle ?: defaultTitle
+    Log.i(
+        "QuizScreen",
+        "QuizScreen - contentFile: $contentFile, lessonId: $lessonId, testId: $testId"
+    )
 
     BackHandler(
         enabled = testUiState !is QuizUiState.Loading,
@@ -103,13 +98,15 @@ fun QuizScreen(
                 viewModel.generateAndSaveTest(
                     contentFile,
                     lessonId,
-                    testTitle = testTittle ?: "Test"
+                    testTitle = finalTestTitle
                 )
             }
+
             testId != null -> {
                 Log.i("QuizScreen", "Loading existing test with ID: $testId")
                 viewModel.loadTest(testId)
             }
+
             else -> {
                 Log.e("QuizScreen", "Invalid navigation arguments")
             }
@@ -121,21 +118,20 @@ fun QuizScreen(
             CenterAlignedTopAppBar(
                 title = {
                     Text(
-                        testTittle ?: "Generate Test",
+                        finalTestTitle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 },
                 navigationIcon = {
-                    // Botón deshabilitado durante loading
                     if (testUiState is QuizUiState.Loading) {
                         IconButton(
-                            onClick = { /* No hace nada - deshabilitado */ },
+                            onClick = { },
                             enabled = false
                         ) {
                             Icon(
                                 Icons.Default.Close,
-                                contentDescription = "Close test",
+                                contentDescription = stringResource(id = R.string.quiz_close_button_cd),
                                 tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                             )
                         }
@@ -143,7 +139,10 @@ fun QuizScreen(
                         IconButton(
                             onClick = onClickBack
                         ) {
-                            Icon(Icons.Default.Close, contentDescription = "Close test")
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(id = R.string.quiz_close_button_cd)
+                            )
                         }
                     }
                 }
@@ -166,15 +165,17 @@ fun QuizScreen(
                                 viewModel.generateAndSaveTest(
                                     contentFile,
                                     lessonId,
-                                    testTitle = testTittle ?: "Test"
+                                    testTitle = finalTestTitle
                                 )
                             }
                         },
                         onBack = onClickBack
                     )
                 }
+
                 is QuizUiState.Finished -> {
-                    val percentage = (uiState.correctAnswers.toDouble() / uiState.totalQuestions) * 100
+                    val percentage =
+                        (uiState.correctAnswers.toDouble() / uiState.totalQuestions) * 100
                     QuizFinished(
                         correctAnswers = uiState.correctAnswers,
                         totalQuestions = uiState.totalQuestions,
@@ -183,6 +184,7 @@ fun QuizScreen(
                         onRetry = { viewModel.restartQuiz() },
                     )
                 }
+
                 QuizUiState.Loading -> {
                     Column(
                         modifier = Modifier.fillMaxSize(),
@@ -190,21 +192,9 @@ fun QuizScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         QuizLoadingScreen()
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Text(
-                            "Generating test...",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            "Please wait, this may take a few moments",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                        )
-                        // NOTA: No hay botón de cancelar - el usuario debe esperar
                     }
                 }
+
                 is QuizUiState.Success -> {
                     QuizQuestionUi(
                         question = uiState.test,
@@ -221,28 +211,26 @@ fun QuizScreen(
         }
     }
 }
+
 @Composable
 fun PulsingRobotLogo(
     modifier: Modifier = Modifier
 ) {
-    // Configura una transición infinita
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
 
-    //  Anima el scale tamaño de 1.0f (normal) a 1.1f (un 10% más grande)
     val scale by infiniteTransition.animateFloat(
         initialValue = 1.0f,
         targetValue = 1.1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1000), //1 segundo de duración
-            repeatMode = RepeatMode.Reverse // Hace que vuelva (1.0 -> 1.1 -> 1.0)
+            animation = tween(durationMillis = 1000),
+            repeatMode = RepeatMode.Reverse
         ),
         label = "scale"
     )
 
-    //Aplica la escala animada a la imagen
     Image(
         painter = painterResource(id = R.drawable.mastanrobot),
-        contentDescription = "Generando...",
+        contentDescription = stringResource(id = R.string.quiz_generating_step_generating),
         modifier = modifier
             .size(160.dp)
             .scale(scale)
@@ -255,8 +243,6 @@ fun QuizLoadingScreen(
     modifier: Modifier = Modifier,
     generateName: String = "Quiz",
     generatingName: String = "preguntas"
-
-
 ) {
     val colorAzul = Color(0xFF2196F3)
     Column(
@@ -267,7 +253,7 @@ fun QuizLoadingScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Generando tu $generateName...",
+            text = stringResource(id = R.string.quiz_generating_title, generateName),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
@@ -280,15 +266,16 @@ fun QuizLoadingScreen(
         Spacer(modifier = Modifier.height(48.dp))
 
         Text(
-            text = "La inteligencia artificial está\ncreando tus $generatingName...",
+            text = stringResource(id = R.string.quiz_generating_subtitle, generatingName),
             style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Esto puede tardar unos momentos.",
+            text = stringResource(id = R.string.quiz_generating_wait_message),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -303,12 +290,11 @@ fun QuizLoadingScreen(
             trackColor = colorAzul.copy(alpha = 0.2f)
         )
 
-
-       Text(
-          text = "Procesando datos",
+        Text(
+            text = stringResource(id = R.string.quiz_generating_step_processing),
             style = MaterialTheme.typography.labelMedium,
-           color = MaterialTheme.colorScheme.onSurfaceVariant
-      )
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
     }
 }
 
@@ -322,68 +308,71 @@ fun QuizFinished(
     onRetry: () -> Unit = {},
 ) {
 
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primary,
-            contentColor = Color.White,
-            modifier = Modifier.size(100.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.Star,
-                contentDescription = "Completado",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp)
-            )
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "¡Quiz Completo!",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Text(
-            text = "$correctAnswers/$totalQuestions Correctas",
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Tu Puntuación: $percentage%",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(
-            text = "Tiempo Transcurrido: $timeTaken",
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        Spacer(modifier = Modifier.height(48.dp))
-
-        Button(
-            onClick = onRetry,
+    Surface(
+        shape = CircleShape,
+        color = MaterialTheme.colorScheme.primary,
+        contentColor = Color.White,
+        modifier = Modifier.size(100.dp)
+    ) {
+        Icon(
+            imageVector = Icons.Default.Star,
+            contentDescription = stringResource(id = R.string.quiz_completed_title),
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .height(50.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
-        ) {
-            Text("Volver a Intentarlo", fontSize = 16.sp)
-        }
+                .fillMaxSize()
+                .padding(20.dp)
+        )
     }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    Text(
+        text = stringResource(id = R.string.quiz_completed_title),
+        style = MaterialTheme.typography.headlineMedium,
+        fontWeight = FontWeight.Bold
+    )
+
+    Text(
+        text = stringResource(id = R.string.quiz_completed_score, correctAnswers, totalQuestions),
+        style = MaterialTheme.typography.titleLarge,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Text(
+        text = stringResource(id = R.string.quiz_completed_percentage, percentage),
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Text(
+        text = stringResource(id = R.string.quiz_completed_time, timeTaken),
+        style = MaterialTheme.typography.bodyLarge,
+        color = MaterialTheme.colorScheme.onSurfaceVariant
+    )
+
+    Spacer(modifier = Modifier.height(48.dp))
+
+    Button(
+        onClick = onRetry,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .height(50.dp),
+        shape = RoundedCornerShape(12.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = MaterialTheme.colorScheme.primary
+        )
+    ) {
+        Text(
+            text = stringResource(id = R.string.quiz_completed_retry),
+            fontSize = 16.sp
+        )
+    }
+}
 
 @Composable
 fun ErrorQuizGenerator(
@@ -400,13 +389,13 @@ fun ErrorQuizGenerator(
     ) {
         Icon(
             imageVector = Icons.Default.Lock,
-            contentDescription = "Error",
+            contentDescription = stringResource(id = R.string.error_prefix),
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(64.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            "Error Generating Test",
+            text = stringResource(id = R.string.quiz_error_generating_title),
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -427,12 +416,12 @@ fun ErrorQuizGenerator(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             ) {
-                Text("Go Back")
+                Text(stringResource(id = R.string.go_back))
             }
             Button(
                 onClick = onRetry
             ) {
-                Text("Try Again")
+                Text(stringResource(id = R.string.error_try_again))
             }
         }
     }
@@ -519,7 +508,7 @@ fun QuizQuestionUi(
             ),
             shape = RoundedCornerShape(12.dp)
         ) {
-            Text("Next Question")
+            Text(stringResource(id = R.string.quiz_next_question))
         }
     }
 }
@@ -572,7 +561,6 @@ fun ModernOptionSurface(
     }
 }
 
-
 @Composable
 fun QuizProgress(
     questionNumber: Int,
@@ -589,7 +577,7 @@ fun QuizProgress(
             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         Text(
-            text = "Pregunta $questionNumber de $totalQuestions",
+            text = stringResource(id = R.string.quiz_question_counter, questionNumber, totalQuestions),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 8.dp)

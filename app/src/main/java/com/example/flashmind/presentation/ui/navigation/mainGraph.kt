@@ -6,15 +6,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.navigation.toRoute
 import com.example.flashmind.presentation.ui.account.AccountSettingsScreen
-import com.example.flashmind.presentation.ui.category.AddCategoryScreen
 import com.example.flashmind.presentation.ui.addflashcardai.AddFlashCardScreenAi
 import com.example.flashmind.presentation.ui.addflashcardmanual.AddFlashCardsManualScreen
+import com.example.flashmind.presentation.ui.addlesson.AddLessonScreen
+import com.example.flashmind.presentation.ui.category.AddCategoryScreen
 import com.example.flashmind.presentation.ui.editflashcard.EditFlashCardScreen
 import com.example.flashmind.presentation.ui.flashcard.FlashCardScreen
 import com.example.flashmind.presentation.ui.home.HomeScreen
-import com.example.flashmind.presentation.ui.addlesson.AddLessonScreen
 import com.example.flashmind.presentation.ui.le.LessonOptionsScreen
-import com.example.flashmind.presentation.ui.lessons.LessonScreen
+import com.example.flashmind.presentation.ui.onboarding.OnboardingFlowScreen
 import com.example.flashmind.presentation.ui.startlesson.StartLessonScreen
 import com.example.flashmind.presentation.ui.summary.GenerateSummaryScreen
 import com.example.flashmind.presentation.ui.summary.SummariesScreen
@@ -23,24 +23,44 @@ import com.example.flashmind.presentation.ui.test.GenerateTestScreen
 import com.example.flashmind.presentation.ui.test.QuizScreen
 import com.example.flashmind.presentation.ui.test.TestScreen
 
-fun NavGraphBuilder.mainGraph(navController: NavHostController) {
+fun NavGraphBuilder.mainGraph(
+    navController: NavHostController,
+    isOnboardingCompleted: Boolean,
+    setOnboardingCompleted: () -> Unit
+) {
+
+
+    val mainGraphStartDestination = if (isOnboardingCompleted) "home" else "onboarding"
+
+
     navigation(
-        startDestination = "home", //generateTest
-        route = Graph.MAIN
+        startDestination = mainGraphStartDestination,
+        route = Graph.MAIN,
     ) {
 
 
+        composable<Onboarding> {
+            OnboardingFlowScreen(
+                onFinishOnboarding = {
+                    setOnboardingCompleted()
+                    navController.navigate(Home) {
+                        popUpTo<Onboarding> { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
         composable<Home> {
             HomeScreen(
                 onNavigateToAddCategory = { navController.navigate(AddCategory) },
 
                 onNavigateToLessonContent = { clickedLessonId, lessonName ->
-                    navController.navigate(LessonOptions(clickedLessonId,lessonName ))
+                    navController.navigate(LessonOptions(clickedLessonId, lessonName))
                 },
                 onNavigateToAccountSettings = { imageUrl ->
                     navController.navigate(AccountSettings(imageUrl))
                 },
-                onNavigateToAddLesson = {navController.navigate(AddLesson(it))}
+                onNavigateToAddLesson = { navController.navigate(AddLesson(it)) }
 
             )
         }
@@ -52,26 +72,19 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
                 lessonId = args.lessonId,
                 lessonTitle = args.lessonName,
                 onNavigateBack = { navController.popBackStack() },
-                onStudyFlashcards = {navController.navigate(FlashCards(args.lessonId))},
-                onViewSummary = { navController.navigate(SummariesRoute(args.lessonId, args.lessonName)) },
+                onStudyFlashcards = { navController.navigate(FlashCards(args.lessonId, args.lessonName)) },
+                onViewSummary = {
+                    navController.navigate(
+                        SummariesRoute(
+                            args.lessonId,
+                            args.lessonName
+                        )
+                    )
+                },
                 onTakeTest = { navController.navigate(Test(args.lessonId)) },
 
-            )
-
-        }
-
-        composable<Lessons> { backStackEntry ->
-
-            val args = backStackEntry.toRoute<Lessons>()
-
-            LessonScreen(
-                categoryId = args.categoryId,
-                categoryName = args.categoryName,
-                onNavigateToFlashcards = { lessonId -> navController.navigate(FlashCards(lessonId)) },
-                onAddLesson = { navController.navigate(AddLesson(args.categoryId)) },
-                onNavigateBack = { navController.popBackStack() },
-
                 )
+
         }
 
 
@@ -118,6 +131,7 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             val args = it.toRoute<FlashCards>()
             FlashCardScreen(
                 lessonId = args.lessonId,
+                lessonName = args.lessonName,
                 navigateToAddFlashCardAi = { navController.navigate(AddFlashCardsAi(it)) },
                 navigateToAddFlashCardManual = { navController.navigate(AddFlashCardsManual(it)) },
                 navigateToStartGame = { navController.navigate(StartLesson(it)) },
@@ -132,7 +146,7 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             AddFlashCardScreenAi(
                 lessonId = args.lessonId,
                 navigateToFlashCards = {
-                    navController.navigate(FlashCards(it))
+                    navController.popBackStack()
                 },
             )
         }
@@ -142,7 +156,7 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             val args = it.toRoute<AddFlashCardsManual>()
             AddFlashCardsManualScreen(
                 lessonId = args.lessonId,
-                navigateToFlashCards = { navController.navigate(FlashCards(it)) }
+                navigateToFlashCards = {navController.popBackStack() }
             )
         }
 
@@ -152,11 +166,7 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             StartLessonScreen(
                 lessonId = args.lessonId,
                 navigateToFlashCardScreen = {
-                    navController.navigate(FlashCards(it)) {
-                        popUpTo<StartLesson> {
-                            inclusive = true
-                        }
-                    }
+                    navController.popBackStack()
                 }
             )
         }
@@ -164,8 +174,15 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
         composable<GenerateTest> { backStackEntry ->
             val args = backStackEntry.toRoute<GenerateTest>()
             GenerateTestScreen(
-                navigateToTestScreen = { contentFile,tittle ->
-                    navController.navigate(Quiz(lessonId = args.lessonId ,contentFile = contentFile, testTittle = tittle, testId = 1)) {
+                navigateToTestScreen = { contentFile, tittle ->
+                    navController.navigate(
+                        Quiz(
+                            lessonId = args.lessonId,
+                            contentFile = contentFile,
+                            testTittle = tittle,
+                            testId = 1
+                        )
+                    ) {
                         popUpTo<GenerateTest> { inclusive = true }
                     }
                 },
@@ -188,21 +205,21 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             val args = it.toRoute<Test>()
             TestScreen(
                 lessonId = args.lessonId,
-                onNavigateBack = {navController.popBackStack()},
+                onNavigateBack = { navController.popBackStack() },
                 onClickTest = { testId, testTittle ->
-                navController.navigate(
-                    Quiz(
-                        lessonId = args.lessonId,
-                        contentFile = null,
-                        testTittle = testTittle,
-                        testId = testId
+                    navController.navigate(
+                        Quiz(
+                            lessonId = args.lessonId,
+                            contentFile = null,
+                            testTittle = testTittle,
+                            testId = testId
+                        )
                     )
-                )
-            }, navigateToNewTest = {
-                navController.navigate(
-                    GenerateTest(args.lessonId)
-                )
-            })
+                }, navigateToNewTest = {
+                    navController.navigate(
+                        GenerateTest(args.lessonId)
+                    )
+                })
         }
 
         // Edit Flashcard
@@ -222,7 +239,13 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
                 lessonId = args.lessonId,
                 lessonTitle = args.lessonTittle,
                 onSummaryClick = { clickedSummaryId, summaryTitle ->
-                    navController.navigate(SummaryDetailRoute(lessonId = args.lessonId,summaryId = clickedSummaryId, summaryTittle = summaryTitle))
+                    navController.navigate(
+                        SummaryDetailRoute(
+                            lessonId = args.lessonId,
+                            summaryId = clickedSummaryId,
+                            summaryTittle = summaryTitle
+                        )
+                    )
                 },
                 onAddSummaryClick = {
                     navController.navigate(GenerateSummaryRoute(lessonId = args.lessonId))
@@ -236,9 +259,20 @@ fun NavGraphBuilder.mainGraph(navController: NavHostController) {
             val args = backStackEntry.toRoute<GenerateSummaryRoute>()
             GenerateSummaryScreen(
                 lessonId = args.lessonId,
-                onClickBack = {navController.popBackStack()},
-                navigateToSummaryScreen = { contentFile,summaryTitle ->
-                    navController.navigate(SummaryDetailRoute(lessonId = args.lessonId,contentFile = contentFile, summaryTittle = summaryTitle ))
+                onClickBack = { navController.popBackStack() },
+                navigateToSummaryScreen = { contentFile, summaryTitle ->
+                    navController.navigate(
+                        SummaryDetailRoute(
+                            lessonId = args.lessonId,
+                            contentFile = contentFile,
+                            summaryTittle = summaryTitle,
+                            summaryId = null
+                        )
+                    ) {
+                        popUpTo<GenerateSummaryRoute> {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

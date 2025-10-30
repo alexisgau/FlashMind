@@ -41,6 +41,7 @@ class QuizRepositoryImpl @Inject constructor(
             title = title,
             lessonId = lessonId,
             userId = userId,
+            creationDate = System.currentTimeMillis(),
             isSynced = false,
             isDeleted = false
         )

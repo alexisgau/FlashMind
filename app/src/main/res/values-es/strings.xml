@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+        <string name="app_name">FlashMind</string>
+
+        <string name="back">Volver</string>
+        <string name="add">Añadir</string>
+        <string name="save">Guardar</string>
+        <string name="cancel">Cancelar</string>
+        <string name="delete">Eliminar</string>
+        <string name="edit">Editar</string>
+        <string name="close">Cerrar</string>
+        <string name="start">Empezar</string>
+        <string name="next">Siguiente</string>
+        <string name="loading">Cargando...</string>
+        <string name="error_prefix">Error:</string>
+        <string name="error_unknown">Ha ocurrido un error desconocido</string>
+        <string name="error_try_again">Intentar de nuevo</string>
+        <string name="go_back">Volver atrás</string>
+        <string name="content_description_file_icon">Icono de archivo</string>
+        <string name="content_description_delete_file">Eliminar archivo</string>
+        <string name="generate">Generar</string>
+
+        <string name="auth_error_null_user">Usuario nulo. Por favor, intenta de nuevo.</string>
+        <string name="auth_error_weak_password">La contraseña es demasiado débil (mínimo 6 caracteres).</string>
+        <string name="auth_error_invalid_email">El formato del email no es válido.</string>
+        <string name="auth_error_user_collision">El email ya está en uso por otra cuenta.</string>
+        <string name="auth_error_no_internet">No hay conexión a internet. Revisa tu conexión.</string>
+        <string name="auth_error_unknown_register">Error desconocido al registrarse.</string>
+        <string name="auth_error_user_not_found">El usuario no existe.</string>
+        <string name="auth_error_invalid_credentials">Email o contraseña incorrectos.</string>
+        <string name="auth_error_unknown_login">Error desconocido al iniciar sesión.</string>
+        <string name="auth_error_user_disabled">Esta cuenta de usuario ha sido deshabilitada.</string>
+        <string name="auth_error_too_many_requests">Demasiados intentos. Intenta más tarde.</string>
+
+
+        <string name="onboarding_welcome_title">¡Bienvenido/a a FlashMind! 🚀</string>
+        <string name="onboarding_welcome_description">Transforma tus apuntes, PDFs o cualquier texto en flashcards, tests y resúmenes para estudiar de forma inteligente.</string>
+        <string name="onboarding_welcome_image_cd">Mascota saludando</string>
+        <string name="onboarding_generation_title">Generación Automática ✨</string>
+        <string name="onboarding_generation_description">Pega texto o sube archivos. Nuestra IA creará flashcards, tests de opción múltiple y resúmenes optimizados.</string>
+        <string name="onboarding_generation_image_cd">Generación IA</string>
+        <string name="onboarding_organization_title">Todo Ordenado 📚</string>
+        <string name="onboarding_organization_description">Estructura tu material creando Categorías (ej: Historia) y Lecciones (ej: Unidad 1) para encontrar todo fácilmente.</string>
+        <string name="onboarding_organization_image_cd">Organización</string>
+        <string name="onboarding_ready_title">¡Todo Listo! ✅</string>
+        <string name="onboarding_ready_description">Empieza a crear tu primera categoría y descubre una forma más eficiente de aprender.</string>
+        <string name="onboarding_ready_image_cd">Listo</string>
+        <string name="onboarding_start_button">¡Comenzar!</string>
+        <string name="onboarding_skip">Saltar</string>
+
+        <string name="auth_welcome_title">¡Bienvenido a Flashmind!</string>
+        <string name="auth_sign_in_prompt">Inicia sesión para continuar con tus tarjetas.</string>
+        <string name="auth_email_label">Email</string>
+        <string name="auth_email_placeholder">tu@email.com</string>
+        <string name="auth_password_label">Contraseña</string>
+        <string name="auth_sign_in">Iniciar sesión</string>
+        <string name="auth_sign_up">Crear cuenta</string>
+        <string name="auth_or_continue_with"> o continuar con </string>
+        <string name="auth_google">Google</string>
+        <string name="auth_no_account_prompt">¿No tienes una cuenta?</string>
+        <string name="auth_already_have_account_prompt">¿Ya tienes una cuenta?</string>
+        <string name="auth_error_login">Error al iniciar sesión</string>
+        <string name="auth_error_google">Error con Google.</string>
+        <string name="auth_logout_error">Error al cerrar sesión.</string>
+
+        <string name="home_greeting">¡Hola, %1$s!</string>
+        <string name="home_greeting_default">¡Hola usuario!</string>
+        <string name="home_main_card_title">Estudiar nunca fue\ntan fácil con\nFlashMind</string>
+        <string name="home_main_card_image_cd">Ilustración de mascota</string>
+        <string name="home_my_categories_title">MIS CATEGORÍAS</string>
+        <string name="home_add_category_cd">Añadir nueva categoría</string>
+        <string name="home_no_lessons_in_category">No hay lecciones en esta categoría.</string>
+        <string name="home_add_lesson_button">Añadir Lección</string>
+        <string name="home_empty_categories_title">¡Aún no tienes categorías!</string>
+        <string name="home_empty_categories_description">Crea tu primer set para organizar tu estudio.</string>
+        <string name="home_category_item_lessons_count">%1$d Lecciones</string>
+        <string name="home_category_item_cd">Categoría</string>
+        <string name="home_category_delete_cd">Eliminar Categoría</string>
+        <string name="home_category_collapse_cd">Colapsar</string>
+        <string name="home_category_expand_cd">Expandir</string>
+        <string name="home_lesson_item_cd">Lección</string>
+        <string name="home_lesson_item_prompt">Toca para ver el contenido</string>
+        <string name="home_lesson_edit_cd">Editar Lección</string>
+        <string name="home_lesson_delete_cd">Eliminar Lección</string>
+
+        <string name="dialog_delete_category_title">Borrar Categoría</string>
+        <string name="dialog_delete_category_message">¿Seguro que quieres borrar "%1$s"? Todas sus lecciones también se borrarán.</string>
+        <string name="dialog_delete_lesson_title">Borrar Lección</string>
+        <string name="dialog_delete_lesson_message">¿Seguro que quieres borrar la lección "%1$s"?</string>
+        <string name="dialog_edit_lesson_title">Editar Lección</string>
+        <string name="dialog_lesson_name_label">Nombre de la lección</string>
+
+        <string name="add_category_title">Crear nueva categoría</string>
+        <string name="add_category_subtitle">Organiza tus lecciones agrupándolas por categoría</string>
+        <string name="add_category_name_label">Nombre de la categoría</string>
+        <string name="add_category_name_placeholder">Escribe el nombre...</string>
+        <string name="add_category_description_label">Descripción</string>
+        <string name="add_category_description_placeholder">Describe esta categoría...</string>
+        <string name="add_lesson_title">Crear nueva lección</string>
+        <string name="add_lesson_subtitle">Escribe el nombre de tu nueva lección para empezar.</string>
+        <string name="add_lesson_name_label">Nombre de la lección</string>
+        <string name="add_lesson_name_placeholder">Escribe el nombre...</string>
+
+        <string name="lesson_options_title">Opciones de la Lección</string>
+        <string name="lesson_options_subtitle">Lección:</string>
+        <string name="lesson_options_flashcards_title">Flashcards</string>
+        <string name="lesson_options_flashcards_desc">Tarjetas interactivas para memorizar conceptos clave.</string>
+        <string name="lesson_options_flashcards_button">Estudiar Set</string>
+        <string name="lesson_options_summary_title">Resumen</string>
+        <string name="lesson_options_summary_desc">Texto generado por IA con los puntos más importantes.</string>
+        <string name="lesson_options_summary_button">Ver Resumen</string>
+        <string name="lesson_options_quiz_title">Tests/Quizes</string>
+        <string name="lesson_options_quiz_desc">Pon a prueba tus conocimientos con preguntas.</string>
+        <string name="lesson_options_quiz_button">Hacer Test</string>
+
+        <string name="flashcards_title">Flashcards: %1$s</string>
+        <string name="flashcards_counter">%1$d Tarjetas</string>
+        <string name="flashcards_delete_dialog_title">Eliminar Tarjeta</string>
+        <string name="flashcards_question_label">Pregunta:</string>
+        <string name="flashcards_answer_label">Respuesta:</string>
+        <string name="flashcards_category_image_cd">Imagen de la categoría %1$s</string>
+        <string name="flashcards_edit_card_cd">Editar tarjeta</string>
+        <string name="flashcards_delete_card_cd">Eliminar tarjeta</string>
+        <string name="flashcards_empty_title">¡Aún no tienes flashcards!</string>
+        <string name="flashcards_empty_description">Crea tu primer set de tarjetas para empezar a estudiar.</string>
+        <string name="flashcards_add_manual_title">Crear nueva Flashcard</string>
+        <string name="flashcards_add_manual_question_placeholder">Escribe aquí tu pregunta</string>
+        <string name="flashcards_add_manual_answer_placeholder">Escribe aquí tu respuesta</string>
+        <string name="flashcards_add_manual_select_color">Selecciona un color</string>
+        <string name="flashcards_add_manual_error_empty_fields">Por favor completa la pregunta y la respuesta.</string>
+
+        <string name="flashcards_ai_title">Robot generador de flashcards</string>
+        <string name="flashcards_ai_subtitle">Genera Flashcards con IA</string>
+        <string name="flashcards_ai_input_label">Texto de entrada</string>
+        <string name="flashcards_ai_input_placeholder">Pega aquí el contenido del que quieres generar flashcards</string>
+        <string name="flashcards_ai_thinking">Pensando en algo genial...🧠</string>
+        <string name="flashcards_ai_saved_success">¡Flashcards guardadas!</string>
+        <string name="flashcards_ai_save_all_button">GUARDAR TODAS</string>
+        <string name="flashcards_create_manual_tab">Crear manualmente</string>
+        <string name="flashcards_create_ai_tab">Crear con IA</string>
+
+        <string name="edit_flashcard_title">Editar Flashcard</string>
+        <string name="edit_flashcard_error_loading">Error al cargar la tarjeta</string>
+        <string name="edit_flashcard_pick_color">Elige un color</string>
+        <string name="edit_flashcard_save_changes">GUARDAR CAMBIOS</string>
+        <string name="edit_flashcard_selected_color_cd">Color seleccionado</string>
+
+        <string name="study_session_completed_title">¡Completado!</string>
+        <string name="study_session_completed_message_1">¡Has terminado todas las lecciones y flashcards!</string>
+        <string name="study_session_completed_message_2">¡Continúa practicando para dominar el tema!</string>
+        <string name="study_session_restart_button">Volver a Empezar</string>
+        <string name="study_session_finish_button">Finalizar Lección</string>
+        <string name="study_session_flip_cd">Girar tarjeta</string>
+
+        <string name="summaries_list_title">Mis resúmenes guardados</string>
+        <string name="summaries_list_add_button">Añadir Resumen</string>
+        <string name="summaries_list_empty_title">¡Aún no tienes resúmenes!</string>
+        <string name="summaries_list_empty_description">Crea un nuevo resumen para empezar a practicar.</string>
+        <string name="summary_view_button">Ver Resumen</string>
+        <string name="summary_delete_button">Eliminar Resumen</string>
+        <string name="generate_summary_title">Resumidor Inteligente</string>
+        <string name="generate_summary_input_title_label">Título del Resumen</string>
+        <string name="generate_summary_button">Generar Resumen</string>
+        <string name="generate_upload_file_button">Cargar Archivo</string>
+        <string name="summary_screen_title">Resumen</string>
+        <string name="summary_download_pdf">Descargar PDF</string>
+        <string name="summary_ia_generated_default_title">Resumen generado por IA.</string>
+        <string name="summary_pdf_save_success">Resumen guardado en Descargas</string>
+        <string name="summary_pdf_save_error">Error al guardar el PDF</string>
+
+        <string name="tests_list_title">Mis tests</string>
+        <string name="tests_list_add_button">Nuevo Test</string>
+        <string name="tests_list_empty_title">¡Aún no tienes tests!</string>
+        <string name="tests_list_empty_description">Crea un nuevo test para empezar a practicar.</string>
+        <string name="quiz_generate_title">Generar Test</string>
+        <string name="quiz_generate_input_title_label">Título del test</string>
+        <string name="quiz_generating_title">Generando tu %1$s...</string>
+        <string name="quiz_generating_subtitle">La inteligencia artificial está\ncreando tus %1$s...</string>
+        <string name="quiz_generating_wait_message">Esto puede tardar unos momentos.</string>
+        <string name="quiz_generating_step_processing">Procesando datos</string>
+        <string name="quiz_generating_step_completed">Completado</string>
+        <string name="quiz_generating_step_generating">Generando...</string>
+        <string name="quiz_close_button_cd">Cerrar test</string>
+        <string name="quiz_completed_title">¡Quiz Completo!</string>
+        <string name="quiz_completed_score">%1$d/%2$d Correctas</string>
+        <string name="quiz_completed_percentage">Tu Puntuación: %1$d%%</string>
+        <string name="quiz_completed_time">Tiempo Transcurrido: %1$s</string>
+        <string name="quiz_completed_retry">Volver a Intentarlo</string>
+        <string name="quiz_error_generating_title">Error al Generar el Test</string>
+        <string name="quiz_next_question">Siguiente Pregunta</string>
+        <string name="quiz_question_counter">Pregunta %1$d de %2$d</string>
+
+        <string name="account_settings_title">Ajustes de cuenta</string>
+        <string name="account_back_to_login">Volver al login</string>
+        <string name="account_profile_picture_cd">Foto de perfil</string>
+        <string name="account_default_profile_cd">Perfil por defecto</string>
+        <string name="account_preferences_section">Preferencias</string>
+        <string name="account_dark_mode_label">Modo oscuro</string>
+        <string name="account_section">Cuenta</string>
+        <string name="account_sign_out">Cerrar sesión</string>
+        <string name="account_app_version">Versión de la app: 1.0.0</string>
+        <string name="account_feedback">Envíanos tu feedback</string>
+
+        <string name="file_selection_cancelled">El usuario canceló la selección de archivo</string>
+        <string name="file_text_extraction_error">Error al extraer texto</string>
+
+
+
+</resources>

@@ -3,8 +3,8 @@ package com.example.flashmind.presentation.ui.summary
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Paint
-import android.os.Build
 import android.graphics.pdf.PdfDocument
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.Layout
@@ -14,7 +14,6 @@ import android.util.Log
 import androidx.core.graphics.withSave
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.flashmind.data.local.entities.LessonEntity
 import com.example.flashmind.domain.model.SummaryModel
 import com.example.flashmind.domain.usecase.summary.CreateSummaryUseCase
 import com.example.flashmind.domain.usecase.summary.GenerateSummaryUseCase
@@ -76,8 +75,9 @@ class SummaryViewModel @Inject constructor(
                     lessonId = lessonId,
                     generatedSummary = generatedSummaryText,
                     title = summaryTitle,
+                    creationDate = System.currentTimeMillis()
 
-                    )
+                )
 
 
                 val newSummaryId = createSummaryUseCase(originalText, summaryToSave)
@@ -180,7 +180,8 @@ class SummaryViewModel @Inject constructor(
 
         fun startNewPage() {
             currentPage?.let { pdfDocument.finishPage(it) } // Finish previous page if exists
-            val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber++).create()
+            val pageInfo =
+                PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber++).create()
             currentPage = pdfDocument.startPage(pageInfo)
             currentCanvas = currentPage!!.canvas
             currentY = margin // Reset Y for new page
@@ -254,7 +255,10 @@ class SummaryViewModel @Inject constructor(
             return "Resumen guardado en Descargas"
 
         } catch (e: Exception) {
-            try { resolver.delete(uri, null, null) } catch (deleteEx: Exception) { /* Ignore */ }
+            try {
+                resolver.delete(uri, null, null)
+            } catch (deleteEx: Exception) { /* Ignore */
+            }
             pdfDocument.close()
             throw e
         }

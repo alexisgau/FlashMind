@@ -19,14 +19,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,8 +38,8 @@ import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +53,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
@@ -58,6 +62,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.flashmind.R
 import com.example.flashmind.presentation.ui.flashcard.FlashCardListViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -70,20 +75,21 @@ fun StartLessonScreen(
     viewModel: FlashCardListViewModel = hiltViewModel()
 ) {
 
-
     val flashCards by viewModel.flashCards.collectAsStateWithLifecycle()
 
     var currentIndex by rememberSaveable { mutableIntStateOf(0) }
     var flipped by rememberSaveable { mutableStateOf(false) }
 
-
-    viewModel.loadFlashCardsByLesson(lessonId)
+    LaunchedEffect(lessonId) {
+        viewModel.loadFlashCardsByLesson(lessonId)
+    }
 
     Scaffold(topBar = {
         MediumTopAppBar(title = {}, navigationIcon = {
-            IconButton(onClick = {navigateToFlashCardScreen(lessonId)}) {
+            IconButton(onClick = { navigateToFlashCardScreen(lessonId) }) {
                 Icon(
-                    Icons.Default.Close, contentDescription = "Close"
+                    Icons.Default.Close,
+                    contentDescription = stringResource(id = R.string.close)
                 )
             }
         })
@@ -93,41 +99,18 @@ fun StartLessonScreen(
             val currentCard = flashCards.getOrNull(currentIndex)
 
             if (currentIndex >= flashCards.size) {
-                // Fin de la lección
                 LessonCompleteScreen(
                     onRestart = {
                         currentIndex = 0
                         flipped = false
                     },
-                    onFinish = {navigateToFlashCardScreen(lessonId)},
-                    onExplore = {}
+                    onFinish = { navigateToFlashCardScreen(lessonId) },
                 )
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .background(MaterialTheme.colorScheme.background)
-//                        .padding(paddingValues),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-//                        Text(
-//                            "You've finished the lesson!",
-//                            fontSize = 20.sp,
-//                            color = MaterialTheme.colorScheme.inverseSurface
-//                        )
-//                        Spacer(modifier = Modifier.height(16.dp))
-//                        Button(onClick = {
-//                            currentIndex = 0
-//                            flipped = false
-//                        }) {
-//                            Text("Restart Lesson")
-//                        }
-//                        Button(onClick = { navigateToFlashCardScreen(lessonId) }) { Text("Finish Lesson") }
-//                    }
-//                }
+
                 return@Scaffold
             }
 
+            if (currentCard == null) return@Scaffold
 
             val animatedRotationY by animateFloatAsState(
                 targetValue = if (flipped) 180f else 0f,
@@ -135,19 +118,13 @@ fun StartLessonScreen(
                 label = "flip"
             )
 
-
             val scope = rememberCoroutineScope()
-
-
             val offsetX = remember { Animatable(0f) }
-
-            //  Obtener el ancho de la pantalla para calcular el umbral de swipe
             val configuration = LocalConfiguration.current
             val density = LocalDensity.current
             val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
-            val swipeThreshold = screenWidthPx * 0.5f // Umbral: 50% de la pantalla
+            val swipeThreshold = screenWidthPx * 0.5f
 
-            //Función centralizada para pasar a la siguiente tarjeta
             val goToNextCard = {
                 if (currentIndex <= flashCards.lastIndex) {
                     currentIndex++
@@ -159,6 +136,7 @@ fun StartLessonScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(MaterialTheme.colorScheme.background)
+                    .padding(paddingValues)
                     .padding(24.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -171,68 +149,74 @@ fun StartLessonScreen(
                         .draggable(
                             orientation = Orientation.Horizontal,
                             state = rememberDraggableState { delta ->
-                                // delta es la cantidad que el dedo se movio.
                                 scope.launch {
                                     offsetX.snapTo(offsetX.value + delta)
                                 }
                             },
                             onDragStopped = {
-                                // Cuando el usuario suelta el dedo
                                 scope.launch {
                                     val currentOffset = offsetX.value
-
                                     if (currentOffset < -swipeThreshold) {
-                                        // Swipe a la izquierda
                                         offsetX.animateTo(-screenWidthPx * 1.2f, tween(300))
                                         goToNextCard()
                                         offsetX.snapTo(0f)
                                     } else {
-
                                         offsetX.animateTo(0f, tween(300))
                                     }
                                 }
                             }
                         )
-
                         .graphicsLayer {
                             rotationY = animatedRotationY
                             cameraDistance = 12 * density.density
                         }
                         .background(
-                            Color(currentCard!!.color.toColorInt()),
+                            Color(currentCard.color.toColorInt()),
                             shape = RoundedCornerShape(16.dp)
                         )
-
                         .clickable { flipped = !flipped }
                         .padding(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
 
-                    if (animatedRotationY <= 90f) {
-                        Text(
-                            text = currentCard.question,
-                            color = Color.Black,
-                            fontSize = 20.sp,
-                            textAlign = TextAlign.Center
-                        )
-                    } else {
-                        val textToShow = if (flipped) {
-                            currentCard.answer
+                    val scrollState = rememberScrollState()
+
+                    LaunchedEffect(flipped) {
+                        scrollState.scrollTo(0)
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(scrollState),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        if (animatedRotationY <= 90f) {
+                            Text(
+                                text = currentCard.question,
+                                color = Color.Black,
+                                fontSize = 20.sp,
+                                textAlign = TextAlign.Center
+                            )
                         } else {
-                            currentCard.question
-                        }
-                        Text(
-                            text = textToShow,
-                            color = Color.Black,
-                            fontSize = 20.sp,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.graphicsLayer {
-                                rotationY = 180f // para que se vea derecha al girar
+                            val textToShow = if (flipped) {
+                                currentCard.answer
+                            } else {
+                                currentCard.question
                             }
-                        )
+                            Text(
+                                text = textToShow,
+                                color = Color.Black,
+                                fontSize = 20.sp,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier.graphicsLayer {
+                                    rotationY = 180f
+                                }
+                            )
+                        }
                     }
                 }
-
 
                 Spacer(modifier = Modifier.height(32.dp))
 
@@ -243,9 +227,17 @@ fun StartLessonScreen(
                     Button(onClick = {
                         goToNextCard()
                     }) {
-                        Text("Next")
+                        Text(stringResource(id = R.string.next))
                     }
                 }
+            }
+        } else if (flashCards.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues), contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
             }
         }
     }
@@ -256,7 +248,6 @@ fun LessonCompleteScreen(
     modifier: Modifier = Modifier,
     onRestart: () -> Unit,
     onFinish: () -> Unit,
-    onExplore: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -273,7 +264,7 @@ fun LessonCompleteScreen(
         ) {
             Icon(
                 imageVector = Icons.Default.Check,
-                contentDescription = "Completado",
+                contentDescription = stringResource(id = R.string.study_session_completed_title),
                 tint = Color.White,
                 modifier = Modifier
                     .fillMaxSize()
@@ -283,9 +274,8 @@ fun LessonCompleteScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-
         Text(
-            text = "¡Has terminado todas las lecciones y flashcards!",
+            text = stringResource(id = R.string.study_session_completed_message_1),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
@@ -294,14 +284,13 @@ fun LessonCompleteScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "¡Continúa practicando para dominar el tema!",
+            text = stringResource(id = R.string.study_session_completed_message_2),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
         )
 
         Spacer(modifier = Modifier.height(48.dp))
-
 
         Button(
             onClick = onRestart,
@@ -319,19 +308,18 @@ fun LessonCompleteScreen(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = "Volver a Empezar",
+                    text = stringResource(id = R.string.study_session_restart_button),
                     fontSize = 16.sp
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
                     imageVector = Icons.Default.Refresh,
-                    contentDescription = "Volver a Empezar"
+                    contentDescription = stringResource(id = R.string.study_session_restart_button)
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
 
         Button(
             onClick = onFinish,
@@ -344,22 +332,11 @@ fun LessonCompleteScreen(
             )
         ) {
             Text(
-                text = "Finalizar Lección",
+                text = stringResource(id = R.string.study_session_finish_button),
                 fontSize = 16.sp
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-
-        TextButton(onClick = onExplore) {
-            Text(
-                text = "Explorar otras categorías",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-            )
-        }
     }
 }
-
-

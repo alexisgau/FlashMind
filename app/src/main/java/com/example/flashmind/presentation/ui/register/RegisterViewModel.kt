@@ -3,7 +3,6 @@ package com.example.flashmind.presentation.ui.register
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashmind.domain.usecase.auth.Register
-import com.example.flashmind.presentation.ui.login.LoginUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

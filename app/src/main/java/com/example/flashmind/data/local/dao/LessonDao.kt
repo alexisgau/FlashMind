@@ -2,8 +2,8 @@ package com.example.flashmind.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
-import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import androidx.room.Upsert
 import com.example.flashmind.data.local.entities.LessonEntity
 import kotlinx.coroutines.flow.Flow
@@ -32,6 +32,9 @@ interface LessonDao {
 
     @Upsert
     suspend fun insert(lesson: LessonEntity)
+
+    @Update
+    suspend fun updateLesson(lesson: LessonEntity)
 
     @Delete
     suspend fun deleteLesson(lesson: LessonEntity)

@@ -5,6 +5,11 @@ import kotlinx.serialization.Serializable
 
 
 @Serializable
+@SerialName("onboarding")
+object Onboarding
+
+
+@Serializable
 @SerialName("login")
 object Login
 
@@ -19,10 +24,6 @@ object Home
 @Serializable
 object AddCategory
 
-
-@Serializable
-data class Lessons(val categoryId: Int, val categoryName: String)
-
 @Serializable
 data class LessonOptions(val lessonId: Int, val lessonName: String)
 
@@ -30,7 +31,7 @@ data class LessonOptions(val lessonId: Int, val lessonName: String)
 data class AddLesson(val categoryId: Int)
 
 @Serializable
-data class FlashCards(val lessonId: Int)
+data class FlashCards(val lessonId: Int, val lessonName: String)
 
 @Serializable
 data class AddFlashCardsAi(val lessonId: Int)
