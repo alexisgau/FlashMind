@@ -3,7 +3,7 @@ package com.example.flashmind.presentation.ui.main
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.flashmind.data.UserPreferencesRepository
+import com.example.flashmind.data.local.preferences.UserPreferencesRepository
 import com.example.flashmind.data.network.AuthClient
 import com.example.flashmind.domain.usecase.preference.GetDarkModeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel

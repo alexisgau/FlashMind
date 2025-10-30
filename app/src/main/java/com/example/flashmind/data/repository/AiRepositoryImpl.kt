@@ -101,15 +101,28 @@ class AiRepositoryImpl @Inject constructor(
 
     override suspend fun generateSummary(text: String): String {
         val prompt = """
-            Eres un asistente experto en sintetizar información para facilitar el estudio. A partir del siguiente texto, crea un resumen detallado pero conciso, bien estructurado, ideal para repasar los conceptos clave a fondo.
+            Tu tarea es crear un resumen de estudio detallado y bien estructurado a partir del "Texto de Entrada".
 
-            **Instrucciones Importantes:**
-            1.  **Detecta el idioma principal del "Texto de Entrada".**
-            2.  **Escribe todo el resumen en ese mismo idioma detectado.**
-            3.  Estructura el resumen usando formato Markdown (##, ###, *, **).
-            4.  Devuelve únicamente el resumen formateado en Markdown, sin ningún texto introductorio.
+            **Instrucciones Cruciales:**
+            1.  **Detecta el idioma principal del "Texto de Entrada" (ej. inglés, español).**
+            2.  **Escribe todo el resumen EN ESE MISMO IDIOMA.**
+            3.  **NO TRADUZCAS** el resumen a otro idioma.
+            4.  Estructura el resumen usando formato Markdown (##, ###, *, **).
+            5.  Devuelve **únicamente** el resumen formateado, sin ningún texto introductorio o saludos.
 
             ---
+            **Ejemplo (Si el Texto de Entrada está en INGLÉS):**
+            ## Key Concepts of OFDM
+            * **Definition:** A digital modulation technique that combines multiplexing and modulation for high spectral efficiency.
+            * **Principle:** Divides a channel into multiple narrow orthogonal subcarriers.
+
+            ---
+            **Ejemplo (Si el Texto de Entrada está en ESPAÑOL):**
+            ## Conceptos Clave de OFDM
+            * **Definición:** Es una tecnología de modulación digital que combina multiplexación y modulación para lograr una alta eficiencia espectral.
+            * **Principio:** Divide un canal en múltiples subportadoras ortogonales estrechas.
+            ---
+
             TEXTO DE ENTRADA:
             $text
             ---

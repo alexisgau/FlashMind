@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashmind.domain.model.AuthResponse
 import com.example.flashmind.domain.usecase.auth.SignIn
+import com.example.flashmind.domain.usecase.auth.SignInAnonymouslyUseCase
 import com.example.flashmind.domain.usecase.auth.SignInWithGoogleUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val signIn: SignIn,
-    private val signInWithGoogleUseCase: SignInWithGoogleUseCase
+    private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
+    private val signInAnonymouslyUseCase: SignInAnonymouslyUseCase
 ) : ViewModel() {
 
 
@@ -31,6 +33,17 @@ class LoginViewModel @Inject constructor(
             _uiState.value = result.fold(
                 onSuccess = { LoginUiState.Success },
                 onFailure = { LoginUiState.Error(it.message ?: "Error al iniciar sesión") }
+            )
+        }
+    }
+
+    fun signInAnonymously() {
+        viewModelScope.launch {
+            _uiState.value = LoginUiState.Loading
+            val result = signInAnonymouslyUseCase()
+            _uiState.value = result.fold(
+                onSuccess = { LoginUiState.Success },
+                onFailure = { LoginUiState.Error(it.message ?: "Error de invitado") }
             )
         }
     }

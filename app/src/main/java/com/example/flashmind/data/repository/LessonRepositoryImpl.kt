@@ -8,7 +8,7 @@ import androidx.work.WorkManager
 import com.example.flashmind.data.local.dao.LessonDao
 import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.local.entities.toEntity
-import com.example.flashmind.data.network.model.LessonFirestore
+import com.example.flashmind.data.network.dto.LessonFirestore
 import com.example.flashmind.domain.model.Lesson
 import com.example.flashmind.domain.reposotory.LessonRepository
 import com.example.flashmind.data.worker.LessonSyncWorker

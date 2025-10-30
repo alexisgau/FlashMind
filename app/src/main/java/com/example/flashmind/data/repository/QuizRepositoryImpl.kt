@@ -10,8 +10,8 @@ import com.example.flashmind.data.local.dao.QuizDao
 import com.example.flashmind.data.local.entities.MultipleChoiceQuestionEntity
 import com.example.flashmind.data.local.entities.TestEntity
 import com.example.flashmind.data.local.entities.toDomain
-import com.example.flashmind.data.network.model.QuestionFirestore
-import com.example.flashmind.data.network.model.TestFirestore
+import com.example.flashmind.data.network.dto.QuestionFirestore
+import com.example.flashmind.data.network.dto.TestFirestore
 import com.example.flashmind.domain.model.QuizQuestionModel
 import com.example.flashmind.domain.model.TestModel
 import com.example.flashmind.domain.model.toDomain

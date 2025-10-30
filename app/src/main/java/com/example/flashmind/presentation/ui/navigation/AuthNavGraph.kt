@@ -25,7 +25,7 @@ fun NavGraphBuilder.authGraph(navController: NavHostController) {
                     }
                 },
                 navigateToRegister = {
-                    navController.navigate("register")
+                    navController.navigate(Register)
                 }
             )
         }

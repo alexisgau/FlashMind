@@ -34,6 +34,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,7 +66,11 @@ fun FlashCardScreen(
 ) {
     val flashCards = viewModel.flashCards.collectAsStateWithLifecycle()
 
-    viewModel.loadFlashCardsByLesson(lessonId)
+
+    LaunchedEffect(key1 = lessonId) {
+        viewModel.loadFlashCardsByLesson(lessonId)
+    }
+
 
     Scaffold(
         floatingActionButton = {

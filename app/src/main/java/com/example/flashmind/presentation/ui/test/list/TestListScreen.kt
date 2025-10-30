@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.test
+package com.example.flashmind.presentation.ui.test.list
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +38,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -204,16 +203,12 @@ fun StartButton(
     onStartClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val colorFondoGris = Color(0xFFF0F0F0)
-    val colorCirculoAzul = Color(0xFF03A9F4)
-    val colorIconoBlanco = Color.White
-    val colorTextoGris = Color(0xFF333333)
-
     Surface(
         onClick = { onStartClick(testId) },
         modifier = modifier.height(40.dp),
         shape = RoundedCornerShape(50),
-        color = colorFondoGris
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -222,16 +217,14 @@ fun StartButton(
             Box(
                 modifier = Modifier
                     .size(28.dp)
-                    .background(color = colorCirculoAzul, shape = CircleShape),
+                    .background(color = MaterialTheme.colorScheme.primary, shape = CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-
                 Icon(
-
                     painter = painterResource(R.drawable.play_icon),
                     contentDescription = stringResource(id = R.string.start),
                     modifier = Modifier.size(18.dp),
-                    tint = colorIconoBlanco
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
 
@@ -240,13 +233,11 @@ fun StartButton(
             Text(
                 text = stringResource(id = R.string.start),
                 style = MaterialTheme.typography.bodyLarge,
-                color = colorTextoGris,
                 fontWeight = FontWeight.Medium
             )
         }
     }
 }
-
 @Preview(showSystemUi = true)
 @Composable
 fun EmptyTestList(

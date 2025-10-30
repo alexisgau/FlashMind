@@ -13,15 +13,15 @@ import com.example.flashmind.presentation.ui.category.AddCategoryScreen
 import com.example.flashmind.presentation.ui.editflashcard.EditFlashCardScreen
 import com.example.flashmind.presentation.ui.flashcard.FlashCardScreen
 import com.example.flashmind.presentation.ui.home.HomeScreen
-import com.example.flashmind.presentation.ui.le.LessonOptionsScreen
+import com.example.flashmind.presentation.ui.lessonoptions.LessonOptionsScreen
 import com.example.flashmind.presentation.ui.onboarding.OnboardingFlowScreen
 import com.example.flashmind.presentation.ui.startlesson.StartLessonScreen
-import com.example.flashmind.presentation.ui.summary.GenerateSummaryScreen
-import com.example.flashmind.presentation.ui.summary.SummariesScreen
-import com.example.flashmind.presentation.ui.summary.SummaryViewScreen
-import com.example.flashmind.presentation.ui.test.GenerateTestScreen
-import com.example.flashmind.presentation.ui.test.QuizScreen
-import com.example.flashmind.presentation.ui.test.TestScreen
+import com.example.flashmind.presentation.ui.summary.generate.GenerateSummaryScreen
+import com.example.flashmind.presentation.ui.summary.list.SummariesScreen
+import com.example.flashmind.presentation.ui.summary.detail.SummaryViewScreen
+import com.example.flashmind.presentation.ui.test.generate.GenerateTestScreen
+import com.example.flashmind.presentation.ui.test.run.QuizScreen
+import com.example.flashmind.presentation.ui.test.list.TestScreen
 
 fun NavGraphBuilder.mainGraph(
     navController: NavHostController,

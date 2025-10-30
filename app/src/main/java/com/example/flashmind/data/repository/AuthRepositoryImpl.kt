@@ -13,6 +13,10 @@ class AuthRepositoryImpl @Inject constructor(private val authClient: AuthClient)
         return authClient.signInWithGoogle()
     }
 
+    override suspend fun signInAnonymously(): Result<String> {
+        return authClient.signInAnonymously()
+    }
+
     override suspend fun signOut(): Result<Unit> {
         return authClient.signOut()
     }

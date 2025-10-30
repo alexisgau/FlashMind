@@ -1,7 +1,9 @@
-package com.example.flashmind.presentation.ui.summary
+package com.example.flashmind.presentation.ui.summary.detail
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import android.os.Build
@@ -163,19 +165,19 @@ class SummaryViewModel @Inject constructor(
         val contentHeight = pageHeight - 2 * margin.toInt() // Usable height per page
 
         val titlePaint = TextPaint().apply {
-            color = android.graphics.Color.BLACK
+            color = Color.BLACK
             textSize = 24f
             isFakeBoldText = true
             textAlign = Paint.Align.CENTER
         }
         val textPaint = TextPaint().apply {
-            color = android.graphics.Color.BLACK
+            color = Color.BLACK
             textSize = 12f
         }
 
         var pageNumber = 1
         var currentPage: PdfDocument.Page? = null
-        var currentCanvas: android.graphics.Canvas? = null
+        var currentCanvas: Canvas? = null
         var currentY = margin // Start Y position below top margin
 
         fun startNewPage() {

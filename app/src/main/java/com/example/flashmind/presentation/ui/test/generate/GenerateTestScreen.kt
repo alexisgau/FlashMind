@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.test
+package com.example.flashmind.presentation.ui.test.generate
 
 import android.content.Context
 import android.net.Uri
@@ -47,7 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flashmind.R
-import com.example.flashmind.presentation.ui.summary.UploadFileButton
+import com.example.flashmind.presentation.ui.summary.generate.UploadFileButton
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 import com.tom_roush.pdfbox.pdmodel.PDDocument
 import com.tom_roush.pdfbox.text.PDFTextStripper

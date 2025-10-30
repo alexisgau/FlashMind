@@ -198,6 +198,21 @@ fun LoginScreen(
                     Text(stringResource(id = R.string.auth_google))
                 }
 
+                Spacer(Modifier.height(16.dp))
+                Button(
+                    onClick = { viewModel.signInAnonymously() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.auth_sign_in_guest),
+                        color = MaterialTheme.colorScheme.onSecondary
+                    )
+                }
+
                 Spacer(Modifier.height(32.dp))
 
 

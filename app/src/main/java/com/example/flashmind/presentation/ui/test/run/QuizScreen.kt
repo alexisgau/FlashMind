@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.test
+package com.example.flashmind.presentation.ui.test.run
 
 import android.util.Log
 import androidx.activity.compose.BackHandler
@@ -438,8 +438,9 @@ fun QuizQuestionUi(
     selectedAnswerIndex: Int?,
     correctAnswerIndex: Int
 ) {
-    val colorCirculoAzul = Color(0xFF2196F3)
+    val colorPrimario = MaterialTheme.colorScheme.primary
     val scrollState = rememberScrollState()
+
     Column(
         Modifier.fillMaxSize()
     ) {
@@ -453,8 +454,8 @@ fun QuizQuestionUi(
         ) {
             Card(
                 elevation = CardDefaults.cardElevation(2.dp),
-                border = BorderStroke(2.dp, colorCirculoAzul),
-                colors = CardDefaults.cardColors(Color.White),
+                border = BorderStroke(2.dp, colorPrimario),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 modifier = Modifier.fillMaxSize(),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -466,7 +467,7 @@ fun QuizQuestionUi(
                 ) {
                     Text(
                         text = question.question,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                     )
                 }
@@ -525,17 +526,40 @@ fun ModernOptionSurface(
 ) {
     val shape = RoundedCornerShape(12.dp)
 
-    val backgroundColor = when {
-        isCorrect != null && index == correctAnswerIndex -> Color.Green.copy(alpha = 0.1f)
-        isCorrect != null && isSelected && !isCorrect -> Color.Red.copy(alpha = 0.1f)
-        else -> Color.White
-    }
 
-    val borderColor = when {
-        isSelected && isCorrect == null -> MaterialTheme.colorScheme.primary
-        isCorrect != null && index == correctAnswerIndex -> Color.Green.copy(alpha = 0.5f)
-        isCorrect != null && isSelected && !isCorrect -> Color.Red.copy(alpha = 0.5f)
-        else -> Color(0xFFE0E0E0)
+    val correctColor = Color(0xFF388E3C)
+    val incorrectColor = Color(0xFFD32F2F)
+
+
+    val (backgroundColor, borderColor, textColor) = when {
+        isCorrect != null && index == correctAnswerIndex -> {
+            Triple(correctColor, correctColor, Color.White)
+        }
+        isCorrect == false && isSelected -> {
+            Triple(incorrectColor, incorrectColor, Color.White)
+        }
+        isCorrect != null && !isSelected -> {
+
+            Triple(
+                MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
+                MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+            )
+        }
+        isSelected -> {
+            Triple(
+                MaterialTheme.colorScheme.surface,
+                MaterialTheme.colorScheme.primary,
+                MaterialTheme.colorScheme.onSurface
+            )
+        }
+        else -> {
+            Triple(
+                MaterialTheme.colorScheme.surface,
+                MaterialTheme.colorScheme.outline,
+                MaterialTheme.colorScheme.onSurface
+            )
+        }
     }
 
     Surface(
@@ -555,12 +579,11 @@ fun ModernOptionSurface(
             Text(
                 text = text,
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.Black
+                color = textColor
             )
         }
     }
 }
-
 @Composable
 fun QuizProgress(
     questionNumber: Int,

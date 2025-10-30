@@ -1,8 +1,10 @@
 package com.example.flashmind.presentation.ui.home
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.flashmind.R
 import com.example.flashmind.data.network.AuthClient
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.domain.model.Lesson
@@ -14,6 +16,7 @@ import com.example.flashmind.domain.usecase.lesson.DeleteLessonUseCase
 import com.example.flashmind.domain.usecase.lesson.GetLessonsUseCase
 import com.example.flashmind.domain.usecase.lesson.UpdateLessonUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -32,7 +35,8 @@ class HomeViewModel @Inject constructor(
     private val deleteLessonUseCase: DeleteLessonUseCase,
     private val updateLessonUseCase: UpdateLessonUseCase,
     private val getLessonCountByCategory: GetLessonCountByCategory,
-    private val authClient: AuthClient
+    private val authClient: AuthClient,
+    @ApplicationContext private val context: Context
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -93,13 +97,21 @@ class HomeViewModel @Inject constructor(
 
     private fun getUserDataInternal(): UserData {
         val user = runCatching { authClient.getCurrentUser() }.getOrNull()
-        val name = user?.displayName?.takeIf { it.isNotBlank() } ?: "User"
-        return when {
-            user != null -> UserData.Success(
-                name = name,
-                imageUrl = user.photoUrl?.toString().orEmpty()
-            )
 
+        return when {
+            user != null && user.isAnonymous -> {
+                UserData.Success(
+                    name = context.getString(R.string.home_guest_name),
+                    imageUrl = ""
+                )
+            }
+            user != null -> {
+                val name = user.displayName?.takeIf { it.isNotBlank() } ?: "User"
+                UserData.Success(
+                    name = name,
+                    imageUrl = user.photoUrl?.toString().orEmpty()
+                )
+            }
             else -> UserData.Error("Usuario no autenticado")
         }
     }

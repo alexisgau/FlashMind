@@ -1,4 +1,4 @@
-package com.example.flashmind.data.local
+package com.example.flashmind.data.local.preferences
 
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey

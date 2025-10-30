@@ -4,12 +4,11 @@ import android.content.Context
 import com.example.flashmind.data.network.AuthClient
 import com.example.flashmind.data.network.AuthInterceptor
 import com.example.flashmind.data.network.GeminiDataSource
-import com.example.flashmind.data.network.IaCallService
+import com.example.flashmind.data.network.api.IaCallService
 import com.example.flashmind.data.repository.AiRepositoryImpl
 import com.example.flashmind.data.repository.AuthRepositoryImpl
 import com.example.flashmind.domain.reposotory.AiRepository
 import com.example.flashmind.domain.reposotory.AuthRepository
-import com.google.ai.client.generativeai.GenerativeModel
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory

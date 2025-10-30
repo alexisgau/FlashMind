@@ -1,6 +1,6 @@
 package com.example.flashmind.domain.usecase.preference
 
-import com.example.flashmind.data.UserPreferencesRepository
+import com.example.flashmind.data.local.preferences.UserPreferencesRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 

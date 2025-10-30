@@ -8,7 +8,7 @@ import androidx.work.WorkManager
 import com.example.flashmind.data.local.dao.FlashCardDao
 import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.local.entities.toEntity
-import com.example.flashmind.data.network.model.FlashCardFirestore
+import com.example.flashmind.data.network.dto.FlashCardFirestore
 import com.example.flashmind.domain.model.FlashCard
 import com.example.flashmind.domain.reposotory.FlashCardRepository
 import com.example.flashmind.data.worker.FlashCardSyncWorker

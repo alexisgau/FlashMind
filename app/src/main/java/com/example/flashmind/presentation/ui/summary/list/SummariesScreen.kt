@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.summary
+package com.example.flashmind.presentation.ui.summary.list
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

@@ -11,7 +11,7 @@ import androidx.work.*
 import com.example.flashmind.data.local.dao.SummaryDao
 import com.example.flashmind.data.local.entities.SummaryEntity
 
-import com.example.flashmind.data.network.model.SummaryFirestore
+import com.example.flashmind.data.network.dto.SummaryFirestore
 import com.example.flashmind.domain.model.SummaryModel
 
 import com.google.firebase.auth.FirebaseAuth

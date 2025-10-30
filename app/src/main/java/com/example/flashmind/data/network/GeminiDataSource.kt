@@ -5,7 +5,8 @@ import android.util.Log
 import com.example.flashmind.BuildConfig
 import com.example.flashmind.data.local.entities.FlashCardEntity
 import com.example.flashmind.data.local.entities.MultipleChoiceQuestionEntity
-import com.example.flashmind.domain.model.GenerateContentRequest
+import com.example.flashmind.data.network.api.IaCallService
+import com.example.flashmind.data.network.dto.GenerateContentRequest
 import com.example.flashmind.domain.model.QuizQuestionModel
 import kotlinx.serialization.json.Json
 import javax.inject.Inject

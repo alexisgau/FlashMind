@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.summary
+package com.example.flashmind.presentation.ui.summary.generate
 
 import android.net.Uri
 import android.util.Log
@@ -47,8 +47,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.flashmind.R
-import com.example.flashmind.presentation.ui.test.extractTextFromUri
-import com.example.flashmind.presentation.ui.test.getFileNameFromUri
+import com.example.flashmind.presentation.ui.test.generate.extractTextFromUri
+import com.example.flashmind.presentation.ui.test.generate.getFileNameFromUri
 import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 
 @OptIn(ExperimentalMaterial3Api::class)

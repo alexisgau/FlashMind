@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.summary
+package com.example.flashmind.presentation.ui.summary.detail
 
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -41,8 +41,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.SummaryModel
-import com.example.flashmind.presentation.ui.test.ErrorQuizGenerator
-import com.example.flashmind.presentation.ui.test.QuizLoadingScreen
+import com.example.flashmind.presentation.ui.test.run.ErrorQuizGenerator
+import com.example.flashmind.presentation.ui.test.run.QuizLoadingScreen
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

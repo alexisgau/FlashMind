@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.summary
+package com.example.flashmind.presentation.ui.summary.list
 
 import android.util.Log
 import androidx.lifecycle.ViewModel

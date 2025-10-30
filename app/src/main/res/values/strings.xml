@@ -21,7 +21,8 @@
     <string name="content_description_delete_file">Delete file</string>
     <string name="generate">Generate</string>
 
-
+    <string name="auth_sign_in_guest">Sign in as Guest</string>
+    <string name="home_guest_name">Guest</string>
     <string name="auth_error_null_user"> User is null. Please try again.</string>
     <string name="auth_error_weak_password">Password is too weak (minimum 6 characters).</string>
     <string name="auth_error_invalid_email">The email format is invalid.</string>

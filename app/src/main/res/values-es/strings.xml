@@ -21,6 +21,8 @@
         <string name="content_description_delete_file">Eliminar archivo</string>
         <string name="generate">Generar</string>
 
+        <string name="auth_sign_in_guest">Entrar como Invitado</string>
+        <string name="home_guest_name">Invitado</string>
         <string name="auth_error_null_user">Usuario nulo. Por favor, intenta de nuevo.</string>
         <string name="auth_error_weak_password">La contraseña es demasiado débil (mínimo 6 caracteres).</string>
         <string name="auth_error_invalid_email">El formato del email no es válido.</string>

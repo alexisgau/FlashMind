@@ -9,7 +9,7 @@ import androidx.work.WorkManager
 import com.example.flashmind.data.local.dao.CategoryDao
 import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.local.entities.toEntity
-import com.example.flashmind.data.network.model.CategoryFirestore
+import com.example.flashmind.data.network.dto.CategoryFirestore
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.domain.reposotory.CategoryRepository
 import com.example.flashmind.data.worker.CategorySyncWorker

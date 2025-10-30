@@ -1,4 +1,4 @@
-package com.example.flashmind.domain.model
+package com.example.flashmind.data.network.dto
 import kotlinx.serialization.Serializable
 
 @Serializable

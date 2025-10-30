@@ -1,6 +1,6 @@
 package com.example.flashmind.domain.usecase.preference
 
-import com.example.flashmind.data.local.ThemePreferenceManager
+import com.example.flashmind.data.local.preferences.ThemePreferenceManager
 import javax.inject.Inject
 
 class SaveDarkModeUseCase @Inject constructor(

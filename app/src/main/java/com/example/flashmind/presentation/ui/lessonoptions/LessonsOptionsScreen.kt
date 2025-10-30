@@ -1,4 +1,4 @@
-package com.example.flashmind.presentation.ui.le
+package com.example.flashmind.presentation.ui.lessonoptions
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

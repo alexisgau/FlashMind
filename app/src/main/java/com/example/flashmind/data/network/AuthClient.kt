@@ -85,6 +85,18 @@ class AuthClient @Inject constructor(
         }
     }
 
+    suspend fun signInAnonymously(): Result<String> {
+        return try {
+            val authResult = auth.signInAnonymously().await()
+            val uid = authResult.user?.uid ?: return Result.failure(Exception(context.getString(R.string.auth_error_null_user)))
+            Result.success(uid)
+        } catch (e: FirebaseNetworkException) {
+            Result.failure(Exception(context.getString(R.string.auth_error_no_internet)))
+        } catch (e: Exception) {
+            Result.failure(Exception(e.message ?: context.getString(R.string.auth_error_unknown_login)))
+        }
+    }
+
     fun signInWithGoogle(): Flow<AuthResponse> = callbackFlow {
         val job = launch {
             try {

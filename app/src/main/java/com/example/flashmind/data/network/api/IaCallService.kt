@@ -1,7 +1,7 @@
-package com.example.flashmind.data.network
+package com.example.flashmind.data.network.api
 
-import com.example.flashmind.domain.model.GenerateContentRequest
-import com.example.flashmind.domain.model.GenerateContentResponse
+import com.example.flashmind.data.network.dto.GenerateContentRequest
+import com.example.flashmind.data.network.dto.GenerateContentResponse
 import kotlinx.serialization.Serializable
 import retrofit2.http.Body
 import retrofit2.http.GET

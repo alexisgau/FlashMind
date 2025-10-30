@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
     fun signInWithGoogle(): Flow<AuthResponse>
+    suspend fun signInAnonymously(): Result<String>
     suspend fun signOut(): Result<Unit>
     fun getCurrentUser(): FirebaseUser?
     suspend fun register(email: String, password: String): Result<String>

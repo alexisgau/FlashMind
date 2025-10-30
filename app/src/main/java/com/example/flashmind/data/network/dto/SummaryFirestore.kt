@@ -1,4 +1,4 @@
-package com.example.flashmind.data.network.model
+package com.example.flashmind.data.network.dto
 
 
 data class SummaryFirestore(
