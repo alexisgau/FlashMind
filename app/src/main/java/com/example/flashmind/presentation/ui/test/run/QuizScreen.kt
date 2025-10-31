@@ -28,8 +28,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -150,7 +150,7 @@ fun QuizScreen(
         }
     ) { innerPadding ->
         Column(
-            Modifier
+            modifier
                 .fillMaxSize()
                 .padding(innerPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -158,7 +158,8 @@ fun QuizScreen(
         ) {
             when (val uiState = testUiState) {
                 is QuizUiState.Error -> {
-                    ErrorQuizGenerator(
+                    ErrorGenerator(
+                        errorTitle = stringResource(id = R.string.quiz_error_generating_title),
                         errorMessage = uiState.error,
                         onRetry = {
                             if (contentFile != null && lessonId != null) {
@@ -375,7 +376,8 @@ fun QuizFinished(
 }
 
 @Composable
-fun ErrorQuizGenerator(
+fun ErrorGenerator(
+    errorTitle: String,
     errorMessage: String,
     onRetry: () -> Unit,
     onBack: () -> Unit
@@ -388,14 +390,14 @@ fun ErrorQuizGenerator(
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            imageVector = Icons.Default.Lock,
+            imageVector = Icons.Default.Warning,
             contentDescription = stringResource(id = R.string.error_prefix),
             tint = MaterialTheme.colorScheme.error,
             modifier = Modifier.size(64.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(id = R.string.quiz_error_generating_title),
+            text = errorTitle ,
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -412,9 +414,6 @@ fun ErrorQuizGenerator(
         ) {
             Button(
                 onClick = onBack,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                )
             ) {
                 Text(stringResource(id = R.string.go_back))
             }

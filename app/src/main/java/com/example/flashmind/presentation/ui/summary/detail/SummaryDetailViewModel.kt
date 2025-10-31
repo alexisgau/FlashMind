@@ -41,7 +41,6 @@ class SummaryViewModel @Inject constructor(
     private val getSummaryByIdUseCase: GetSummaryByIdUseCase
 ) : ViewModel() {
 
-
     private val _generationState =
         MutableStateFlow<SummaryGenerationState>(SummaryGenerationState.Idle)
     val generationState: StateFlow<SummaryGenerationState> = _generationState.asStateFlow()
@@ -49,28 +48,26 @@ class SummaryViewModel @Inject constructor(
     private val _downloadChannel = Channel<DownloadEvent>()
     val downloadEvents = _downloadChannel.receiveAsFlow()
 
-
     private var showLoadingJob: Job? = null
-
 
     fun generateAndSaveSummary(
         originalText: String,
         lessonId: Int,
         summaryTitle: String
     ) {
-        // Evita iniciar una nueva generación si ya está en proceso
         if (_generationState.value == SummaryGenerationState.Loading) return
-
         _generationState.value = SummaryGenerationState.Loading
         viewModelScope.launch {
             try {
-                // Generar resumen con IA
                 val generatedSummaryText = generateSummaryUseCase(originalText)
-                if (generatedSummaryText.isBlank()) {
-                    throw Exception("La IA no generó un resumen.")
-                }
-                Log.i("SummaryViewModel", "Resumen generado por IA.")
 
+                val MIN_SUMMARY_LENGTH = 50
+                if (generatedSummaryText.isBlank() || generatedSummaryText.length < MIN_SUMMARY_LENGTH) {
+                    Log.w("SummaryViewModel", "La IA generó un resumen inválido o vacío. Texto: $generatedSummaryText")
+                    throw Exception("La IA no pudo generar un resumen válido a partir de este texto.")
+                }
+
+                Log.i("SummaryViewModel", "Resumen generado por IA.")
 
                 val summaryToSave = SummaryModel(
                     summaryId = 0,
@@ -78,9 +75,7 @@ class SummaryViewModel @Inject constructor(
                     generatedSummary = generatedSummaryText,
                     title = summaryTitle,
                     creationDate = System.currentTimeMillis()
-
                 )
-
 
                 val newSummaryId = createSummaryUseCase(originalText, summaryToSave)
                 if (newSummaryId <= 0) {
@@ -88,7 +83,6 @@ class SummaryViewModel @Inject constructor(
                 }
                 Log.i("SummaryViewModel", "Resumen guardado con ID: $newSummaryId")
 
-                // 4. Actualizar estado a Success con el resumen completo (incluyendo el ID)
                 val savedSummary = summaryToSave.copy(summaryId = newSummaryId.toInt())
                 _generationState.value = SummaryGenerationState.Success(savedSummary)
 
@@ -101,14 +95,19 @@ class SummaryViewModel @Inject constructor(
         }
     }
 
-    fun loadSummaryById(summaryId: Int) {
-
+    fun loadSummaryById(summaryId: Int?) {
         showLoadingJob?.cancel()
+
+
+        if (summaryId == null || summaryId <= 0) {
+            _generationState.value = SummaryGenerationState.Error("ID de resumen inválido.")
+            return
+        }
 
         viewModelScope.launch {
             showLoadingJob = launch {
                 delay(150L)
-                if (_generationState.value == SummaryGenerationState.Idle || _generationState.value !is SummaryGenerationState.Success) {
+                if (_generationState.value !is SummaryGenerationState.Success) {
                     _generationState.value = SummaryGenerationState.Loading
                 }
             }
@@ -121,7 +120,6 @@ class SummaryViewModel @Inject constructor(
                 if (summary != null) {
                     _generationState.value = SummaryGenerationState.Success(summary)
                 } else {
-
                     _generationState.value = SummaryGenerationState.Error("Resumen no encontrado")
                 }
             } catch (e: Exception) {
@@ -131,11 +129,6 @@ class SummaryViewModel @Inject constructor(
                     SummaryGenerationState.Error(e.message ?: "Error desconocido al cargar resumen")
             }
         }
-    }
-
-    fun resetState() {
-        showLoadingJob?.cancel()
-        _generationState.value = SummaryGenerationState.Idle
     }
 
     fun saveSummaryAsPdf(context: Context, summary: SummaryModel) {
@@ -162,7 +155,6 @@ class SummaryViewModel @Inject constructor(
         val pageWidth = 792  // A4 Width approx.
         val margin = 72f
         val contentWidth = pageWidth - 2 * margin.toInt()
-        val contentHeight = pageHeight - 2 * margin.toInt() // Usable height per page
 
         val titlePaint = TextPaint().apply {
             color = Color.BLACK

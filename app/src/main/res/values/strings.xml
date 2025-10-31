@@ -20,6 +20,12 @@
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_delete_file">Delete file</string>
     <string name="generate">Generate</string>
+    <string name="generate_summary_text_field">summary title</string>
+    <string name="generate_summary">Generate summary</string>
+    <string name="upload_file">Upload file</string>
+    <string name="generate_summary_topbar">Smart summarizer</string>
+
+
 
     <string name="auth_sign_in_guest">Sign in as Guest</string>
     <string name="home_guest_name">Guest</string>
@@ -168,6 +174,7 @@
     <string name="summary_download_pdf">Download PDF</string>
     <string name="summary_ia_generated_default_title">AI-generated summary.</string>
     <string name="summary_pdf_save_success">Summary saved to Downloads</string>
+    <string name="summary_error_generating_title">Error Generating Summary</string>
     <string name="summary_pdf_save_error">Error saving PDF</string>
 
     <string name="tests_list_title">My tests</string>

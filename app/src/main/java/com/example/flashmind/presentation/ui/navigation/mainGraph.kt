@@ -284,7 +284,7 @@ fun NavGraphBuilder.mainGraph(
             SummaryViewScreen(
                 summaryId = args.summaryId,
                 contentFile = args.contentFile,
-                summaryTittle = args.summaryTittle,
+                summaryTitle = args.summaryTittle,
                 lessonId = args.lessonId,
                 onClickBack = { navController.popBackStack() }
             )

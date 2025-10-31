@@ -6,12 +6,14 @@ import kotlinx.serialization.Serializable
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface IaCallService {
 
-    @POST("v1/models/gemini-2.5-flash:generateContent")
+    @POST("v1/models/{modelName}:generateContent")
     suspend fun generateContent(
+        @Path("modelName") modelName: String,
         @Query("key") apiKey: String,
         @Body request: GenerateContentRequest
     ): GenerateContentResponse

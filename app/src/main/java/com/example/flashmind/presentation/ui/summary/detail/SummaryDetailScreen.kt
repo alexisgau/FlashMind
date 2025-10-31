@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -41,7 +42,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.SummaryModel
-import com.example.flashmind.presentation.ui.test.run.ErrorQuizGenerator
+import com.example.flashmind.presentation.ui.test.run.ErrorGenerator
 import com.example.flashmind.presentation.ui.test.run.QuizLoadingScreen
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -52,7 +53,7 @@ fun SummaryViewScreen(
     modifier: Modifier = Modifier,
     summaryId: Int? = null,
     contentFile: String? = null,
-    summaryTittle: String? = null,
+    summaryTitle: String? = null,
     lessonId: Int? = null,
     onClickBack: () -> Unit,
     viewModel: SummaryViewModel = hiltViewModel()
@@ -71,7 +72,7 @@ fun SummaryViewScreen(
                 viewModel.generateAndSaveSummary(
                     contentFile,
                     lessonId,
-                    summaryTittle ?: "Summary generated"
+                    summaryTitle ?: "Summary generated"
                 )
             }
 
@@ -112,7 +113,7 @@ fun SummaryViewScreen(
                 title = {
                     val title =
                         (generationState as? SummaryGenerationState.Success)?.newSummary?.title
-                            ?: summaryTittle ?: "Resumen"
+                            ?: summaryTitle ?: "Summary"
                     Text(
                         title,
                         maxLines = 1,
@@ -151,7 +152,7 @@ fun SummaryViewScreen(
 
         ) { innerPadding ->
         Column(
-            Modifier
+            modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(16.dp),
@@ -161,9 +162,18 @@ fun SummaryViewScreen(
             when (val uiState = generationState) {
 
                 is SummaryGenerationState.Error -> {
-                    ErrorQuizGenerator(
+                    ErrorGenerator(
+                        errorTitle = stringResource(id = R.string.summary_error_generating_title),
                         errorMessage = uiState.error,
-                        onRetry = { },
+                        onRetry = {
+                            if (contentFile != null && lessonId != null) {
+                                viewModel.generateAndSaveSummary(
+                                    originalText = contentFile,
+                                    lessonId = lessonId,
+                                    summaryTitle = summaryTitle ?: "Summary tittle"
+                                )
+                            }
+                        },
                         onBack = onClickBack
                     )
 

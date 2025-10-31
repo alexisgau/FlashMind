@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -110,7 +111,7 @@ fun GenerateSummaryScreen(
         CenterAlignedTopAppBar(
             title = {
                 Text(
-                    "Resumidor Inteligente", maxLines = 1,
+                    stringResource(R.string.generate_summary_topbar), maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
             },
@@ -191,7 +192,7 @@ fun GenerateSummaryScreen(
             OutlinedTextField(
                 value = summaryTitle,
                 onValueChange = { summaryTitle = it },
-                label = { Text("Título del Resumen") },
+                label = { Text(stringResource(R.string.generate_summary_text_field))},
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -207,7 +208,7 @@ fun GenerateSummaryScreen(
                     .fillMaxWidth()
                     .height(50.dp)
             ) {
-                Text("Generar Resumen", fontSize = 16.sp)
+                Text(stringResource(R.string.generate_summary), fontSize = 16.sp)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -288,7 +289,7 @@ fun UploadFileButton(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Cargar Archivo",
+                text = stringResource(R.string.upload_file),
                 textAlign = TextAlign.Center,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold

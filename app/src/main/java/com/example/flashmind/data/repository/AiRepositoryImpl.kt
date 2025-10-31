@@ -3,6 +3,7 @@ package com.example.flashmind.data.repository
 import android.util.Log
 import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.network.GeminiDataSource
+import com.example.flashmind.data.network.dto.SafetySetting
 import com.example.flashmind.domain.model.FlashCard
 import com.example.flashmind.domain.model.QuizQuestionModel
 import com.example.flashmind.domain.reposotory.AiRepository
@@ -58,44 +59,47 @@ class AiRepositoryImpl @Inject constructor(
     ): List<QuizQuestionModel> {
 
         val prompt = """
-           Eres un asistente experto en crear material de estudio. A partir del siguiente texto, genera **tantas preguntas de opción múltiple (multiple choice) como consideres relevantes** basándote en el contenido. La cantidad de preguntas debe ajustarse al tamaño y la densidad de la información del texto.
+           Actúa como un tutor experto. Tu objetivo es ayudar a un estudiante a autoevaluarse.
 
-            **Instrucciones Importantes:**
-            1.  Detecta el idioma principal del "Texto de Entrada" (ejemplo: inglés, español, etc.).
-            2.  **Genera todas las preguntas y todas las opciones en ese mismo idioma detectado.**
-            3.  Devuelve tu respuesta **únicamente** en formato JSON, sin texto introductorio ni comentarios.
-            4.  **Usa las claves JSON en español** ("pregunta", "opciones", "respuesta_correcta") tal como se muestra en el ejemplo, sin importar el idioma del contenido.
+           **Tarea:**
+           1.  Lee el "TEXTO DE ENTRADA". Este texto puede estar "sucio", extraído de un PDF (puede incluir encabezados, pies de página, o fórmulas).
+           2.  Ignora la "basura" (encabezados, pies de página repetitivos, texto de diagramas) y extrae los conceptos principales.
+           3.  Basado **solo en los conceptos principales**, genera preguntas de opción múltiple para ayudar al estudiante a verificar su comprensión.
+           4.  **Detecta el idioma** del texto principal (inglés o español) y genera las preguntas y opciones en ESE MISMO IDIOMA.
 
+           **Formato de Salida Obligatorio:**
+           * Devuelve **únicamente** un JSON, sin texto introductorio.
+           * Usa **exactamente** las claves en español: "pregunta", "opciones", "respuesta_correcta".
 
-            Ejemplo de formato de salida (si el texto fuera en español):
-            [
-              {
-                "pregunta": "¿En qué año terminó la Segunda Guerra Mundial?",
-                "opciones": [
-                  "1942",
-                  "1945",
-                  "1939",
-                  "1950"
-                ],
-                "respuesta_correcta": 1
-              }
-            ]
-
-            ---
-            TEXTO DE ENTRADA:
-            $text
-            ---
+           Ejemplo de formato (si el texto fuera en español):
+           [
+             {
+               "pregunta": "¿Qué es la criptografía simétrica?",
+               "opciones": ["Usa dos claves", "Usa una clave pública", "Usa la misma clave para cifrar y descifrar", "No usa claves"],
+               "respuesta_correcta": 2
+             }
+           ]
+           ---
+           TEXTO DE ENTRADA:
+           $text
+           ---
         """.trimIndent()
-        var response = geminiDataSource.getTestFromText(prompt)
+        val safetySettings = listOf(
+            SafetySetting("HARM_CATEGORY_HARASSMENT", "BLOCK_NONE"),
+            SafetySetting("HARM_CATEGORY_HATE_SPEECH", "BLOCK_NONE"),
+            SafetySetting("HARM_CATEGORY_SEXUALLY_EXPLICIT", "BLOCK_NONE"),
+            SafetySetting("HARM_CATEGORY_DANGEROUS_CONTENT", "BLOCK_NONE")
+        )
+
+        // 2. Pasa el prompt Y los safetySettings a la función del DataSource
+        var response = geminiDataSource.getTestFromText(prompt, safetySettings) // <-- CORREGIDO
 
         if (response.isBlank()) {
             Log.e("AiRepository", "La respuesta de Gemini fue nula o vacía.")
-            return emptyList() // Devuelve una lista vacía en lugar de crashear
+            return emptyList()
         }
         response = response.trim().removePrefix("```json").removeSuffix("```").trim()
         return geminiDataSource.parseTestFromJson(response, testId).map { it.toDomain() }
-
-
     }
 
 

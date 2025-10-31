@@ -20,6 +20,13 @@
         <string name="content_description_file_icon">Icono de archivo</string>
         <string name="content_description_delete_file">Eliminar archivo</string>
         <string name="generate">Generar</string>
+        <string name="generate_summary_text_field">titulo del resumen</string>
+        <string name="generate_summary">Generar resumen</string>
+        <string name="upload_file">Cargar Archivo</string>
+        <string name="generate_summary_topbar">Resumidor Inteligente</string>
+
+
+
 
         <string name="auth_sign_in_guest">Entrar como Invitado</string>
         <string name="home_guest_name">Invitado</string>
@@ -168,6 +175,7 @@
         <string name="summary_screen_title">Resumen</string>
         <string name="summary_download_pdf">Descargar PDF</string>
         <string name="summary_ia_generated_default_title">Resumen generado por IA.</string>
+        <string name="summary_error_generating_title">Error genernado resumen</string>
         <string name="summary_pdf_save_success">Resumen guardado en Descargas</string>
         <string name="summary_pdf_save_error">Error al guardar el PDF</string>
 

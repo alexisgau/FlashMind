@@ -7,6 +7,7 @@ import com.example.flashmind.data.local.entities.FlashCardEntity
 import com.example.flashmind.data.local.entities.MultipleChoiceQuestionEntity
 import com.example.flashmind.data.network.api.IaCallService
 import com.example.flashmind.data.network.dto.GenerateContentRequest
+import com.example.flashmind.data.network.dto.SafetySetting
 import com.example.flashmind.domain.model.QuizQuestionModel
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
@@ -16,11 +17,16 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
 
     val apiKey = BuildConfig.GEMINI_API_KEY
 
+    private val modelFlash = "gemini-2.5-flash"
+    private val modelPro = "gemini-2.5-pro"
 
+    init {
+        if (apiKey.isEmpty()) {
+            Log.e("API_KEY", "¡ADVERTENCIA! La API Key de Gemini no está configurada")
+        }
+    }
 
     suspend fun getFlashcardsFromText(prompt: String): String {
-        val models = apiService.listModels(apiKey)
-        Log.i("Models", "$models")
         val requestBody = GenerateContentRequest(
             contents = listOf(
                 GenerateContentRequest.Content(
@@ -30,32 +36,53 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
         )
 
         return try {
-            val response = apiService.generateContent(apiKey, requestBody)
+            val response = apiService.generateContent(
+                modelName = modelPro,
+                apiKey = apiKey,
+                request = requestBody
+            )
             response.getSafeText()
         } catch (e: Exception) {
             Log.e("GeminiAPI", "Error en Retrofit (Flashcards): ${e.message}", e)
-            try {
-                val response = apiService.generateContent(apiKey, requestBody)
-                response.getSafeText()
-            } catch (e2: Exception) {
-                Log.e("GeminiAPI", "Error también con v1.5: ${e2.message}")
-                ""
-            }
+            ""
         }
     }
 
-    suspend fun getTestFromText(prompt: String): String {
+    suspend fun getTestFromText(prompt: String, safetySettings: List<SafetySetting>): String {
+        val requestBody = GenerateContentRequest(
+            contents = listOf(GenerateContentRequest.Content(
+                parts = listOf(GenerateContentRequest.Part(text = prompt))
+            )),
+            safetySettings = safetySettings
+        )
+        return try {
+            val response = apiService.generateContent(
+                modelName = modelPro,
+                apiKey = apiKey,
+                request = requestBody
+            )
+            response.getSafeText()
+        } catch (e: Exception) {
+            Log.e("GeminiAPI", "Error en Retrofit (GenerateTest): ${e.message}", e)
+            ""
+        }
+    }
+
+    suspend fun getSummaryFromText(prompt: String): String {
         val requestBody = GenerateContentRequest(
             contents = listOf(GenerateContentRequest.Content(
                 parts = listOf(GenerateContentRequest.Part(text = prompt))
             ))
         )
         return try {
-            val response = apiService.generateContent(apiKey, requestBody)
-            //devuelve el texto limpio
+            val response = apiService.generateContent(
+                modelName = modelFlash,
+                apiKey = apiKey,
+                request = requestBody
+            )
             response.getSafeText()
         } catch (e: Exception) {
-            Log.e("GeminiAPI", "Error en Retrofit (GenerateTest): ${e.message}", e)
+            Log.e("GeminiAPI", "Error en Retrofit (GenerateSummary): ${e.message}", e)
             ""
         }
     }
@@ -80,7 +107,6 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
             emptyList()
         }
     }
-
 
     fun parseFlashcardsFromText(
         input: String,
@@ -111,23 +137,6 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
             )
         }
         return flashcards
-    }
-
-    suspend fun getSummaryFromText(prompt: String): String {
-        val requestBody = GenerateContentRequest(
-            contents = listOf(
-                GenerateContentRequest.Content(
-                    parts = listOf(GenerateContentRequest.Part(text = prompt))
-                )
-            )
-        )
-        return try {
-            val response = apiService.generateContent(apiKey, requestBody)
-            response.getSafeText()
-        } catch (e: Exception) {
-            Log.e("GeminiAPI", "Error en Retrofit (GenerateSummary): ${e.message}", e)
-            ""
-        }
     }
 
 

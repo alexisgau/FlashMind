@@ -3,7 +3,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GenerateContentRequest(
-    val contents: List<Content>
+    val contents: List<Content>,
+    val safetySettings: List<SafetySetting>? = null
 ) {
     @Serializable
     data class Content(
@@ -16,6 +17,12 @@ data class GenerateContentRequest(
     )
 }
 
+
+@Serializable
+data class SafetySetting(
+    val category: String,
+    val threshold: String
+)
 @Serializable
 data class GenerateContentResponse(
     val candidates: List<Candidate>?
