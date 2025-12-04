@@ -1,6 +1,8 @@
 package com.example.flashmind.presentation.ui.test.list
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -147,13 +149,22 @@ fun TestItem(
     onStartClick: (Int) -> Unit,
     onDeleteClick: () -> Unit
 ) {
+    val isDarkTheme = isSystemInDarkTheme()
+
+    val borderStroke = if (isDarkTheme) {
+        BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
+    } else {
+        null
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = borderStroke
     ) {
         Row(
             modifier = Modifier

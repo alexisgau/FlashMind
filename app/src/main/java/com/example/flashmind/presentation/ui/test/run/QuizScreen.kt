@@ -63,6 +63,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.QuizQuestionModel
+import com.example.flashmind.presentation.utils.formatTime
 import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -177,11 +178,12 @@ fun QuizScreen(
                 is QuizUiState.Finished -> {
                     val percentage =
                         (uiState.correctAnswers.toDouble() / uiState.totalQuestions) * 100
+
                     QuizFinished(
                         correctAnswers = uiState.correctAnswers,
                         totalQuestions = uiState.totalQuestions,
                         percentage = percentage.roundToInt(),
-                        timeTaken = uiState.elapsedTimeSeconds.toString(),
+                        timeTaken = uiState.elapsedTimeSeconds.formatTime(),
                         onRetry = { viewModel.restartQuiz() },
                     )
                 }

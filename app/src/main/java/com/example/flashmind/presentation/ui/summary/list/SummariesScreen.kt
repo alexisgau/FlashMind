@@ -1,6 +1,8 @@
 package com.example.flashmind.presentation.ui.summary.list
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -170,10 +172,17 @@ fun SummaryItem(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-
     val cleanSubtitle = remember(subtitle) {
         cleanMarkdownForPreview(subtitle)
     }
+
+    val isDarkTheme = isSystemInDarkTheme()
+    val borderStroke = if (isDarkTheme) {
+        BorderStroke(1.dp, MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f))
+    } else {
+        null
+    }
+
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -181,7 +190,8 @@ fun SummaryItem(
             .clickable { onViewClick() },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = borderStroke
     ) {
         Row(
             modifier = Modifier

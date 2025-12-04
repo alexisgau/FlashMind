@@ -108,13 +108,13 @@ class QuizViewModel @Inject constructor(
             } catch (e: CancellationException) {
                 Log.w("QuizViewModel", "Generación cancelada. Borrando test huérfano: $newTestId", e)
                 newTestId?.let {
-                    try { deleteTestUseCase(it.toInt()) } catch (e: Exception) { /* Ignora error de limpieza */ }
+                    try { deleteTestUseCase(it.toInt()) } catch (e: Exception) {  }
                 }
                 _quizState.value = QuizUiState.Error("Canceled generation.")
             } catch (e: Exception) {
                 Log.e("QuizViewModel", "Error en generateAndSaveTest. Borrando test huérfano: $newTestId", e)
                 newTestId?.let {
-                    try { deleteTestUseCase(it.toInt()) } catch (e: Exception) { /* Ignora error de limpieza */ }
+                    try { deleteTestUseCase(it.toInt()) } catch (e: Exception) {  }
                 }
                 _quizState.value = QuizUiState.Error(e.message ?: "Unknown error")
             }

@@ -5,8 +5,12 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.presentation.ui.navigation.AppNavHost
 import com.example.flashmind.ui.theme.FlashMindTheme
@@ -27,18 +31,21 @@ class MainActivity : ComponentActivity() {
             val isOnboardingCompleted by viewModel.isOnboardingCompleted.collectAsStateWithLifecycle()
 
             FlashMindTheme(darkTheme = isDarkMode) {
-                if (!isLoading) {
-                    val isAuthenticated by viewModel.isAuthenticated.collectAsState()
-                    AppNavHost(
-                        isAuthenticated = isAuthenticated,
-                        isOnboardingCompleted = isOnboardingCompleted,
-                        setOnboardingCompleted = viewModel::setOnboardingCompleted
-                    )
-                } else {
-                    // Puedes mostrar un splash screen aquí si quieres
-                    // Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-                    //    CircularProgressIndicator()
-                    // }
+
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    if (!isLoading) {
+                        val isAuthenticated by viewModel.isAuthenticated.collectAsState()
+                        AppNavHost(
+                            isAuthenticated = isAuthenticated,
+                            isOnboardingCompleted = isOnboardingCompleted,
+                            setOnboardingCompleted = viewModel::setOnboardingCompleted
+                        )
+                    } else {
+
+                    }
                 }
             }
         }

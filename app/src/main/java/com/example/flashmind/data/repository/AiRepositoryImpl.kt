@@ -66,6 +66,7 @@ class AiRepositoryImpl @Inject constructor(
            2.  Ignora la "basura" (encabezados, pies de página repetitivos, texto de diagramas) y extrae los conceptos principales.
            3.  Basado **solo en los conceptos principales**, genera preguntas de opción múltiple para ayudar al estudiante a verificar su comprensión.
            4.  **Detecta el idioma** del texto principal (inglés o español) y genera las preguntas y opciones en ESE MISMO IDIOMA.
+           5. ** En el caso que detectes un que el texto tiene sus preguntas con sus opciones, usa esa información para generar las preguntas sin ignorar ninguna.
 
            **Formato de Salida Obligatorio:**
            * Devuelve **únicamente** un JSON, sin texto introductorio.
@@ -92,7 +93,7 @@ class AiRepositoryImpl @Inject constructor(
         )
 
         // 2. Pasa el prompt Y los safetySettings a la función del DataSource
-        var response = geminiDataSource.getTestFromText(prompt, safetySettings) // <-- CORREGIDO
+        var response = geminiDataSource.getTestFromText(prompt, safetySettings)
 
         if (response.isBlank()) {
             Log.e("AiRepository", "La respuesta de Gemini fue nula o vacía.")

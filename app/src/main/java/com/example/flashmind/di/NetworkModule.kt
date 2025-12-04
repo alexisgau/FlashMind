@@ -45,10 +45,11 @@ object NetworkModule {
                 level = HttpLoggingInterceptor.Level.BODY
             })
             .addInterceptor(authInterceptor)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS)
+            .connectTimeout(5, TimeUnit.MINUTES)
+            .readTimeout(5, TimeUnit.MINUTES)
+            .writeTimeout(5, TimeUnit.MINUTES)   
             .build()
+
     }
 
     @Provides
