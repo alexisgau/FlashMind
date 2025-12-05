@@ -100,14 +100,14 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.1")
 
 
-    implementation("androidx.room:room-runtime:2.6.1")  // Versión estable más reciente
-    kapt("androidx.room:room-compiler:2.6.1")  // Procesador de anotaciones (kapt)
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
 
     implementation("com.google.dagger:hilt-android:2.48")
     kapt("com.google.dagger:hilt-android-compiler:2.48")
 
-    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")  // Si usas Jetpack Compose
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
 
@@ -115,6 +115,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.2.0")
 
     implementation("com.google.firebase:firebase-firestore-ktx:25.0.0")
+
+    implementation("com.google.firebase:firebase-storage")
 
     // Manejo de credenciales (Authentication API)
     implementation ("androidx.credentials:credentials:1.3.0-alpha05")

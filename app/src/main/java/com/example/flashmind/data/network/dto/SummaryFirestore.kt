@@ -6,5 +6,6 @@ data class SummaryFirestore(
     val lessonId: Int = 0,
     val generatedSummary: String = "",
     val title: String = "",
-    val userId: String = ""
+    val userId: String = "",
+    val creationDate: Long = 0L
 )

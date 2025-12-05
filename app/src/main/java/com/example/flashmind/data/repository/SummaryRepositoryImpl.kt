@@ -92,7 +92,8 @@ class SummaryRepositoryImpl @Inject constructor(
             lessonId = summary.lessonId,
             generatedSummary = summary.generatedSummary,
             title = summary.title,
-            userId = summary.userId
+            userId = summary.userId,
+            creationDate = summary.creationDate
         )
         firestore.collection("users").document(userId)
             .collection("summaries").document("Summary_${summary.summaryId}")

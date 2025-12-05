@@ -73,7 +73,12 @@
         <string name="auth_error_google">Error con Google.</string>
         <string name="auth_logout_error">Error al cerrar sesión.</string>
 
+        <string name="hello">¡Hola! 👋</string>
+        <string name="how_should_we_call_you">¿Cómo te gustaría que te llamemos?</string>
+        <string name="your_name">Tu nombre</string>
+        <string name="continue_button">Continuar</string>
         <string name="home_greeting">¡Hola, %1$s!</string>
+        <string name="home_welcome_generic">¡Bienvenido!</string>
         <string name="home_greeting_default">¡Hola usuario!</string>
         <string name="home_main_card_title">Estudiar nunca fue\ntan fácil con\nFlashMind</string>
         <string name="home_main_card_image_cd">Ilustración de mascota</string>
@@ -203,6 +208,7 @@
 
         <string name="account_settings_title">Ajustes de cuenta</string>
         <string name="account_back_to_login">Volver al login</string>
+        <string name="create_account">Crear cuenta</string>
         <string name="account_profile_picture_cd">Foto de perfil</string>
         <string name="account_default_profile_cd">Perfil por defecto</string>
         <string name="account_preferences_section">Preferencias</string>
@@ -211,6 +217,10 @@
         <string name="account_sign_out">Cerrar sesión</string>
         <string name="account_app_version">Versión de la app: 1.0.0</string>
         <string name="account_feedback">Envíanos tu feedback</string>
+        <string name="are_you_sure_title">¿Estás seguro?</string>
+        <string name="guest_mode_warning_message">Estás en modo invitado. Si cierras sesión, PERDERÁS todos tus resúmenes, tests y categorías creados. Esta acción no se puede deshacer.</string>
+        <string name="delete_all_and_exit">Borrar todo y salir</string>
+
 
         <string name="file_selection_cancelled">El usuario canceló la selección de archivo</string>
         <string name="file_text_extraction_error">Error al extraer texto</string>

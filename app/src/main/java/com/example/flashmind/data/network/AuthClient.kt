@@ -1,6 +1,7 @@
 package com.example.flashmind.data.network
 
 import android.content.Context
+import android.net.Uri
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
@@ -27,14 +28,20 @@ import android.util.Log
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.exceptions.GetCredentialException
 import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
+import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import javax.inject.Singleton
 
 @Singleton
 class AuthClient @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val auth: FirebaseAuth
+    private val auth: FirebaseAuth,
+    private val storage: FirebaseStorage
 ) {
 
     fun getAuthState(): Flow<Boolean> = callbackFlow {
@@ -51,6 +58,7 @@ class AuthClient @Inject constructor(
         return try {
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
             val uid = authResult.user?.uid ?: return Result.failure(Exception(context.getString(R.string.auth_error_null_user)))
+
             Result.success(uid)
         } catch (e: FirebaseAuthWeakPasswordException) {
             Result.failure(Exception(context.getString(R.string.auth_error_weak_password)))
@@ -85,6 +93,54 @@ class AuthClient @Inject constructor(
         }
     }
 
+
+    suspend fun updateUserName(name: String): Result<Unit> {
+        val user = auth.currentUser ?: return Result.failure(Exception("No hay usuario logueado"))
+        return try {
+            val updates = userProfileChangeRequest { displayName = name }
+            user.updateProfile(updates).await()
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    suspend fun updateProfilePicture(imageUri: Uri): Result<String> {
+        val user = auth.currentUser ?: return Result.failure(Exception("No hay usuario logueado"))
+
+        return try {
+            val storageRef = storage.reference.child("profile_images/${user.uid}")
+
+            val contentResolver = context.contentResolver
+            val inputStream = contentResolver.openInputStream(imageUri)
+                ?: return Result.failure(Exception("No se pudo abrir el archivo de imagen"))
+
+            val mimeType = contentResolver.getType(imageUri) ?: "image/jpeg"
+            val metadata = StorageMetadata.Builder()
+                .setContentType(mimeType)
+                .build()
+
+            inputStream.use { stream ->
+                storageRef.putStream(stream, metadata).await()
+            }
+
+
+            val downloadUrl = storageRef.downloadUrl.await()
+
+
+            val profileUpdates = userProfileChangeRequest {
+                photoUri = downloadUrl
+            }
+            user.updateProfile(profileUpdates).await()
+
+            Result.success(downloadUrl.toString())
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Result.failure(e)
+        }
+    }
     suspend fun signInAnonymously(): Result<String> {
         return try {
             val authResult = auth.signInAnonymously().await()
@@ -97,60 +153,86 @@ class AuthClient @Inject constructor(
         }
     }
 
-    fun signInWithGoogle(): Flow<AuthResponse> = callbackFlow {
-        val job = launch {
-            try {
-                val googleIdOption = GetGoogleIdOption.Builder()
-                    .setFilterByAuthorizedAccounts(false)
-                    .setServerClientId(context.getString(R.string.web_client_id))
-                    .setAutoSelectEnabled(true)
-                    .setNonce(createNonce())
-                    .build()
-
-                val request = GetCredentialRequest.Builder()
-                    .addCredentialOption(googleIdOption)
-                    .build()
-
-                val credentialManager = CredentialManager.create(context)
-                val result = credentialManager.getCredential(context = context, request = request)
-                val credential = result.credential
-
-                if (credential is CustomCredential &&
-                    credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
-                ) {
-                    val googleIdTokenCredential =
-                        GoogleIdTokenCredential.createFrom(credential.data)
-
-                    val firebaseCredential = GoogleAuthProvider.getCredential(
-                        googleIdTokenCredential.idToken,
-                        null
-                    )
-
-                    auth.signInWithCredential(firebaseCredential)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                trySend(AuthResponse.Success)
-                            } else {
-                                val errorMsg = task.exception?.message ?: context.getString(R.string.auth_error_google)
-                                trySend(AuthResponse.Error(errorMsg))
-                            }
-                            channel.close()
-                        }
-                } else {
-                    trySend(AuthResponse.Error(context.getString(R.string.auth_error_google)))
-                    channel.close()
-                }
-            } catch (e: GetCredentialException) {
-                Log.e("AuthClient", "GetCredentialException: ${e.message}")
-                trySend(AuthResponse.Error(context.getString(R.string.auth_error_google)))
-                channel.close()
-            } catch (e: Exception) {
-                Log.e("AuthClient", "Error en signInWithGoogle: ${e.message}")
-                trySend(AuthResponse.Error(e.message ?: context.getString(R.string.auth_error_google)))
-                channel.close()
-            }
+    suspend fun upgradeAnonymousAccount(email: String, password: String): Result<String> {
+        val user = auth.currentUser
+        if (user == null || !user.isAnonymous) {
+            return Result.failure(Exception("No hay un usuario invitado activo para vincular."))
         }
-        awaitClose { job.cancel() }
+
+        val credential = EmailAuthProvider.getCredential(email, password)
+
+        return try {
+            val authResult = user.linkWithCredential(credential).await()
+            val uid = authResult.user?.uid ?: return Result.failure(Exception("Usuario nulo tras vincular"))
+            Result.success(uid)
+        } catch (e: FirebaseAuthUserCollisionException) {
+            Result.failure(Exception("Este email ya tiene una cuenta. Por favor inicia sesión."))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    fun isUserAnonymous(): Boolean {
+        return auth.currentUser?.isAnonymous == true
+    }
+
+    fun signInWithGoogle(): Flow<AuthResponse> = flow {
+        try {
+            val googleIdToken = getGoogleIdToken()
+
+            val firebaseCredential = GoogleAuthProvider.getCredential(googleIdToken, null)
+            val currentUser = auth.currentUser
+
+
+            if (currentUser != null && currentUser.isAnonymous) {
+                try {
+                    currentUser.linkWithCredential(firebaseCredential).await()
+                } catch (e: FirebaseAuthUserCollisionException) {
+                    auth.signInWithCredential(firebaseCredential).await()
+                }
+            } else {
+
+                auth.signInWithCredential(firebaseCredential).await()
+            }
+
+
+            emit(AuthResponse.Success)
+
+        } catch (e: GetCredentialException) {
+            Log.e("AuthClient", "Google Sign-In cancelado o fallido: ${e.message}")
+            emit(AuthResponse.Error(context.getString(R.string.auth_error_google)))
+        } catch (e: Exception) {
+            Log.e("AuthClient", "Error en signInWithGoogle: ${e.message}")
+            val errorMsg = e.message ?: context.getString(R.string.auth_error_google)
+            emit(AuthResponse.Error(errorMsg))
+        }
+    }
+
+    private suspend fun getGoogleIdToken(): String {
+        val googleIdOption = GetGoogleIdOption.Builder()
+            .setFilterByAuthorizedAccounts(false)
+            .setServerClientId(context.getString(R.string.web_client_id))
+            .setAutoSelectEnabled(true)
+            .setNonce(createNonce())
+            .build()
+
+        val request = GetCredentialRequest.Builder()
+            .addCredentialOption(googleIdOption)
+            .build()
+
+
+        val result = CredentialManager.create(context).getCredential(context, request)
+        val credential = result.credential
+
+        if (credential is CustomCredential &&
+            credential.type == GoogleIdTokenCredential.TYPE_GOOGLE_ID_TOKEN_CREDENTIAL
+        ) {
+            val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
+            return googleIdTokenCredential.idToken
+                ?: throw Exception("El ID token de Google vino nulo")
+        } else {
+            throw Exception("Tipo de credencial no reconocido")
+        }
     }
 
     fun getCurrentUser(): FirebaseUser? {

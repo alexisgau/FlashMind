@@ -71,7 +71,13 @@
     <string name="auth_error_google">Error with Google.</string>
     <string name="auth_logout_error">Error signing out.</string>
 
+
+    <string name="hello">Hello! 👋</string>
+    <string name="how_should_we_call_you">How would you like us to call you?</string>
+    <string name="your_name">Your name</string>
+    <string name="continue_button">Continue</string>
     <string name="home_greeting">Hello, %1$s!</string>
+    <string name="home_welcome_generic">¡Welcome!</string>
     <string name="home_greeting_default">Hello user!</string>
     <string name="home_main_card_title">Studying has never\nbeen easier with\nFlashMind</string>
     <string name="home_main_card_image_cd">Mascot illustration</string>
@@ -201,6 +207,7 @@
 
     <string name="account_settings_title">Account settings</string>
     <string name="account_back_to_login">Back to login</string>
+    <string name="create_account">Create account</string>
     <string name="account_profile_picture_cd">Profile picture</string>
     <string name="account_default_profile_cd">Default profile</string>
     <string name="account_preferences_section">Preferences</string>
@@ -209,6 +216,10 @@
     <string name="account_sign_out">Sign out</string>
     <string name="account_app_version">App version: 1.0.0</string>
     <string name="account_feedback">Send us your feedback</string>
+    <string name="are_you_sure_title">Are you sure?</string>
+    <string name="guest_mode_warning_message">You are in guest mode. If you log out, you will LOSE all your summaries, tests, and created categories. This action cannot be undone.</string>
+    <string name="delete_all_and_exit">Delete all and exit</string>
+
 
     <string name="file_selection_cancelled">User cancelled file selection</string>
     <string name="file_text_extraction_error">Error extracting text</string>

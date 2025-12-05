@@ -171,7 +171,7 @@ fun StartLessonScreen(
                             cameraDistance = 12 * density.density
                         }
                         .background(
-                            Color(currentCard.color.toColorInt()),
+                            color = parseColorSafe(currentCard.color),
                             shape = RoundedCornerShape(16.dp)
                         )
                         .clickable { flipped = !flipped }
@@ -311,11 +311,7 @@ fun LessonCompleteScreen(
                     text = stringResource(id = R.string.study_session_restart_button),
                     fontSize = 16.sp
                 )
-                Spacer(modifier = Modifier.weight(1f))
-                Icon(
-                    imageVector = Icons.Default.Refresh,
-                    contentDescription = stringResource(id = R.string.study_session_restart_button)
-                )
+
             }
         }
 
@@ -338,5 +334,18 @@ fun LessonCompleteScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+fun parseColorSafe(colorString: String): Color {
+    return try {
+        if (colorString.isBlank()) {
+            Color(0xFF6750A4)
+        } else {
+
+            Color(android.graphics.Color.parseColor(colorString))
+        }
+    } catch (e: Exception) {
+        Color(0xFF6750A4)
     }
 }

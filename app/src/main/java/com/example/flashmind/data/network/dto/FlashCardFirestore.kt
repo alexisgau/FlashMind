@@ -6,7 +6,7 @@ import java.util.Date
 data class FlashCardFirestore(
 
     val id: Int = 0,
-    val lessonId: Int,
+    val lessonId: Int = 0,
     val question: String = "",
     val answer: String = "",
     val color: String = "",

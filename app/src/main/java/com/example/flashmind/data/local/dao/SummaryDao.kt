@@ -9,10 +9,13 @@ import kotlinx.coroutines.flow.Flow
 interface SummaryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertSummary(summary: SummaryEntity): Long // Returns the inserted ID
+    suspend fun insertSummary(summary: SummaryEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(summaries: List<SummaryEntity>)
 
     @Update
-    suspend fun updateSummary(summary: SummaryEntity) // If summaries can be edited
+    suspend fun updateSummary(summary: SummaryEntity)
 
     @Query("UPDATE summaries SET isDeleted = 1, isSynced = 0 WHERE summaryId = :summaryId")
     suspend fun markSummaryForDeletion(summaryId: Int)
@@ -24,11 +27,11 @@ interface SummaryDao {
     suspend fun markSummaryAsSynced(summaryId: Int)
 
     @Query("DELETE FROM summaries WHERE summaryId = :summaryId")
-    suspend fun deleteSummaryById(summaryId: Int) // Physical delete
+    suspend fun deleteSummaryById(summaryId: Int)
 
-    @Query("SELECT * FROM summaries WHERE lessonId = :lessonId AND isDeleted = 0 ORDER BY summaryId DESC") // Show newest first
+    @Query("SELECT * FROM summaries WHERE lessonId = :lessonId AND isDeleted = 0 ORDER BY summaryId DESC")
     fun getSummariesByLessonId(lessonId: Int): Flow<List<SummaryEntity>>
 
     @Query("SELECT * FROM summaries WHERE summaryId = :summaryId")
-    suspend fun getSummaryById(summaryId: Int): SummaryEntity? // Optional: If needed
+    suspend fun getSummaryById(summaryId: Int): SummaryEntity?
 }

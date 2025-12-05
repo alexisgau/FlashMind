@@ -245,7 +245,7 @@ fun PulsingRobotLogo(
 fun QuizLoadingScreen(
     modifier: Modifier = Modifier,
     generateName: String = "Quiz",
-    generatingName: String = "preguntas"
+    generatingName: String = "Questions"
 ) {
     val colorAzul = Color(0xFF2196F3)
     Column(

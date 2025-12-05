@@ -2,6 +2,8 @@ package com.example.flashmind.data.local.dao
 
 import androidx.room.Dao
 import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import androidx.room.Upsert
@@ -32,6 +34,9 @@ interface LessonDao {
 
     @Upsert
     suspend fun insert(lesson: LessonEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAll(lessons: List<LessonEntity>)
 
     @Update
     suspend fun updateLesson(lesson: LessonEntity)

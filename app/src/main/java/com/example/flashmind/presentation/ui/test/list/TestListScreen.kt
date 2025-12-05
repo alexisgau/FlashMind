@@ -1,6 +1,7 @@
 package com.example.flashmind.presentation.ui.test.list
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -263,11 +265,11 @@ fun EmptyTestList(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Icon(
-            painter = painterResource(R.drawable.folder_icon),
+        Image(
+            painter = painterResource(R.drawable.empty_tests),
             contentDescription = stringResource(id = R.string.tests_list_empty_title),
-            modifier = Modifier.size(120.dp),
-            tint = MaterialTheme.colorScheme.primary
+            modifier = Modifier.size(150.dp),
+            contentScale = ContentScale.Fit,
         )
 
         Spacer(modifier = Modifier.height(24.dp))

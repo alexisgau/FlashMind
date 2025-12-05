@@ -110,7 +110,8 @@ class QuizRepositoryImpl @Inject constructor(
             testId = test.testId,
             lessonId = test.lessonId,
             title = test.title,
-            userId = test.userId
+            userId = test.userId,
+            creationDate = test.creationDate
         )
         firestore.collection("users").document(userId)
             .collection("tests").document("Test_${test.testId}")

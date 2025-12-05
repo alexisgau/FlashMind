@@ -13,6 +13,9 @@ interface QuizDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTest(test: TestEntity): Long
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllTests(tests: List<TestEntity>)
+
     @Query("UPDATE tests SET isDeleted = 1, isSynced = 0 WHERE testId = :testId")
     suspend fun markTestForDeletion(testId: Int)
 
@@ -34,6 +37,9 @@ interface QuizDao {
     // --- Operaciones para Preguntas ---
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertQuestions(questions: List<MultipleChoiceQuestionEntity>)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertAllQuestions(questions: List<MultipleChoiceQuestionEntity>)
 
     @Query("UPDATE questions SET isDeleted = 1, isSynced = 0 WHERE testId = :testId")
     suspend fun markQuestionsForDeletionByTestId(testId: Int)

@@ -46,10 +46,22 @@ class FlashCardRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveGeneratedFlashcards(flashcards: List<FlashCard>) {
-        dao.insertAll(flashcards.map { it.toEntity() })
+        val currentUserId = auth.currentUser?.uid ?: run {
+
+            throw Exception("Usuario no autenticado al guardar flashcards")
+        }
+        val entities = flashcards.map { flashCard ->
+            flashCard.toEntity().copy(
+                userId = currentUserId,
+                isSynced = false,
+                isDeleted = false
+            )
+        }
+
+        dao.insertAll(entities)
+
         scheduleSync()
     }
-
     private fun scheduleSync() {
         val syncRequest = OneTimeWorkRequestBuilder<FlashCardSyncWorker>()
             .setConstraints(
@@ -85,7 +97,8 @@ class FlashCardRepositoryImpl @Inject constructor(
             id = flashCard.id,
             question = flashCard.question,
             answer = flashCard.answer,
-            lessonId = flashCard.lessonId
+            lessonId = flashCard.lessonId,
+            color = flashCard.color
         )
         firestore.collection("users").document(userId)
             .collection("flashcards").document("FlashCard: ${flashCard.id}")

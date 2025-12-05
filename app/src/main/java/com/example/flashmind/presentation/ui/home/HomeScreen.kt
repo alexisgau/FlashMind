@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -79,6 +80,7 @@ fun HomeScreen(
     val categoryToDelete by viewModel.categoryToDelete.collectAsStateWithLifecycle()
     val lessonToDelete by viewModel.lessonToDelete.collectAsStateWithLifecycle()
     val lessonToEdit by viewModel.lessonToEdit.collectAsStateWithLifecycle()
+    val showNameInput by viewModel.showNameInput.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -301,6 +303,12 @@ fun HomeScreen(
             }
         )
     }
+    if (showNameInput) {
+        NameInputDialog(
+            onConfirm = { name ->
+                viewModel.updateUserName(name)
+            })
+    }
 
     lessonToEdit?.let { lesson ->
         EditLessonDialog(
@@ -309,7 +317,10 @@ fun HomeScreen(
             onConfirm = viewModel::confirmLessonEdit
         )
     }
-}
+
+    }
+
+
 
 @Composable
 fun ExpandableCategoryItem(
@@ -469,8 +480,14 @@ fun TopBar(
     ) {
         when (userData) {
             is UserData.Success -> {
+                val greetingText = if (userData.name.isNotEmpty()) {
+                    stringResource(id = R.string.home_greeting, userData.name)
+                } else {
+                    stringResource(id = R.string.home_welcome_generic)
+                }
+
                 Text(
-                    text = stringResource(id = R.string.home_greeting, userData.name),
+                    text = greetingText,
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -650,3 +667,52 @@ fun EditLessonDialog(
         }
     )
 }
+
+    @Composable
+    fun NameInputDialog(
+        onConfirm: (String) -> Unit,
+        onDismiss: () -> Unit = {}
+    ) {
+        var name by remember { mutableStateOf("") }
+
+        AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                Text(
+                    text = stringResource(R.string.hello),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column {
+                    Text(stringResource(R.string.how_should_we_call_you))
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { newValue ->
+                            if (newValue.length <= 16) {
+                                name = newValue
+                            }
+                        },
+                        label = { Text(stringResource(R.string.your_name))},
+                        singleLine = true,
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = { onConfirm(name) },
+                    enabled = name.isNotBlank(),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(stringResource(R.string.continue_button))
+                }
+            },
+            containerColor = MaterialTheme.colorScheme.surface,
+            shape = RoundedCornerShape(24.dp)
+        )
+    }

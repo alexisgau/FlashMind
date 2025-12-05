@@ -339,7 +339,9 @@ fun EmptyFlashcardList(
             text = stringResource(id = R.string.flashcards_empty_title),
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -348,12 +350,11 @@ fun EmptyFlashcardList(
             text = stringResource(id = R.string.flashcards_empty_description),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
         )
     }
 }
-
-
 
 
 

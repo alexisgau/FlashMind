@@ -1,7 +1,12 @@
 package com.example.flashmind.presentation.ui.account
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,21 +22,30 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -73,6 +87,20 @@ fun AccountScreenImpl(
 ) {
     val signOutState by viewModel.signOutState.collectAsStateWithLifecycle()
     val isDarkMode by viewModel.isDarkMode.collectAsStateWithLifecycle()
+    var showGuestLogoutDialog by remember { mutableStateOf(false) }
+    val currentImageUrl by viewModel.currentImageUrl.collectAsStateWithLifecycle()
+    val isUploading by viewModel.isUploadingPhoto.collectAsStateWithLifecycle()
+
+    val isAnonymous = viewModel.isUserAnonymous
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            if (uri != null) {
+                viewModel.updateProfilePicture(uri)
+            }
+        }
+    )
 
     LaunchedEffect(signOutState) {
         if (signOutState is AuthResponse.Success) {
@@ -118,27 +146,64 @@ fun AccountScreenImpl(
             ) {
                 Spacer(Modifier.height(16.dp))
 
-                if (userData.isNotEmpty()) {
-                    AsyncImage(
-                        model = userData,
-                        contentDescription = stringResource(id = R.string.account_profile_picture_cd),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(140.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                    )
-                } else {
-                    Icon(
-                        painter = painterResource(R.drawable.default_profile_ic),
-                        contentDescription = stringResource(id = R.string.account_default_profile_cd),
-                        tint = Color.Unspecified,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .size(140.dp)
-                            .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                    )
+                Box(contentAlignment = Alignment.Center) {
+
+                    val imageModifier = Modifier
+                        .size(140.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
+                        .then(
+                            if (!isAnonymous) {
+                                Modifier.clickable {
+                                    photoPickerLauncher.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                }
+                            } else {
+                                Modifier
+                            }
+                        )
+
+                    if (currentImageUrl.isNotEmpty()) {
+                        AsyncImage(
+                            model = currentImageUrl,
+                            contentDescription = stringResource(id = R.string.account_profile_picture_cd),
+                            contentScale = ContentScale.Crop,
+                            modifier = imageModifier
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(R.drawable.default_profile_ic),
+                            contentDescription = stringResource(id = R.string.account_default_profile_cd),
+                            contentScale = ContentScale.Crop,
+                            modifier = imageModifier
+                        )
+                    }
+
+
+                    if (isUploading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(48.dp),
+                            color = MaterialTheme.colorScheme.primary,
+                            strokeWidth = 4.dp
+                        )
+                    }
+
+                    if (!isAnonymous) {
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Cambiar foto",
+                            tint = Color.White,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(8.dp)
+                                .background(MaterialTheme.colorScheme.primary, CircleShape)
+                                .padding(6.dp)
+                                .size(16.dp)
+                        )
+                    }
                 }
+
 
                 Spacer(Modifier.height(32.dp))
 
@@ -196,19 +261,43 @@ fun AccountScreenImpl(
 
                     Spacer(Modifier.height(12.dp))
 
-                    Button(
-                        onClick = { viewModel.signOut() },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp),
-                        shape = RoundedCornerShape(50),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    ) {
-                        Text(stringResource(id = R.string.account_sign_out))
+                    if (isAnonymous) {
+                        Button(
+                            onClick = { navigateToLogin() },
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                        ) {
+                            Text(stringResource(R.string.create_account))
+                        }
+
+                        Spacer(Modifier.height(12.dp))
+
+                        OutlinedButton(
+                            onClick = { showGuestLogoutDialog = true },
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                        ) {
+                            Text(stringResource(R.string.account_sign_out))
+                        }
+                    } else {
+
+                        Button(
+                            onClick = { viewModel.signOut() },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
+                            shape = RoundedCornerShape(50),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
+                            )
+                        ) {
+                            Text(stringResource(id = R.string.account_sign_out))
+                        }
                     }
+
                 }
             }
 
@@ -231,8 +320,33 @@ fun AccountScreenImpl(
             }
         }
     }
-}
 
+    if (showGuestLogoutDialog) {
+
+        AlertDialog(
+            onDismissRequest = { showGuestLogoutDialog = false },
+            title = { Text(stringResource(R.string.are_you_sure_title)) },
+            text = { Text(stringResource(R.string.guest_mode_warning_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showGuestLogoutDialog = false
+                        viewModel.signOut()
+                    },
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text(stringResource(R.string.delete_all_and_exit))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showGuestLogoutDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            }
+        )
+    }
+
+}
 
 @Preview(showBackground = true)
 @Composable

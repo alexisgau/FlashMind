@@ -9,6 +9,7 @@ import com.example.flashmind.data.network.AuthClient
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.domain.model.Lesson
 import com.example.flashmind.domain.model.UserData
+import com.example.flashmind.domain.usecase.auth.UpdateUserNameUseCase
 import com.example.flashmind.domain.usecase.category.DeleteCategoryUseCase
 import com.example.flashmind.domain.usecase.category.GetCategoriesUseCase
 import com.example.flashmind.domain.usecase.category.GetLessonCountByCategory
@@ -35,6 +36,7 @@ class HomeViewModel @Inject constructor(
     private val deleteLessonUseCase: DeleteLessonUseCase,
     private val updateLessonUseCase: UpdateLessonUseCase,
     private val getLessonCountByCategory: GetLessonCountByCategory,
+    private val updateUserNameUseCase: UpdateUserNameUseCase,
     private val authClient: AuthClient,
     @ApplicationContext private val context: Context
 ) : ViewModel() {
@@ -52,8 +54,12 @@ class HomeViewModel @Inject constructor(
     private val _lessonToEdit = MutableStateFlow<Lesson?>(null)
     val lessonToEdit: StateFlow<Lesson?> = _lessonToEdit.asStateFlow()
 
+    private val _showNameInput = MutableStateFlow(false)
+    val showNameInput: StateFlow<Boolean> = _showNameInput.asStateFlow()
+
     init {
         loadInitialData()
+        checkUserName()
     }
 
 
@@ -88,10 +94,36 @@ class HomeViewModel @Inject constructor(
                     lessonCounts = counts,
                     userData = userData
                 )
+
+                checkUserName()
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error loading initial data", e)
                 _uiState.value = HomeUiState.Error(e.message ?: "Error cargando datos iniciales")
             }
+        }
+    }
+
+    private fun checkUserName() {
+        val user = authClient.getCurrentUser()
+        if (user != null && !user.isAnonymous && user.displayName.isNullOrBlank()) {
+            _showNameInput.value = true
+        }
+    }
+
+    fun updateUserName(name: String) {
+        viewModelScope.launch {
+            updateUserNameUseCase(name)
+                .onSuccess {
+                    _showNameInput.value = false
+                    val newState = _uiState.value
+                    if (newState is HomeUiState.Success) {
+                        _uiState.value = newState.copy(userData = getUserDataInternal())
+                    }
+                }
+                .onFailure {
+                    Log.e("HomeViewModel", "Error updating name", it)
+
+                }
         }
     }
 
@@ -100,16 +132,26 @@ class HomeViewModel @Inject constructor(
 
         return when {
             user != null && user.isAnonymous -> {
+
                 UserData.Success(
                     name = context.getString(R.string.home_guest_name),
-                    imageUrl = ""
+                    imageUrl = "",
+                    isAnonymous = true
                 )
             }
             user != null -> {
-                val name = user.displayName?.takeIf { it.isNotBlank() } ?: "User"
+                val displayName = user.displayName
+
+                val nameToShow = if (!displayName.isNullOrBlank()) {
+                    displayName
+                } else {
+                    ""
+                }
+
                 UserData.Success(
-                    name = name,
-                    imageUrl = user.photoUrl?.toString().orEmpty()
+                    name = nameToShow,
+                    imageUrl = user.photoUrl?.toString().orEmpty(),
+                    isAnonymous = false
                 )
             }
             else -> UserData.Error("Usuario no autenticado")

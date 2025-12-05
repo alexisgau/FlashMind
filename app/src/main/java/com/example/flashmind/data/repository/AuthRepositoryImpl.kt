@@ -1,5 +1,6 @@
 package com.example.flashmind.data.repository
 
+import android.net.Uri
 import com.example.flashmind.data.network.AuthClient
 import com.example.flashmind.domain.model.AuthResponse
 import com.example.flashmind.domain.reposotory.AuthRepository
@@ -27,7 +28,8 @@ class AuthRepositoryImpl @Inject constructor(private val authClient: AuthClient)
 
     override suspend fun register(
         email: String,
-        password: String
+        password: String,
+
     ): Result<String> {
         return authClient.register(email, password)
     }
@@ -37,5 +39,24 @@ class AuthRepositoryImpl @Inject constructor(private val authClient: AuthClient)
         password: String
     ): Result<String> {
         return authClient.login(email, password)
+    }
+
+    override suspend fun updateUserName(name: String): Result<Unit> {
+        return authClient.updateUserName(name)
+    }
+
+    override suspend fun updateProfilePicture(imageUri: Uri): Result<String> {
+        return authClient.updateProfilePicture(imageUri)
+    }
+
+    override suspend fun upgradeAnonymousAccount(
+        email: String,
+        password: String,
+    ): Result<String> {
+        return  authClient.upgradeAnonymousAccount(email,password)
+    }
+
+    override fun isUserAnonymous(): Boolean {
+        return  authClient.isUserAnonymous()
     }
 }

@@ -2,6 +2,10 @@ package com.example.flashmind.presentation.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
+import androidx.work.WorkManager
+import com.example.flashmind.data.worker.RestoreUserDataWorker
 import com.example.flashmind.domain.model.AuthResponse
 import com.example.flashmind.domain.usecase.auth.SignIn
 import com.example.flashmind.domain.usecase.auth.SignInAnonymouslyUseCase
@@ -18,7 +22,8 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val signIn: SignIn,
     private val signInWithGoogleUseCase: SignInWithGoogleUseCase,
-    private val signInAnonymouslyUseCase: SignInAnonymouslyUseCase
+    private val signInAnonymouslyUseCase: SignInAnonymouslyUseCase,
+    private val workManager: WorkManager,
 ) : ViewModel() {
 
 
@@ -31,7 +36,10 @@ class LoginViewModel @Inject constructor(
             _uiState.value = LoginUiState.Loading
             val result = signIn(email, password)
             _uiState.value = result.fold(
-                onSuccess = { LoginUiState.Success },
+                onSuccess = {
+                    startDataRestoration()
+                    LoginUiState.Success
+                },
                 onFailure = { LoginUiState.Error(it.message ?: "Error al iniciar sesión") }
             )
         }
@@ -55,7 +63,10 @@ class LoginViewModel @Inject constructor(
 
                 signInWithGoogleUseCase().collect { response ->
                     when (response) {
-                        is AuthResponse.Success -> _uiState.value = LoginUiState.Success
+                        is AuthResponse.Success ->{
+                            startDataRestoration()
+                            _uiState.value = LoginUiState.Success
+                        }
                         is AuthResponse.Error -> _uiState.value =
                             LoginUiState.Error(response.message)
 
@@ -68,7 +79,14 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    private fun startDataRestoration() {
+        val request = OneTimeWorkRequestBuilder<RestoreUserDataWorker>()
+            .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+            .addTag("restore_data_work")
+            .build()
 
+        workManager.enqueue(request)
+    }
     fun resetState() {
         _uiState.value = LoginUiState.Idle
     }
