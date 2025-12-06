@@ -8,6 +8,6 @@ class GenerateFlashCardsUseCase @Inject constructor(private val repository: AiRe
 
     suspend operator fun invoke(text: String, lessonId: Int): List<FlashCard> {
 
-        return repository.generateFlashcards(text,lessonId)
+        return repository.generateFlashcards(text, lessonId)
     }
 }

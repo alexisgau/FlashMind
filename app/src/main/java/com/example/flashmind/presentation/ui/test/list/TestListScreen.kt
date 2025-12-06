@@ -60,7 +60,7 @@ fun TestScreen(
     lessonId: Int = 1,
     onNavigateBack: () -> Unit,
     onClickTest: (Int, String) -> Unit,
-    navigateToNewTest: () -> Unit
+    navigateToNewTest: () -> Unit,
 ) {
 
     val uiState by viewModel.testsState.collectAsStateWithLifecycle()
@@ -149,7 +149,7 @@ fun TestItem(
     title: String,
     createdAt: String,
     onStartClick: (Int) -> Unit,
-    onDeleteClick: () -> Unit
+    onDeleteClick: () -> Unit,
 ) {
     val isDarkTheme = isSystemInDarkTheme()
 
@@ -214,7 +214,7 @@ fun TestItem(
 fun StartButton(
     testId: Int,
     onStartClick: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Surface(
         onClick = { onStartClick(testId) },
@@ -251,12 +251,13 @@ fun StartButton(
         }
     }
 }
+
 @Preview(showSystemUi = true)
 @Composable
 fun EmptyTestList(
     modifier: Modifier = Modifier,
     tittle: String = stringResource(id = R.string.tests_list_empty_title),
-    subtitle: String = stringResource(id = R.string.tests_list_empty_description)
+    subtitle: String = stringResource(id = R.string.tests_list_empty_description),
 ) {
     Column(
         modifier = modifier

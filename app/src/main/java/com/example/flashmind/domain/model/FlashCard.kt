@@ -8,7 +8,7 @@ data class FlashCard(
     val lessonId: Int,
     val userId: String = "",
     val isSynced: Boolean = false,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
 
 
-)
+    )

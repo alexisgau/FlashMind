@@ -62,7 +62,7 @@ fun SummariesScreen(
     viewModel: SummariesListViewModel = hiltViewModel(),
     onSummaryClick: (summaryId: Int, summaryTitle: String) -> Unit,
     onAddSummaryClick: () -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -143,7 +143,7 @@ private fun SummariesList(
     summaries: List<SummaryModel>,
     onSummaryClick: (SummaryModel) -> Unit,
     onDeleteClick: (SummaryModel) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
@@ -170,7 +170,7 @@ fun SummaryItem(
     createdAt: String,
     onViewClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val cleanSubtitle = remember(subtitle) {
         cleanMarkdownForPreview(subtitle)
@@ -253,7 +253,7 @@ fun SummaryItem(
 fun EmptySummariesList(
     modifier: Modifier = Modifier,
     tittle: String = stringResource(id = R.string.summaries_list_empty_title),
-    subtitle: String = stringResource(id = R.string.summaries_list_empty_description)
+    subtitle: String = stringResource(id = R.string.summaries_list_empty_description),
 ) {
     Column(
         modifier = modifier

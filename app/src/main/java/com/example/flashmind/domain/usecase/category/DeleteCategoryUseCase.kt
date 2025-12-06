@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class DeleteCategoryUseCase @Inject constructor(private val categoryRepository: CategoryRepository) {
 
-    suspend operator fun invoke(category: Category){
+    suspend operator fun invoke(category: Category) {
         categoryRepository.deleteCategory(category)
     }
 
@@ -15,8 +15,8 @@ class DeleteCategoryUseCase @Inject constructor(private val categoryRepository: 
 
 class GetLessonCountByCategory @Inject constructor(private val categoryRepository: CategoryRepository) {
 
-     operator fun invoke(categoryId: Int): Flow<Int> {
-       return categoryRepository.getLessonCountByCategory(categoryId)
+    operator fun invoke(categoryId: Int): Flow<Int> {
+        return categoryRepository.getLessonCountByCategory(categoryId)
     }
 
 }

@@ -10,5 +10,5 @@ data class QuizQuestionModel(
     @SerialName("opciones")
     val options: List<String>,
     @SerialName("respuesta_correcta")
-    val correctResponseIndex: Int
+    val correctResponseIndex: Int,
 )

@@ -9,5 +9,5 @@ data class CategoryFirestore(
     val description: String = "",
     val color: String = "",
     @ServerTimestamp
-    val timestamp: Date? = null
+    val timestamp: Date? = null,
 )

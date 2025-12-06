@@ -46,7 +46,12 @@ data class StartLesson(val lessonId: Int)
 data class GenerateTest(val lessonId: Int)
 
 @Serializable
-data class Quiz(val lessonId: Int,val contentFile: String?, val testId: Int, val testTittle: String?)
+data class Quiz(
+    val lessonId: Int,
+    val contentFile: String?,
+    val testId: Int,
+    val testTittle: String?,
+)
 
 @Serializable
 data class Test(val lessonId: Int)
@@ -57,16 +62,17 @@ data class SummariesRoute(val lessonId: Int, val lessonTittle: String)
 
 @Serializable
 data class GenerateSummaryRoute(
-    val lessonId: Int
+    val lessonId: Int,
 )
 
 @Serializable
 data class SummaryDetailRoute(
     val lessonId: Int,
     val summaryId: Int? = null,
-    val contentFile:String? = null,
-    val summaryTittle:String? = null
+    val contentFile: String? = null,
+    val summaryTittle: String? = null,
 )
+
 @Serializable
 data class EditFlashCard(val flashcardId: Int)
 

@@ -1,4 +1,5 @@
 package com.example.flashmind.data.worker
+
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
@@ -11,7 +12,7 @@ import dagger.assisted.AssistedInject
 class FlashCardSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val repository: FlashCardRepository
+    private val repository: FlashCardRepository,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {

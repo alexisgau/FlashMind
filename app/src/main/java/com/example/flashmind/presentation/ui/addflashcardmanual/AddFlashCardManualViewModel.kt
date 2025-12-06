@@ -14,7 +14,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddFlashCardManualViewModel @Inject constructor(
-    private val insertFlashCardUseCase: InsertFlashCardUseCase
+    private val insertFlashCardUseCase: InsertFlashCardUseCase,
 ) : ViewModel() {
 
 

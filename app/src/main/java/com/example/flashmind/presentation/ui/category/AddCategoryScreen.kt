@@ -38,7 +38,7 @@ import com.example.flashmind.presentation.ui.home.AddCategoryState
 @Composable
 fun AddCategoryScreen(
     viewModel: AddCategoryViewModel = hiltViewModel(),
-    navigateToHome: () -> Unit
+    navigateToHome: () -> Unit,
 ) {
     val editState by viewModel.addCategoryState.collectAsStateWithLifecycle()
     var name by remember { mutableStateOf("") }

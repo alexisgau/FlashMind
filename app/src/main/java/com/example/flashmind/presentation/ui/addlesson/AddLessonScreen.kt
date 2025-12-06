@@ -1,6 +1,5 @@
 package com.example.flashmind.presentation.ui.addlesson
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,11 +34,10 @@ import com.example.flashmind.domain.model.Lesson
 fun AddLessonScreen(
     categoryId: Int,
     navigateToHome: () -> Unit,
-    viewModel: AddLessonViewModel = hiltViewModel()
+    viewModel: AddLessonViewModel = hiltViewModel(),
 ) {
     var title by remember { mutableStateOf("") }
 
-    Log.i("AddLessonScreen", "id : $categoryId")
 
     Column(
         modifier = Modifier

@@ -7,7 +7,6 @@ import com.example.flashmind.domain.model.TestModel
 import kotlinx.coroutines.flow.Flow
 
 
-
 interface QuizRepository {
 
     suspend fun createTest(title: String, lessonId: Int): Long

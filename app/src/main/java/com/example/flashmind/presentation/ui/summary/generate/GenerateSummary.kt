@@ -58,11 +58,11 @@ fun GenerateSummaryScreen(
     modifier: Modifier = Modifier,
     navigateToSummaryScreen: (String, String) -> Unit,
     onClickBack: () -> Unit,
-    lessonId: Int
+    lessonId: Int,
 ) {
     var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
-    var fileName by remember { mutableStateOf<String>("") }
-    var contentFile by remember { mutableStateOf<String>("") }
+    var fileName by remember { mutableStateOf("") }
+    var contentFile by remember { mutableStateOf("") }
 
     var summaryTitle by remember { mutableStateOf("") }
 
@@ -96,12 +96,10 @@ fun GenerateSummaryScreen(
                 try {
                     val textFile = extractTextFromUri(selectedFileUri!!, context)
                     contentFile = textFile
-                    Log.i("TestScreen", "Texto extraído: $textFile")
                 } catch (e: Exception) {
                     Log.e("TestScreen", "Error al extraer texto", e)
                 }
             } else {
-                Log.i("TestScreen", "El usuario canceló la selección de archivo")
             }
         }
     )
@@ -192,7 +190,7 @@ fun GenerateSummaryScreen(
             OutlinedTextField(
                 value = summaryTitle,
                 onValueChange = { summaryTitle = it },
-                label = { Text(stringResource(R.string.generate_summary_text_field))},
+                label = { Text(stringResource(R.string.generate_summary_text_field)) },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
             )
@@ -269,7 +267,7 @@ fun GenerateSummaryScreen(
 @Composable
 fun UploadFileButton(
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Surface(
         modifier = modifier.clickable(onClick = onClick),

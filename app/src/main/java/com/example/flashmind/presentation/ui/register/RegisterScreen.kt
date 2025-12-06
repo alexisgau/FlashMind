@@ -49,7 +49,7 @@ import com.example.flashmind.R
 fun RegisterScreen(
     viewModel: RegisterViewModel = hiltViewModel(),
     onRegisterSuccess: () -> Unit,
-    navigateBackToLogin: () -> Unit
+    navigateBackToLogin: () -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     var email by remember { mutableStateOf("") }

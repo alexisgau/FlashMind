@@ -5,9 +5,9 @@ import com.example.flashmind.domain.reposotory.FlashCardRepository
 import javax.inject.Inject
 
 
-class GetFlashCardsByIdUseCase  @Inject constructor(private val flashCardRepository: FlashCardRepository){
+class GetFlashCardsByIdUseCase @Inject constructor(private val flashCardRepository: FlashCardRepository) {
 
-   suspend  operator fun invoke(id: Int): FlashCard {
+    suspend operator fun invoke(id: Int): FlashCard {
 
         return flashCardRepository.getFlashCardsById(id)
     }

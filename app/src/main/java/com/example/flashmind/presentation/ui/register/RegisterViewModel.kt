@@ -12,7 +12,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class RegisterViewModel @Inject constructor(private val register: Register, private val authRepository: AuthRepository) : ViewModel() {
+class RegisterViewModel @Inject constructor(
+    private val register: Register,
+    private val authRepository: AuthRepository,
+) : ViewModel() {
 
 
     private val _uiState = MutableStateFlow<RegisterUiState>(RegisterUiState.Idle)
@@ -42,9 +45,6 @@ class RegisterViewModel @Inject constructor(private val register: Register, priv
         }
     }
 
-    fun resetState() {
-        _uiState.value = RegisterUiState.Idle
-    }
 }
 
 sealed interface RegisterUiState {

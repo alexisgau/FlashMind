@@ -10,7 +10,7 @@ fun AppNavHost(
     isAuthenticated: Boolean,
     isOnboardingCompleted: Boolean,
     setOnboardingCompleted: () -> Unit,
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
 ) {
     val startDestination = when {
         !isAuthenticated -> Graph.AUTH

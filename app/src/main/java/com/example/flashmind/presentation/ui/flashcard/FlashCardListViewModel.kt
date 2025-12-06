@@ -18,7 +18,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FlashCardListViewModel @Inject constructor(
     private val getFlashCardsUseCase: GetFlashCardsUseCase,
-    private val deleteFlashCardUseCase: DeleteFlashCardUseCase
+    private val deleteFlashCardUseCase: DeleteFlashCardUseCase,
 ) : ViewModel() {
 
     private val _flashCards = MutableStateFlow<List<FlashCard>>(emptyList())

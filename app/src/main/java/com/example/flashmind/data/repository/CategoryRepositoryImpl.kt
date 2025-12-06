@@ -10,9 +10,9 @@ import com.example.flashmind.data.local.dao.CategoryDao
 import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.local.entities.toEntity
 import com.example.flashmind.data.network.dto.CategoryFirestore
+import com.example.flashmind.data.worker.CategorySyncWorker
 import com.example.flashmind.domain.model.Category
 import com.example.flashmind.domain.reposotory.CategoryRepository
-import com.example.flashmind.data.worker.CategorySyncWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -24,12 +24,11 @@ class CategoryRepositoryImpl @Inject constructor(
     private val auth: FirebaseAuth,
     private val categoryDao: CategoryDao,
     private val firestore: FirebaseFirestore,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
 ) : CategoryRepository {
 
     private val userId: String
-        get() = auth.currentUser?.uid ?:  "debug-user"
-
+        get() = auth.currentUser?.uid ?: "debug-user"
 
 
     override suspend fun insertCategory(category: Category) {
@@ -53,6 +52,7 @@ class CategoryRepositoryImpl @Inject constructor(
             syncRequest
         )
     }
+
     override suspend fun deleteCategory(category: Category) {
         categoryDao.markCategoryForDeletion(category.id)
         scheduleSync()
@@ -90,17 +90,13 @@ class CategoryRepositoryImpl @Inject constructor(
             firestore.collection("users").document(userId)
                 .collection("categories").document(category.id.toString())
                 .set(categoryFirestore).await()
-
-
-
-            Log.d("WorkManager", "Subida exitosa de categoría: ${category.name}")
         } catch (e: Exception) {
             Log.e("WorkManager", "Error subiendo categoría: ${category.name}", e)
         }
     }
 
-    override fun getLessonCountByCategory(categoryId: Int): Flow<Int>{
-        return categoryDao.getLessonCountByCategory(categoryId )
+    override fun getLessonCountByCategory(categoryId: Int): Flow<Int> {
+        return categoryDao.getLessonCountByCategory(categoryId)
     }
 
     override suspend fun markCategoryAsSynced(categoryId: Int) {

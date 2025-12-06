@@ -16,17 +16,17 @@ import com.example.flashmind.presentation.ui.home.HomeScreen
 import com.example.flashmind.presentation.ui.lessonoptions.LessonOptionsScreen
 import com.example.flashmind.presentation.ui.onboarding.OnboardingFlowScreen
 import com.example.flashmind.presentation.ui.startlesson.StartLessonScreen
+import com.example.flashmind.presentation.ui.summary.detail.SummaryViewScreen
 import com.example.flashmind.presentation.ui.summary.generate.GenerateSummaryScreen
 import com.example.flashmind.presentation.ui.summary.list.SummariesScreen
-import com.example.flashmind.presentation.ui.summary.detail.SummaryViewScreen
 import com.example.flashmind.presentation.ui.test.generate.GenerateTestScreen
-import com.example.flashmind.presentation.ui.test.run.QuizScreen
 import com.example.flashmind.presentation.ui.test.list.TestScreen
+import com.example.flashmind.presentation.ui.test.run.QuizScreen
 
 fun NavGraphBuilder.mainGraph(
     navController: NavHostController,
     isOnboardingCompleted: Boolean,
-    setOnboardingCompleted: () -> Unit
+    setOnboardingCompleted: () -> Unit,
 ) {
 
 
@@ -72,7 +72,14 @@ fun NavGraphBuilder.mainGraph(
                 lessonId = args.lessonId,
                 lessonTitle = args.lessonName,
                 onNavigateBack = { navController.popBackStack() },
-                onStudyFlashcards = { navController.navigate(FlashCards(args.lessonId, args.lessonName)) },
+                onStudyFlashcards = {
+                    navController.navigate(
+                        FlashCards(
+                            args.lessonId,
+                            args.lessonName
+                        )
+                    )
+                },
                 onViewSummary = {
                     navController.navigate(
                         SummariesRoute(
@@ -90,16 +97,13 @@ fun NavGraphBuilder.mainGraph(
 
         // Account Settings
         composable<AccountSettings> {
-            val args = it.toRoute<AccountSettings>()
             AccountSettingsScreen(
                 navigateToLogin = {
                     navController.navigate(Login) {
                         popUpTo(Home) { inclusive = true }
                     }
-                },
-                navigateToHome = { navController.navigate(Home) },
-                userData = args.userData
-            )
+                }
+            ) { navController.navigate(Home) }
         }
 
         // Add Category
@@ -156,7 +160,7 @@ fun NavGraphBuilder.mainGraph(
             val args = it.toRoute<AddFlashCardsManual>()
             AddFlashCardsManualScreen(
                 lessonId = args.lessonId,
-                navigateToFlashCards = {navController.popBackStack() }
+                navigateToFlashCards = { navController.popBackStack() }
             )
         }
 

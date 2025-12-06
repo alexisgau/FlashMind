@@ -1,6 +1,5 @@
 package com.example.flashmind.presentation.ui.category
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashmind.domain.model.Category
@@ -26,7 +25,6 @@ class AddCategoryViewModel @Inject constructor(private val insertCategoryUseCase
             runCatching { insertCategoryUseCase(category) }
                 .onSuccess { _addCategoryState.value = AddCategoryState.Success }
                 .onFailure { e ->
-                    Log.e("HomeViewModel", "insertCategory: $e")
                     _addCategoryState.value =
                         AddCategoryState.Error(e.message ?: "Error desconocido")
                 }

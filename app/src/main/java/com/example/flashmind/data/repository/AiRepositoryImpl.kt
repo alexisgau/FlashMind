@@ -1,6 +1,5 @@
 package com.example.flashmind.data.repository
 
-import android.util.Log
 import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.network.GeminiDataSource
 import com.example.flashmind.data.network.dto.SafetySetting
@@ -10,7 +9,7 @@ import com.example.flashmind.domain.reposotory.AiRepository
 import javax.inject.Inject
 
 class AiRepositoryImpl @Inject constructor(
-    private val geminiDataSource: GeminiDataSource
+    private val geminiDataSource: GeminiDataSource,
 ) : AiRepository {
 
     override suspend fun generateFlashcards(text: String, lessonId: Int): List<FlashCard> {
@@ -55,7 +54,7 @@ class AiRepositoryImpl @Inject constructor(
 
     override suspend fun generateTest(
         text: String,
-        testId: Int
+        testId: Int,
     ): List<QuizQuestionModel> {
 
         val prompt = """
@@ -96,7 +95,6 @@ class AiRepositoryImpl @Inject constructor(
         var response = geminiDataSource.getTestFromText(prompt, safetySettings)
 
         if (response.isBlank()) {
-            Log.e("AiRepository", "La respuesta de Gemini fue nula o vacía.")
             return emptyList()
         }
         response = response.trim().removePrefix("```json").removeSuffix("```").trim()
@@ -135,10 +133,9 @@ class AiRepositoryImpl @Inject constructor(
 
         var response = geminiDataSource.getSummaryFromText(prompt)
 
-         response = response.trim().removePrefix("```markdown").removeSuffix("```").trim()
+        response = response.trim().removePrefix("```markdown").removeSuffix("```").trim()
 
         if (response.isBlank()) {
-            Log.e("AiRepository", "La respuesta de Gemini para el resumen fue nula o vacía.")
             return ""
         }
 

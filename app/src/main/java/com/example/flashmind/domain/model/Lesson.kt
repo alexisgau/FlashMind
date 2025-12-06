@@ -6,6 +6,6 @@ data class Lesson(
     val categoryId: Int,
     val userId: String = "",
     val isSynced: Boolean = false,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
 
-)
+    )

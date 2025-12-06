@@ -33,10 +33,12 @@ fun NavGraphBuilder.authGraph(navController: NavHostController) {
         //Register
         composable<Register> {
             RegisterScreen(
-                onRegisterSuccess = { navController.navigate(Graph.MAIN) {
-                    popUpTo(Graph.AUTH) { inclusive = true }
-                    launchSingleTop = true
-                } },
+                onRegisterSuccess = {
+                    navController.navigate(Graph.MAIN) {
+                        popUpTo(Graph.AUTH) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                },
                 navigateBackToLogin = {
                     navController.popBackStack()
                 })

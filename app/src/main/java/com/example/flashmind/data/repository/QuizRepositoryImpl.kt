@@ -1,6 +1,5 @@
 package com.example.flashmind.data.repository
 
-import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
@@ -17,7 +16,7 @@ import com.example.flashmind.domain.model.TestModel
 import com.example.flashmind.domain.model.toDomain
 import com.example.flashmind.domain.reposotory.QuizRepository
 import com.example.flashmind.domain.reposotory.toEntity
-import com.example.flashmind.workers.QuizSyncWorker
+import com.example.flashmind.data.worker.QuizSyncWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -29,7 +28,7 @@ class QuizRepositoryImpl @Inject constructor(
     private val dao: QuizDao,
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
 ) : QuizRepository {
 
     private val userId: String
@@ -77,7 +76,7 @@ class QuizRepositoryImpl @Inject constructor(
         }
     }
 
-    //syncs
+
     private fun scheduleSync() {
         val syncRequest = OneTimeWorkRequestBuilder<QuizSyncWorker>()
             .setConstraints(
@@ -94,7 +93,6 @@ class QuizRepositoryImpl @Inject constructor(
             ExistingWorkPolicy.KEEP,
             syncRequest
         )
-        Log.d("QuizRepositoryImpl", "Quiz sync scheduled.")
     }
 
     override suspend fun getUnsyncedTests(): List<TestEntity> {
@@ -146,19 +144,15 @@ class QuizRepositoryImpl @Inject constructor(
             batch.delete(doc.reference)
         }
         batch.commit().await()
-        Log.d("QuizRepositoryImpl", "Deleted test $testId and its questions from Firestore.")
     }
 
 
     override suspend fun deleteTestLocally(testId: Int) {
-        // Borrar preguntas asociadas primero (debido a la foreign key)
         val questionIds = dao.getQuestionIdsByTestId(testId)
         if (questionIds.isNotEmpty()) {
             dao.deleteQuestionsByIds(questionIds)
         }
-        // Luego borrar el test
         dao.deleteTestById(testId)
-        Log.d("QuizRepositoryImpl", "Deleted test $testId and its questions locally.")
     }
 
     override suspend fun deleteQuestionsLocally(questionIds: List<Int>) {

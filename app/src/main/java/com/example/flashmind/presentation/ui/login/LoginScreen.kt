@@ -48,7 +48,7 @@ import com.example.flashmind.R
 fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     onLoginSuccess: () -> Unit,
-    navigateToRegister: () -> Unit
+    navigateToRegister: () -> Unit,
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()

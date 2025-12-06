@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class GetSummariesForLessonUseCase @Inject constructor(
-    private val repository: SummaryRepository
+    private val repository: SummaryRepository,
 ) {
     operator fun invoke(lessonId: Int): Flow<List<SummaryModel>> {
         return repository.getSummariesForLesson(lessonId = lessonId)

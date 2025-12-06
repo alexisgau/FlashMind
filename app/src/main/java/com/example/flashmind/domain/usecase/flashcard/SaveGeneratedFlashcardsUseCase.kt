@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class SaveGeneratedFlashcardsUseCase @Inject constructor(private val flashCardRepository: FlashCardRepository) {
 
-    suspend operator fun invoke(flashcards: List<FlashCard>){
+    suspend operator fun invoke(flashcards: List<FlashCard>) {
         return flashCardRepository.saveGeneratedFlashcards(flashcards)
     }
 }

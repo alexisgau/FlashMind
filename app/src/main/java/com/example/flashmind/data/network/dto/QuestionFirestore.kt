@@ -6,5 +6,5 @@ data class QuestionFirestore(
     val questionText: String = "",
     val options: List<String> = emptyList(),
     val correctAnswerIndex: Int = -1,
-    val userId: String = ""
+    val userId: String = "",
 )

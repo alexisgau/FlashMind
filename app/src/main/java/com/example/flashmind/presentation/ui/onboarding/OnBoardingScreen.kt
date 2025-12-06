@@ -53,7 +53,7 @@ data class OnboardingPage(
     @DrawableRes val imageResId: Int,
     @StringRes val imageContentDescription: Int,
     @StringRes val bodyText: Int,
-    @StringRes val buttonText: Int
+    @StringRes val buttonText: Int,
 )
 
 @Composable
@@ -93,7 +93,7 @@ fun getOnboardingPages(): List<OnboardingPage> {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnboardingFlowScreen(
-    onFinishOnboarding: () -> Unit
+    onFinishOnboarding: () -> Unit,
 ) {
     val onboardingPages = getOnboardingPages()
     val totalPages = onboardingPages.size
@@ -177,7 +177,7 @@ fun OnboardingScreenContent(
     isLastPage: Boolean,
     onNextClick: () -> Unit,
     onSkipClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val backgroundColor = Color(0xFF1AA7C1)
     val contentColor = Color.White
@@ -249,7 +249,7 @@ fun PageIndicator(
     defaultColor: Color = Color.White.copy(alpha = 0.5f),
     dotSize: Dp = 8.dp,
     dotSpacing: Dp = 12.dp,
-    onDotClick: (Int) -> Unit
+    onDotClick: (Int) -> Unit,
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,

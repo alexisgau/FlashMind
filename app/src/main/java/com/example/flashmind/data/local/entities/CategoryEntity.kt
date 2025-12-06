@@ -15,11 +15,20 @@ data class CategoryEntity(
     val color: String,
     val userId: String = "",
     val isSynced: Boolean = false,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
 
+    )
+
+fun Category.toEntity(): CategoryEntity = CategoryEntity(
+    id,
+    name,
+    description,
+    color,
+    userId = userId,
+    isSynced = isSynced,
+    isDeleted = isDeleted
 )
 
-fun Category.toEntity(): CategoryEntity = CategoryEntity(id,name,description,color, userId = userId, isSynced = isSynced, isDeleted = isDeleted )
 fun CategoryEntity.toDomain(): Category = Category(
     id = id,
     name = name,

@@ -20,11 +20,6 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
     private val modelFlash = "gemini-2.5-flash"
     private val modelPro = "gemini-2.5-pro"
 
-    init {
-        if (apiKey.isEmpty()) {
-            Log.e("API_KEY", "¡ADVERTENCIA! La API Key de Gemini no está configurada")
-        }
-    }
 
     suspend fun getFlashcardsFromText(prompt: String): String {
         val requestBody = GenerateContentRequest(
@@ -50,9 +45,11 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
 
     suspend fun getTestFromText(prompt: String, safetySettings: List<SafetySetting>): String {
         val requestBody = GenerateContentRequest(
-            contents = listOf(GenerateContentRequest.Content(
-                parts = listOf(GenerateContentRequest.Part(text = prompt))
-            )),
+            contents = listOf(
+                GenerateContentRequest.Content(
+                    parts = listOf(GenerateContentRequest.Part(text = prompt))
+                )
+            ),
             safetySettings = safetySettings
         )
         return try {
@@ -70,9 +67,11 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
 
     suspend fun getSummaryFromText(prompt: String): String {
         val requestBody = GenerateContentRequest(
-            contents = listOf(GenerateContentRequest.Content(
-                parts = listOf(GenerateContentRequest.Part(text = prompt))
-            ))
+            contents = listOf(
+                GenerateContentRequest.Content(
+                    parts = listOf(GenerateContentRequest.Part(text = prompt))
+                )
+            )
         )
         return try {
             val response = apiService.generateContent(
@@ -110,7 +109,7 @@ class GeminiDataSource @Inject constructor(private val apiService: IaCallService
 
     fun parseFlashcardsFromText(
         input: String,
-        lessonId: Int
+        lessonId: Int,
     ): List<FlashCardEntity> {
         val flashcards = mutableListOf<FlashCardEntity>()
 

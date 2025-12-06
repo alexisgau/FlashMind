@@ -23,5 +23,5 @@ data class TestEntity(
     val creationDate: Long,
     val userId: String = "",
     val isSynced: Boolean = false,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
 )

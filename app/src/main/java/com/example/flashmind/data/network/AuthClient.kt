@@ -2,46 +2,45 @@ package com.example.flashmind.data.network
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
+import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialException
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.AuthResponse
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.FirebaseNetworkException
+import com.google.firebase.FirebaseTooManyRequestsException
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.tasks.await
 import java.security.MessageDigest
 import java.util.UUID
 import javax.inject.Inject
-import android.util.Log
-import androidx.credentials.ClearCredentialStateRequest
-import androidx.credentials.exceptions.GetCredentialException
-import com.google.firebase.FirebaseTooManyRequestsException
-import com.google.firebase.auth.EmailAuthProvider
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.userProfileChangeRequest
-import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.StorageMetadata
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.launch
 import javax.inject.Singleton
 
 @Singleton
 class AuthClient @Inject constructor(
     @ApplicationContext private val context: Context,
     private val auth: FirebaseAuth,
-    private val storage: FirebaseStorage
+    private val storage: FirebaseStorage,
 ) {
 
     fun getAuthState(): Flow<Boolean> = callbackFlow {
@@ -57,7 +56,8 @@ class AuthClient @Inject constructor(
     suspend fun register(email: String, password: String): Result<String> {
         return try {
             val authResult = auth.createUserWithEmailAndPassword(email, password).await()
-            val uid = authResult.user?.uid ?: return Result.failure(Exception(context.getString(R.string.auth_error_null_user)))
+            val uid = authResult.user?.uid
+                ?: return Result.failure(Exception(context.getString(R.string.auth_error_null_user)))
 
             Result.success(uid)
         } catch (e: FirebaseAuthWeakPasswordException) {
@@ -71,14 +71,19 @@ class AuthClient @Inject constructor(
         } catch (e: FirebaseTooManyRequestsException) {
             Result.failure(Exception(context.getString(R.string.auth_error_too_many_requests)))
         } catch (e: Exception) {
-            Result.failure(Exception(e.message ?: context.getString(R.string.auth_error_unknown_register)))
+            Result.failure(
+                Exception(
+                    e.message ?: context.getString(R.string.auth_error_unknown_register)
+                )
+            )
         }
     }
 
     suspend fun login(email: String, password: String): Result<String> {
         return try {
             val authResult = auth.signInWithEmailAndPassword(email, password).await()
-            val uid = authResult.user?.uid ?: return Result.failure(Exception(context.getString(R.string.auth_error_null_user)))
+            val uid = authResult.user?.uid
+                ?: return Result.failure(Exception(context.getString(R.string.auth_error_null_user)))
             Result.success(uid)
         } catch (e: FirebaseAuthInvalidUserException) {
             Result.failure(Exception(context.getString(R.string.auth_error_user_not_found)))
@@ -89,7 +94,11 @@ class AuthClient @Inject constructor(
         } catch (e: FirebaseTooManyRequestsException) {
             Result.failure(Exception(context.getString(R.string.auth_error_too_many_requests)))
         } catch (e: Exception) {
-            Result.failure(Exception(e.message ?: context.getString(R.string.auth_error_unknown_login)))
+            Result.failure(
+                Exception(
+                    e.message ?: context.getString(R.string.auth_error_unknown_login)
+                )
+            )
         }
     }
 
@@ -141,15 +150,21 @@ class AuthClient @Inject constructor(
             Result.failure(e)
         }
     }
+
     suspend fun signInAnonymously(): Result<String> {
         return try {
             val authResult = auth.signInAnonymously().await()
-            val uid = authResult.user?.uid ?: return Result.failure(Exception(context.getString(R.string.auth_error_null_user)))
+            val uid = authResult.user?.uid
+                ?: return Result.failure(Exception(context.getString(R.string.auth_error_null_user)))
             Result.success(uid)
         } catch (e: FirebaseNetworkException) {
             Result.failure(Exception(context.getString(R.string.auth_error_no_internet)))
         } catch (e: Exception) {
-            Result.failure(Exception(e.message ?: context.getString(R.string.auth_error_unknown_login)))
+            Result.failure(
+                Exception(
+                    e.message ?: context.getString(R.string.auth_error_unknown_login)
+                )
+            )
         }
     }
 
@@ -163,7 +178,8 @@ class AuthClient @Inject constructor(
 
         return try {
             val authResult = user.linkWithCredential(credential).await()
-            val uid = authResult.user?.uid ?: return Result.failure(Exception("Usuario nulo tras vincular"))
+            val uid = authResult.user?.uid
+                ?: return Result.failure(Exception("Usuario nulo tras vincular"))
             Result.success(uid)
         } catch (e: FirebaseAuthUserCollisionException) {
             Result.failure(Exception("Este email ya tiene una cuenta. Por favor inicia sesión."))
@@ -229,7 +245,6 @@ class AuthClient @Inject constructor(
         ) {
             val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
             return googleIdTokenCredential.idToken
-                ?: throw Exception("El ID token de Google vino nulo")
         } else {
             throw Exception("Tipo de credencial no reconocido")
         }

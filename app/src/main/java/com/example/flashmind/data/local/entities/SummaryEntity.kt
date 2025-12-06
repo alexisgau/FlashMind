@@ -29,5 +29,5 @@ data class SummaryEntity(
 
     val userId: String = "",
     val isSynced: Boolean = false,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
 )

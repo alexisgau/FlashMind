@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
@@ -65,13 +64,12 @@ import com.example.flashmind.domain.model.AuthResponse
 @Composable
 fun AccountSettingsScreen(
     viewModel: AccountViewModel = hiltViewModel(),
-    userData: String,
     navigateToLogin: () -> Unit,
-    navigateToHome: () -> Unit
+    navigateToHome: () -> Unit,
 ) {
 
 
-    AccountScreenImpl(modifier = Modifier, userData, navigateToLogin, navigateToHome, viewModel)
+    AccountScreenImpl(modifier = Modifier, navigateToLogin, navigateToHome, viewModel)
 
 }
 
@@ -80,10 +78,9 @@ fun AccountSettingsScreen(
 @Composable
 fun AccountScreenImpl(
     modifier: Modifier,
-    userData: String,
     navigateToLogin: () -> Unit,
     navigateToHome: () -> Unit,
-    viewModel: AccountViewModel
+    viewModel: AccountViewModel,
 ) {
     val signOutState by viewModel.signOutState.collectAsStateWithLifecycle()
     val isDarkMode by viewModel.isDarkMode.collectAsStateWithLifecycle()
@@ -264,7 +261,9 @@ fun AccountScreenImpl(
                     if (isAnonymous) {
                         Button(
                             onClick = { navigateToLogin() },
-                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
                             shape = RoundedCornerShape(50),
                             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                         ) {
@@ -275,7 +274,9 @@ fun AccountScreenImpl(
 
                         OutlinedButton(
                             onClick = { showGuestLogoutDialog = true },
-                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp),
                             shape = RoundedCornerShape(50),
                             colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
                         ) {

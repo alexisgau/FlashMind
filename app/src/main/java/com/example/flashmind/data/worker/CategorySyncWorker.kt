@@ -12,7 +12,7 @@ import dagger.assisted.AssistedInject
 class CategorySyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val repository: CategoryRepository
+    private val repository: CategoryRepository,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {

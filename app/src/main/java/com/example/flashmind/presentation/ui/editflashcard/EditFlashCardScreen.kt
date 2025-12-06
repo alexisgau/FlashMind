@@ -54,7 +54,7 @@ import com.example.flashmind.presentation.ui.flashcard.FlashCardUiState
 fun EditFlashCardScreen(
     flashCardId: Int,
     onNavigateBack: () -> Unit,
-    viewModel: EditFlashCardViewModel = hiltViewModel()
+    viewModel: EditFlashCardViewModel = hiltViewModel(),
 ) {
     val flashCardState by viewModel.flashCardState.collectAsStateWithLifecycle()
 
@@ -122,7 +122,7 @@ fun EditFlashCardScreen(
 @Composable
 fun EditFlashCardForm(
     flashCard: FlashCard,
-    onSaveChanges: (FlashCard) -> Unit
+    onSaveChanges: (FlashCard) -> Unit,
 ) {
     var question by remember { mutableStateOf(flashCard.question) }
     var answer by remember { mutableStateOf(flashCard.answer) }
@@ -197,7 +197,7 @@ fun EditFlashCardForm(
 fun ColorPickerRow(
     colors: List<String>,
     selectedColor: String,
-    onColorSelected: (String) -> Unit
+    onColorSelected: (String) -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),

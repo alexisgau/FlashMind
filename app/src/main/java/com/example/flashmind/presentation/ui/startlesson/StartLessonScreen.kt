@@ -26,7 +26,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -59,20 +58,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.graphics.toColorInt
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.flashmind.R
 import com.example.flashmind.presentation.ui.flashcard.FlashCardListViewModel
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+import androidx.core.graphics.toColorInt
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartLessonScreen(
     lessonId: Int,
     navigateToFlashCardScreen: (Int) -> Unit,
-    viewModel: FlashCardListViewModel = hiltViewModel()
+    viewModel: FlashCardListViewModel = hiltViewModel(),
 ) {
 
     val flashCards by viewModel.flashCards.collectAsStateWithLifecycle()
@@ -231,7 +230,7 @@ fun StartLessonScreen(
                     }
                 }
             }
-        } else if (flashCards.isEmpty()) {
+        } else {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -343,7 +342,7 @@ fun parseColorSafe(colorString: String): Color {
             Color(0xFF6750A4)
         } else {
 
-            Color(android.graphics.Color.parseColor(colorString))
+            Color(colorString.toColorInt())
         }
     } catch (e: Exception) {
         Color(0xFF6750A4)

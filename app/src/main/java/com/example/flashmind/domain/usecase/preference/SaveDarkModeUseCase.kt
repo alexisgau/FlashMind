@@ -4,7 +4,7 @@ import com.example.flashmind.data.local.preferences.ThemePreferenceManager
 import javax.inject.Inject
 
 class SaveDarkModeUseCase @Inject constructor(
-    private val preferenceManager: ThemePreferenceManager
+    private val preferenceManager: ThemePreferenceManager,
 ) {
     suspend operator fun invoke(isDark: Boolean) {
         preferenceManager.saveDarkModeSetting(isDark)

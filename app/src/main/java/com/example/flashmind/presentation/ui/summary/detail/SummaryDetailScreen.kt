@@ -1,6 +1,5 @@
 package com.example.flashmind.presentation.ui.summary.detail
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -56,7 +55,7 @@ fun SummaryViewScreen(
     summaryTitle: String? = null,
     lessonId: Int? = null,
     onClickBack: () -> Unit,
-    viewModel: SummaryViewModel = hiltViewModel()
+    viewModel: SummaryViewModel = hiltViewModel(),
 ) {
 
 
@@ -77,7 +76,6 @@ fun SummaryViewScreen(
             }
 
             else -> {
-                Log.e("TestScreen", "Invalid navigation arguments")
                 viewModel.loadSummaryById(summaryId ?: 3)
             }
         }

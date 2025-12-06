@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class EditFlashCardUseCase @Inject constructor(private val flashCardRepository: FlashCardRepository) {
 
-    suspend operator fun invoke(flashCard: FlashCard){
+    suspend operator fun invoke(flashCard: FlashCard) {
         return flashCardRepository.update(flashCard)
     }
 }

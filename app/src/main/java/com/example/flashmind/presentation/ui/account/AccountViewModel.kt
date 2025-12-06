@@ -22,7 +22,7 @@ class AccountViewModel @Inject constructor(
     private val signOutUseCase: SignOutUseCase,
     private val getDarkModeUseCase: GetDarkModeUseCase,
     private val updateProfilePictureUseCase: UpdateProfilePictureUseCase,
-    private val authClient: AuthClient
+    private val authClient: AuthClient,
 ) : ViewModel() {
 
     val isUserAnonymous: Boolean
@@ -30,7 +30,7 @@ class AccountViewModel @Inject constructor(
     private val _signOutState = MutableStateFlow<AuthResponse>(AuthResponse.Init)
     val signOutState: StateFlow<AuthResponse> = _signOutState.asStateFlow()
 
-    private val _isDarkMode = MutableStateFlow<Boolean>(false)
+    private val _isDarkMode = MutableStateFlow(false)
     val isDarkMode: StateFlow<Boolean> = _isDarkMode.asStateFlow()
 
     private val _currentImageUrl = MutableStateFlow("")

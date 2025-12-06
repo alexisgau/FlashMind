@@ -50,7 +50,7 @@ fun LessonOptionsScreen(
     onStudyFlashcards: () -> Unit,
     onViewSummary: () -> Unit,
     onTakeTest: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         topBar = {
@@ -149,7 +149,7 @@ private fun OptionCard(
     description: String,
     buttonText: String,
     onButtonClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),

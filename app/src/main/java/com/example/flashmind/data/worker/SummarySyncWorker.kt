@@ -14,17 +14,13 @@ import dagger.assisted.AssistedInject
 class SummarySyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val repository: SummaryRepository
+    private val repository: SummaryRepository,
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        Log.d("SummarySyncWorker", "Starting summary sync work...")
         return try {
             val unsyncedSummaries = repository.getUnsyncedSummaries()
-            Log.d("SummarySyncWorker", "Found ${unsyncedSummaries.size} unsynced summaries.")
-
             if (unsyncedSummaries.isEmpty()) {
-                Log.d("SummarySyncWorker", "No summaries to sync. Work finished successfully.")
                 return Result.success()
             }
 
@@ -33,24 +29,29 @@ class SummarySyncWorker @AssistedInject constructor(
                     try {
                         repository.deleteSummaryFromFirestore(summary.summaryId)
                         repository.deleteSummaryLocally(summary.summaryId)
-                        Log.i("SummarySyncWorker", "Deleted summary ${summary.summaryId} from Firestore and locally.")
                     } catch (e: Exception) {
-                        Log.e("SummarySyncWorker", "Failed to delete summary ${summary.summaryId}. Retrying later.", e)
+                        Log.e(
+                            "SummarySyncWorker",
+                            "Failed to delete summary ${summary.summaryId}. Retrying later.",
+                            e
+                        )
                         return@doWork Result.retry()
                     }
                 } else {
                     try {
                         repository.uploadSummaryToFirestore(summary)
                         repository.markSummaryAsSynced(summary.summaryId)
-                        Log.i("SummarySyncWorker", "Synced summary ${summary.summaryId} to Firestore.")
                     } catch (e: Exception) {
-                        Log.e("SummarySyncWorker", "Failed to sync summary ${summary.summaryId}. Retrying later.", e)
+                        Log.e(
+                            "SummarySyncWorker",
+                            "Failed to sync summary ${summary.summaryId}. Retrying later.",
+                            e
+                        )
                         return@doWork Result.retry() // Important to retry upload failures
                     }
                 }
             }
 
-            Log.d("SummarySyncWorker", "Summary sync work finished successfully after processing summaries.")
             Result.success()
 
         } catch (e: Exception) {

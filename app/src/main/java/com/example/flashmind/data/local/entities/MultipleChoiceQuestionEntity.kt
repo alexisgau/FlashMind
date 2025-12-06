@@ -25,7 +25,7 @@ data class MultipleChoiceQuestionEntity(
     val correctAnswerIndex: Int,
     val userId: String = "",
     val isSynced: Boolean = false,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
 )
 
 fun MultipleChoiceQuestionEntity.toDomain(): QuizQuestionModel {

@@ -9,9 +9,9 @@ import com.example.flashmind.data.local.dao.FlashCardDao
 import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.local.entities.toEntity
 import com.example.flashmind.data.network.dto.FlashCardFirestore
+import com.example.flashmind.data.worker.FlashCardSyncWorker
 import com.example.flashmind.domain.model.FlashCard
 import com.example.flashmind.domain.reposotory.FlashCardRepository
-import com.example.flashmind.data.worker.FlashCardSyncWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +23,7 @@ class FlashCardRepositoryImpl @Inject constructor(
     private val dao: FlashCardDao,
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
 ) :
     FlashCardRepository {
 
@@ -62,6 +62,7 @@ class FlashCardRepositoryImpl @Inject constructor(
 
         scheduleSync()
     }
+
     private fun scheduleSync() {
         val syncRequest = OneTimeWorkRequestBuilder<FlashCardSyncWorker>()
             .setConstraints(
@@ -116,6 +117,6 @@ class FlashCardRepositoryImpl @Inject constructor(
     }
 
     override suspend fun markFlashcardAsSynced(flashcardId: Int) {
-      dao.markFlashcardAsSynced(flashcardId)
+        dao.markFlashcardAsSynced(flashcardId)
     }
 }

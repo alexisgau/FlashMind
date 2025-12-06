@@ -40,6 +40,7 @@ object DatabaseModule {
             db.execSQL("ALTER TABLE summaries ADD COLUMN creationDate INTEGER NOT NULL DEFAULT 0")
         }
     }
+
     @Provides
     @Singleton
     fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
@@ -69,7 +70,7 @@ object DatabaseModule {
         auth: FirebaseAuth,
         categoryDao: CategoryDao,
         firestore: FirebaseFirestore,
-        workManager: WorkManager
+        workManager: WorkManager,
     ): CategoryRepository {
         return CategoryRepositoryImpl(auth, categoryDao, firestore, workManager)
     }
@@ -85,7 +86,7 @@ object DatabaseModule {
         dao: LessonDao,
         auth: FirebaseAuth,
         firestore: FirebaseFirestore,
-        workManager: WorkManager
+        workManager: WorkManager,
     ): LessonRepository {
         return LessonRepositoryImpl(dao, auth, firestore, workManager)
     }
@@ -100,7 +101,7 @@ object DatabaseModule {
         auth: FirebaseAuth,
         dao: FlashCardDao,
         firestore: FirebaseFirestore,
-        workManager: WorkManager
+        workManager: WorkManager,
     ): FlashCardRepository {
         return FlashCardRepositoryImpl(
             auth = auth,
@@ -121,7 +122,7 @@ object DatabaseModule {
         dao: QuizDao,
         auth: FirebaseAuth,
         firestore: FirebaseFirestore,
-        workManager: WorkManager
+        workManager: WorkManager,
     ): QuizRepository {
         return QuizRepositoryImpl(dao, auth, firestore, workManager)
     }
@@ -136,7 +137,7 @@ object DatabaseModule {
         dao: SummaryDao,
         auth: FirebaseAuth,
         firestore: FirebaseFirestore,
-        workManager: WorkManager
+        workManager: WorkManager,
     ): SummaryRepository {
 
         return SummaryRepositoryImpl(dao, auth, firestore, workManager)

@@ -62,7 +62,7 @@ fun FlashCardScreen(
     navigateToStartGame: (Int) -> Unit,
     navigateToEditFlashCard: (Int) -> Unit,
     navigateToLessons: () -> Unit,
-    viewModel: FlashCardListViewModel = hiltViewModel()
+    viewModel: FlashCardListViewModel = hiltViewModel(),
 ) {
     val flashCards = viewModel.flashCards.collectAsStateWithLifecycle()
 
@@ -105,12 +105,18 @@ fun FlashCardScreen(
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.playing_cards),
-                        contentDescription = stringResource(id = R.string.flashcards_counter, flashCards.value.size),
+                        contentDescription = stringResource(
+                            id = R.string.flashcards_counter,
+                            flashCards.value.size
+                        ),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(id = R.string.flashcards_counter, flashCards.value.size),
+                        text = stringResource(
+                            id = R.string.flashcards_counter,
+                            flashCards.value.size
+                        ),
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -190,7 +196,7 @@ fun FlashCardItemDeletable(
     question: String,
     answer: String,
     deleteFlashCard: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier
@@ -240,7 +246,7 @@ fun FlashcardItem(
     imagePainter: Painter,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         modifier = modifier.fillMaxWidth(),
@@ -318,7 +324,7 @@ fun FlashcardItemPreview() {
 
 @Composable
 fun EmptyFlashcardList(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier

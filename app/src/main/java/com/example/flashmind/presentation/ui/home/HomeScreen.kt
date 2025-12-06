@@ -74,7 +74,7 @@ fun HomeScreen(
     onNavigateToLessonContent: (lessonId: Int, lessonTitle: String) -> Unit,
     onNavigateToAddCategory: () -> Unit,
     onNavigateToAccountSettings: (String) -> Unit,
-    onNavigateToAddLesson: (categoryId: Int) -> Unit
+    onNavigateToAddLesson: (categoryId: Int) -> Unit,
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val categoryToDelete by viewModel.categoryToDelete.collectAsStateWithLifecycle()
@@ -318,8 +318,7 @@ fun HomeScreen(
         )
     }
 
-    }
-
+}
 
 
 @Composable
@@ -330,7 +329,7 @@ fun ExpandableCategoryItem(
     onToggleExpand: () -> Unit,
     onDeleteRequest: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
         Card(
@@ -409,7 +408,7 @@ fun LessonItem(
     onClick: () -> Unit,
     onEditClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier
@@ -469,7 +468,7 @@ fun LessonItem(
 fun TopBar(
     modifier: Modifier = Modifier,
     userData: UserData,
-    navigateToAccountSettings: (String) -> Unit
+    navigateToAccountSettings: (String) -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -588,7 +587,7 @@ fun HomeCard() {
 
 @Composable
 fun EmptyCategoryList(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier
@@ -636,7 +635,7 @@ fun EmptyCategoryListPreview() {
 fun EditLessonDialog(
     lesson: Lesson,
     onDismiss: () -> Unit,
-    onConfirm: (String) -> Unit
+    onConfirm: (String) -> Unit,
 ) {
     var text by remember(lesson.tittle) { mutableStateOf(lesson.tittle) }
 
@@ -668,51 +667,51 @@ fun EditLessonDialog(
     )
 }
 
-    @Composable
-    fun NameInputDialog(
-        onConfirm: (String) -> Unit,
-        onDismiss: () -> Unit = {}
-    ) {
-        var name by remember { mutableStateOf("") }
+@Composable
+fun NameInputDialog(
+    onConfirm: (String) -> Unit,
+    onDismiss: () -> Unit = {},
+) {
+    var name by remember { mutableStateOf("") }
 
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            title = {
-                Text(
-                    text = stringResource(R.string.hello),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Column {
-                    Text(stringResource(R.string.how_should_we_call_you))
-                    Spacer(modifier = Modifier.height(16.dp))
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = { newValue ->
-                            if (newValue.length <= 16) {
-                                name = newValue
-                            }
-                        },
-                        label = { Text(stringResource(R.string.your_name))},
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = { onConfirm(name) },
-                    enabled = name.isNotBlank(),
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(R.string.hello),
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column {
+                Text(stringResource(R.string.how_should_we_call_you))
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { newValue ->
+                        if (newValue.length <= 16) {
+                            name = newValue
+                        }
+                    },
+                    label = { Text(stringResource(R.string.your_name)) },
+                    singleLine = true,
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text(stringResource(R.string.continue_button))
-                }
-            },
-            containerColor = MaterialTheme.colorScheme.surface,
-            shape = RoundedCornerShape(24.dp)
-        )
-    }
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onConfirm(name) },
+                enabled = name.isNotBlank(),
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(stringResource(R.string.continue_button))
+            }
+        },
+        containerColor = MaterialTheme.colorScheme.surface,
+        shape = RoundedCornerShape(24.dp)
+    )
+}

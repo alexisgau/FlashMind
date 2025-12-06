@@ -38,7 +38,7 @@ class HomeViewModel @Inject constructor(
     private val getLessonCountByCategory: GetLessonCountByCategory,
     private val updateUserNameUseCase: UpdateUserNameUseCase,
     private val authClient: AuthClient,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -139,6 +139,7 @@ class HomeViewModel @Inject constructor(
                     isAnonymous = true
                 )
             }
+
             user != null -> {
                 val displayName = user.displayName
 
@@ -154,6 +155,7 @@ class HomeViewModel @Inject constructor(
                     isAnonymous = false
                 )
             }
+
             else -> UserData.Error("Usuario no autenticado")
         }
     }
@@ -226,6 +228,7 @@ class HomeViewModel @Inject constructor(
         _lessonToDelete.value = null
         _lessonToEdit.value = null
     }
+
     fun requestCategoryDeletion(category: Category) {
         _categoryToDelete.value = category
     }
@@ -244,7 +247,6 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 deleteCategoryUseCase(category)
-                Log.i("HomeViewModel", "Category ${category.id} marked for deletion.")
                 val currentState = _uiState.value
                 if (currentState is HomeUiState.Success) {
                     _uiState.value = currentState.copy(
@@ -267,7 +269,6 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 deleteLessonUseCase(lesson)
-                Log.i("HomeViewModel", "Lesson ${lesson.id} marked for deletion.")
                 val currentState = _uiState.value
                 if (currentState is HomeUiState.Success) {
                     val currentLessonsForCat = currentState.lessonsMap[lesson.categoryId]
@@ -298,7 +299,6 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 updateLessonUseCase(updatedLesson)
-                Log.i("HomeViewModel", "Lesson ${lesson.id} updated.")
 
                 val currentState = _uiState.value
                 if (currentState is HomeUiState.Success) {

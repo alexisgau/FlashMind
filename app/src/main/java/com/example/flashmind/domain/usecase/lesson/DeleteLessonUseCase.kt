@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 class DeleteLessonUseCase @Inject constructor(private val lessonRepository: LessonRepository) {
 
-    suspend operator fun invoke(lesson: Lesson){
+    suspend operator fun invoke(lesson: Lesson) {
         return lessonRepository.deleteLesson(lesson)
     }
 }

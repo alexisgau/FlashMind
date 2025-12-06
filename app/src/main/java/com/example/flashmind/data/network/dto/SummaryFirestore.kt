@@ -7,5 +7,5 @@ data class SummaryFirestore(
     val generatedSummary: String = "",
     val title: String = "",
     val userId: String = "",
-    val creationDate: Long = 0L
+    val creationDate: Long = 0L,
 )

@@ -25,7 +25,7 @@ sealed interface TestsListUiState {
 @HiltViewModel
 class TestViewModel @Inject constructor(
     private val getTestsForLessonUseCase: GetTestsForLessonUseCase,
-    private val deleteTestUseCase: DeleteTestUseCase
+    private val deleteTestUseCase: DeleteTestUseCase,
 ) : ViewModel() {
 
     private val _testsState = MutableStateFlow<TestsListUiState>(TestsListUiState.Loading)
@@ -35,7 +35,6 @@ class TestViewModel @Inject constructor(
 
     fun loadTestsForLesson(lessonId: Int) {
         if (currentLessonId == lessonId && _testsState.value !is TestsListUiState.Error) {
-            Log.d("TestViewModel", "Skipping load for lesson $lessonId, already loaded or loading.")
             return
         }
         currentLessonId = lessonId
@@ -48,7 +47,6 @@ class TestViewModel @Inject constructor(
                     _testsState.value = TestsListUiState.Error(e.message ?: "Failed to load tests")
                 }
                 .collectLatest { testsList ->
-                    Log.i("TestViewModel", "Tests loaded: ${testsList.size} for lesson $lessonId")
                     _testsState.value = if (testsList.isNotEmpty()) {
                         TestsListUiState.Success(testsList)
                     } else {
@@ -59,14 +57,11 @@ class TestViewModel @Inject constructor(
     }
 
     fun deleteTest(testId: Int) {
-        val lessonId = currentLessonId ?: return
         val currentState = _testsState.value
 
         viewModelScope.launch {
             try {
                 deleteTestUseCase(testId)
-                Log.i("TestViewModel", "Test $testId marked for deletion.")
-
                 if (currentState is TestsListUiState.Success) {
                     val updatedList = currentState.tests.filterNot { it.testId == testId }
                     _testsState.value = if (updatedList.isNotEmpty()) {
@@ -77,7 +72,6 @@ class TestViewModel @Inject constructor(
                 }
 
             } catch (e: Exception) {
-                Log.e("TestViewModel", "Error deleting test $testId", e)
 
                 _testsState.value = TestsListUiState.Error("Failed to delete test: ${e.message}")
 

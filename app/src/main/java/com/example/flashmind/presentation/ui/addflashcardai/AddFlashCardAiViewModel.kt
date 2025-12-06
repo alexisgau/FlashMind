@@ -16,14 +16,13 @@ import javax.inject.Inject
 @HiltViewModel
 class AddFlashCardAiViewModel @Inject constructor(
     private val generateFlashCardsUseCase: GenerateFlashCardsUseCase,
-    private val saveGeneratedFlashcardsUseCase: SaveGeneratedFlashcardsUseCase
+    private val saveGeneratedFlashcardsUseCase: SaveGeneratedFlashcardsUseCase,
 ) : ViewModel() {
 
     private val _flashCardAiState = MutableStateFlow<FlashCardAiState>(FlashCardAiState.Init)
     val flashCardAiState: StateFlow<FlashCardAiState> = _flashCardAiState.asStateFlow()
 
     private val _generatedFlashcards = MutableStateFlow<List<FlashCard>>(emptyList())
-    val generatedFlashcards: StateFlow<List<FlashCard>> = _generatedFlashcards.asStateFlow()
 
     fun generateFlashCards(text: String, lessonId: Int) {
         _flashCardAiState.value = FlashCardAiState.Loading

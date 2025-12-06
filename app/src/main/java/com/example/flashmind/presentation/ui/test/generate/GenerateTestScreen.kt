@@ -60,11 +60,11 @@ import java.io.InputStream
 fun GenerateTestScreen(
     modifier: Modifier = Modifier,
     navigateToTestScreen: (String, String) -> Unit,
-    onNavigateBack: () -> Unit
+    onNavigateBack: () -> Unit,
 ) {
     var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
-    var fileName by remember { mutableStateOf<String>("") }
-    var contentFile by remember { mutableStateOf<String>("") }
+    var fileName by remember { mutableStateOf("") }
+    var contentFile by remember { mutableStateOf("") }
     val context = LocalContext.current
 
     var testTitle by remember { mutableStateOf("") }
@@ -92,12 +92,10 @@ fun GenerateTestScreen(
                 try {
                     val textFile = extractTextFromUri(selectedFileUri!!, context)
                     contentFile = textFile
-                    Log.i("TestScreen", "Texto extraído: $textFile")
                 } catch (e: Exception) {
                     Log.e("TestScreen", "Error al extraer texto", e)
                 }
             } else {
-                Log.i("TestScreen", "El usuario canceló la selección de archivo")
             }
         }
     )

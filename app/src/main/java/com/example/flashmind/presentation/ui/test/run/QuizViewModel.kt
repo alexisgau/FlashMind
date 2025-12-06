@@ -26,7 +26,7 @@ class QuizViewModel @Inject constructor(
     private val saveGeneratedQuestionsUseCase: SaveGeneratedQuestionsUseCase,
     private val createTestUseCase: CreateTestUseCase,
     private val getQuestionsForTestUseCase: GetQuestionsForTestUseCase,
-    private val deleteTestUseCase: DeleteTestUseCase
+    private val deleteTestUseCase: DeleteTestUseCase,
 ) : ViewModel() {
 
     private val _quizState = MutableStateFlow<QuizUiState>(QuizUiState.Loading)
@@ -72,7 +72,7 @@ class QuizViewModel @Inject constructor(
     fun generateAndSaveTest(
         contentFile: String,
         lessonId: Int,
-        testTitle: String = "Test Generado"
+        testTitle: String = "Test Generado",
     ) {
         _quizState.value = QuizUiState.Loading
         stopTimer()
@@ -101,20 +101,29 @@ class QuizViewModel @Inject constructor(
                     )
                     startTimer()
                 } else {
-                    Log.w("QuizViewModel", "IA no generó preguntas. Borrando test huérfano: $newTestId")
                     deleteTestUseCase(newTestId.toInt())
-                    _quizState.value = QuizUiState.Error("No questions were raised.\nPlease try again")
+                    _quizState.value =
+                        QuizUiState.Error("No questions were raised.\nPlease try again")
                 }
             } catch (e: CancellationException) {
-                Log.w("QuizViewModel", "Generación cancelada. Borrando test huérfano: $newTestId", e)
                 newTestId?.let {
-                    try { deleteTestUseCase(it.toInt()) } catch (e: Exception) {  }
+                    try {
+                        deleteTestUseCase(it.toInt())
+                    } catch (e: Exception) {
+                    }
                 }
                 _quizState.value = QuizUiState.Error("Canceled generation.")
             } catch (e: Exception) {
-                Log.e("QuizViewModel", "Error en generateAndSaveTest. Borrando test huérfano: $newTestId", e)
+                Log.e(
+                    "QuizViewModel",
+                    "Error en generateAndSaveTest. Borrando test huérfano: $newTestId",
+                    e
+                )
                 newTestId?.let {
-                    try { deleteTestUseCase(it.toInt()) } catch (e: Exception) {  }
+                    try {
+                        deleteTestUseCase(it.toInt())
+                    } catch (e: Exception) {
+                    }
                 }
                 _quizState.value = QuizUiState.Error(e.message ?: "Unknown error")
             }
@@ -219,7 +228,7 @@ sealed interface QuizUiState {
         val totalQuestions: Int,
         val selectedAnswerIndex: Int? = null,
         val elapsedTimeSeconds: Long = 0L,
-        val isCorrect: Boolean? = null
+        val isCorrect: Boolean? = null,
     ) : QuizUiState
 
     data class Error(val error: String) : QuizUiState
@@ -227,6 +236,6 @@ sealed interface QuizUiState {
     data class Finished(
         val correctAnswers: Int,
         val totalQuestions: Int,
-        val elapsedTimeSeconds: Long = 0L
+        val elapsedTimeSeconds: Long = 0L,
     ) : QuizUiState
 }

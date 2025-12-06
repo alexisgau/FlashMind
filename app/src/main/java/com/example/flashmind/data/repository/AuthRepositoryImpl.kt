@@ -30,13 +30,13 @@ class AuthRepositoryImpl @Inject constructor(private val authClient: AuthClient)
         email: String,
         password: String,
 
-    ): Result<String> {
+        ): Result<String> {
         return authClient.register(email, password)
     }
 
     override suspend fun login(
         email: String,
-        password: String
+        password: String,
     ): Result<String> {
         return authClient.login(email, password)
     }
@@ -53,10 +53,10 @@ class AuthRepositoryImpl @Inject constructor(private val authClient: AuthClient)
         email: String,
         password: String,
     ): Result<String> {
-        return  authClient.upgradeAnonymousAccount(email,password)
+        return authClient.upgradeAnonymousAccount(email, password)
     }
 
     override fun isUserAnonymous(): Boolean {
-        return  authClient.isUserAnonymous()
+        return authClient.isUserAnonymous()
     }
 }

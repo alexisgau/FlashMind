@@ -15,7 +15,7 @@ interface IaCallService {
     suspend fun generateContent(
         @Path("modelName") modelName: String,
         @Query("key") apiKey: String,
-        @Body request: GenerateContentRequest
+        @Body request: GenerateContentRequest,
     ): GenerateContentResponse
 
     @GET("v1/models")
@@ -24,7 +24,7 @@ interface IaCallService {
 
 @Serializable
 data class ModelsResponse(
-    val models: List<ModelInfo>
+    val models: List<ModelInfo>,
 )
 
 @Serializable
@@ -33,5 +33,5 @@ data class ModelInfo(
     val version: String,
     val displayName: String,
     val description: String,
-    val supportedGenerationMethods: List<String>
+    val supportedGenerationMethods: List<String>,
 )

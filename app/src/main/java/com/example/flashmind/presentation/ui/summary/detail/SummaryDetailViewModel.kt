@@ -38,7 +38,7 @@ import javax.inject.Inject
 class SummaryViewModel @Inject constructor(
     private val createSummaryUseCase: CreateSummaryUseCase,
     private val generateSummaryUseCase: GenerateSummaryUseCase,
-    private val getSummaryByIdUseCase: GetSummaryByIdUseCase
+    private val getSummaryByIdUseCase: GetSummaryByIdUseCase,
 ) : ViewModel() {
 
     private val _generationState =
@@ -53,7 +53,7 @@ class SummaryViewModel @Inject constructor(
     fun generateAndSaveSummary(
         originalText: String,
         lessonId: Int,
-        summaryTitle: String
+        summaryTitle: String,
     ) {
         if (_generationState.value == SummaryGenerationState.Loading) return
         _generationState.value = SummaryGenerationState.Loading
@@ -63,11 +63,9 @@ class SummaryViewModel @Inject constructor(
 
                 val MIN_SUMMARY_LENGTH = 50
                 if (generatedSummaryText.isBlank() || generatedSummaryText.length < MIN_SUMMARY_LENGTH) {
-                    Log.w("SummaryViewModel", "La IA generó un resumen inválido o vacío. Texto: $generatedSummaryText")
                     throw Exception("La IA no pudo generar un resumen válido a partir de este texto.")
                 }
 
-                Log.i("SummaryViewModel", "Resumen generado por IA.")
 
                 val summaryToSave = SummaryModel(
                     summaryId = 0,
@@ -81,7 +79,6 @@ class SummaryViewModel @Inject constructor(
                 if (newSummaryId <= 0) {
                     throw Exception("Error al guardar el resumen en la base de datos.")
                 }
-                Log.i("SummaryViewModel", "Resumen guardado con ID: $newSummaryId")
 
                 val savedSummary = summaryToSave.copy(summaryId = newSummaryId.toInt())
                 _generationState.value = SummaryGenerationState.Success(savedSummary)
@@ -139,7 +136,6 @@ class SummaryViewModel @Inject constructor(
                 }
                 // Envía evento de éxito a la UI
                 _downloadChannel.send(DownloadEvent.Success(successMessage))
-                Log.i("SummaryViewModel", successMessage)
 
             } catch (e: Exception) {
                 Log.e("SummaryViewModel", "Error saving PDF", e)
@@ -226,10 +222,8 @@ class SummaryViewModel @Inject constructor(
             val safeTitle = summary.title.replace(Regex("[^a-zA-Z0-9.-]"), "_").take(50)
             put(MediaStore.MediaColumns.DISPLAY_NAME, "${safeTitle}_Summary.pdf")
             put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-                put(MediaStore.MediaColumns.IS_PENDING, 1)
-            }
+            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+            put(MediaStore.MediaColumns.IS_PENDING, 1)
         }
 
         val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
@@ -240,11 +234,9 @@ class SummaryViewModel @Inject constructor(
                 if (outputStream == null) throw Exception("Failed to open output stream")
                 pdfDocument.writeTo(outputStream as FileOutputStream)
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                contentValues.clear()
-                contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
-                resolver.update(uri, contentValues, null, null)
-            }
+            contentValues.clear()
+            contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
+            resolver.update(uri, contentValues, null, null)
             pdfDocument.close()
             return "Resumen guardado en Descargas"
 

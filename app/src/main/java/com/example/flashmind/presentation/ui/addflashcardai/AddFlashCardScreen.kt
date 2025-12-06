@@ -68,7 +68,7 @@ import com.example.flashmind.presentation.ui.flashcard.FlashCardItemDeletable
 fun AddFlashCardScreenAi(
     lessonId: Int,
     navigateToFlashCards: (Int) -> Unit,
-    viewModel: AddFlashCardAiViewModel = hiltViewModel()
+    viewModel: AddFlashCardAiViewModel = hiltViewModel(),
 ) {
     val state by viewModel.flashCardAiState.collectAsStateWithLifecycle()
     var text by remember { mutableStateOf("") }
@@ -206,112 +206,11 @@ fun AddFlashCardScreenAi(
 }
 
 
-@Composable
-fun AddFlashCardForm(
-    question: String,
-    onQuestionChange: (String) -> Unit,
-    answer: String,
-    onAnswerChange: (String) -> Unit,
-    selectedColor: String,
-    onColorSelected: (String) -> Unit,
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    val colors = listOf(
-        "#FF5733",
-        "#33FF57",
-        "#3357FF",
-        "#FF33A1",
-        "#F3F3F3"
-    )
-
-    Column(
-        modifier = Modifier
-            .padding(16.dp),
-    ) {
-        OutlinedTextField(
-            value = question,
-            onValueChange = onQuestionChange,
-            label = { Text(stringResource(id = R.string.flashcards_question_label)) },
-            placeholder = { Text(stringResource(id = R.string.flashcards_add_manual_question_placeholder)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            singleLine = true
-        )
-
-        OutlinedTextField(
-            value = answer,
-            onValueChange = onAnswerChange,
-            label = { Text(stringResource(id = R.string.flashcards_answer_label)) },
-            placeholder = { Text(stringResource(id = R.string.flashcards_add_manual_answer_placeholder)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        )
-
-        Text(
-            text = stringResource(id = R.string.flashcards_add_manual_select_color),
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.inverseSurface
-        )
-
-        Box(modifier = Modifier.padding(vertical = 8.dp)) {
-            OutlinedButton(
-                onClick = { expanded = true },
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = Color(selectedColor.toColorInt())
-                )
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .background(Color(selectedColor.toColorInt()))
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                }
-            }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false }
-            ) {
-                colors.forEach { color ->
-                    DropdownMenuItem(
-                        text = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(20.dp)
-                                        .background(Color(color.toColorInt()))
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(color)
-                            }
-                        },
-                        onClick = {
-                            onColorSelected(color)
-                            expanded = false
-                        }
-                    )
-                }
-            }
-        }
-
-    }
-
-    Spacer(modifier = Modifier.height(16.dp))
-}
-
 
 @Composable
 fun AddFlashCardFab(
     onManualClick: () -> Unit,
-    onAiClick: () -> Unit
+    onAiClick: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
 

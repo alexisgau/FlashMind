@@ -5,5 +5,5 @@ data class TestFirestore(
     val lessonId: Int = 0,
     val title: String = "",
     val userId: String = "",
-    val creationDate: Long = 0L
+    val creationDate: Long = 0L,
 )

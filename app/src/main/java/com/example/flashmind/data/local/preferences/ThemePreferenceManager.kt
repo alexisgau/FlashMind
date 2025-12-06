@@ -12,7 +12,7 @@ import javax.inject.Inject
 private val Context.dataStore by preferencesDataStore(name = "settings")
 
 class ThemePreferenceManager @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
 ) {
     companion object {
         val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")

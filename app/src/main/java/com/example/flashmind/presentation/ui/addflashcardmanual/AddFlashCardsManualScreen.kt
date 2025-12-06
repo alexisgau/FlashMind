@@ -65,7 +65,7 @@ import kotlinx.coroutines.launch
 fun AddFlashCardsManualScreen(
     lessonId: Int,
     navigateToFlashCards: (Int) -> Unit,
-    viewModel: AddFlashCardManualViewModel = hiltViewModel()
+    viewModel: AddFlashCardManualViewModel = hiltViewModel(),
 ) {
 
     val saveState by viewModel.saveState.collectAsStateWithLifecycle()
@@ -319,7 +319,7 @@ fun QuestionTextField(
     question: String,
     onQuestionChange: (String) -> Unit,
     label: String,
-    placeholder: String
+    placeholder: String,
 ) {
     OutlinedTextField(
         value = question,
@@ -338,7 +338,7 @@ fun QuestionTextField(
 @Composable
 fun ColorSelector(
     selectedColor: String,
-    onColorSelected: (String) -> Unit
+    onColorSelected: (String) -> Unit,
 ) {
     val colors = listOf("#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#FFC300")
 

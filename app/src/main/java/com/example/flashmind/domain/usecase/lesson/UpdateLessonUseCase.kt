@@ -5,7 +5,7 @@ import com.example.flashmind.domain.reposotory.LessonRepository
 import javax.inject.Inject
 
 class UpdateLessonUseCase @Inject constructor(
-    private val repository: LessonRepository
+    private val repository: LessonRepository,
 ) {
     suspend operator fun invoke(lesson: Lesson) {
         repository.updateLesson(lesson)

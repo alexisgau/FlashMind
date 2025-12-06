@@ -63,10 +63,11 @@ class LoginViewModel @Inject constructor(
 
                 signInWithGoogleUseCase().collect { response ->
                     when (response) {
-                        is AuthResponse.Success ->{
+                        is AuthResponse.Success -> {
                             startDataRestoration()
                             _uiState.value = LoginUiState.Success
                         }
+
                         is AuthResponse.Error -> _uiState.value =
                             LoginUiState.Error(response.message)
 
@@ -87,6 +88,7 @@ class LoginViewModel @Inject constructor(
 
         workManager.enqueue(request)
     }
+
     fun resetState() {
         _uiState.value = LoginUiState.Idle
     }

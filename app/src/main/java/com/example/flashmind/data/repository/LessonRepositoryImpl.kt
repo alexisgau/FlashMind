@@ -9,9 +9,9 @@ import com.example.flashmind.data.local.dao.LessonDao
 import com.example.flashmind.data.local.entities.toDomain
 import com.example.flashmind.data.local.entities.toEntity
 import com.example.flashmind.data.network.dto.LessonFirestore
+import com.example.flashmind.data.worker.LessonSyncWorker
 import com.example.flashmind.domain.model.Lesson
 import com.example.flashmind.domain.reposotory.LessonRepository
-import com.example.flashmind.data.worker.LessonSyncWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +23,7 @@ class LessonRepositoryImpl @Inject constructor(
     private val dao: LessonDao,
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
 ) : LessonRepository {
 
     private val userId: String

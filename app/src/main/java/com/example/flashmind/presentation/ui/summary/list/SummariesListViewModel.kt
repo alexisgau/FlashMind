@@ -28,7 +28,7 @@ sealed interface SummariesListUiState {
 @HiltViewModel
 class SummariesListViewModel @Inject constructor(
     private val getSummariesForLessonUseCase: GetSummariesForLessonUseCase,
-    private val deleteSummaryUseCase: DeleteSummaryUseCase
+    private val deleteSummaryUseCase: DeleteSummaryUseCase,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<SummariesListUiState>(SummariesListUiState.Loading)
@@ -38,7 +38,6 @@ class SummariesListViewModel @Inject constructor(
 
     fun loadSummaries(lessonId: Int) {
         if (currentLessonId == lessonId && _uiState.value !is SummariesListUiState.Error) {
-            Log.d("SummariesListViewModel", "Skipping load for lesson $lessonId, already loaded or loading.")
             return
         }
 
@@ -48,11 +47,15 @@ class SummariesListViewModel @Inject constructor(
         viewModelScope.launch {
             getSummariesForLessonUseCase(lessonId)
                 .catch { e ->
-                    Log.e("SummariesListViewModel", "Error loading summaries for lesson $lessonId", e)
-                    _uiState.value = SummariesListUiState.Error(e.message ?: "Failed to load summaries")
+                    Log.e(
+                        "SummariesListViewModel",
+                        "Error loading summaries for lesson $lessonId",
+                        e
+                    )
+                    _uiState.value =
+                        SummariesListUiState.Error(e.message ?: "Failed to load summaries")
                 }
                 .collectLatest { summariesList ->
-                    Log.i("SummariesListViewModel", "Loaded ${summariesList.size} summaries for lesson $lessonId")
                     _uiState.value = if (summariesList.isNotEmpty()) {
                         SummariesListUiState.Success(summariesList)
                     } else {
@@ -64,13 +67,11 @@ class SummariesListViewModel @Inject constructor(
 
 
     fun deleteSummary(summaryId: Int) {
-        val lessonId = currentLessonId ?: return
         val currentState = _uiState.value
 
         viewModelScope.launch {
             try {
                 deleteSummaryUseCase(summaryId)
-                Log.i("SummariesListViewModel", "Summary $summaryId marked for deletion.")
 
 
                 if (currentState is SummariesListUiState.Success) {
@@ -87,7 +88,8 @@ class SummariesListViewModel @Inject constructor(
 
             } catch (e: Exception) {
                 Log.e("SummariesListViewModel", "Error deleting summary $summaryId", e)
-                _uiState.value = SummariesListUiState.Error("Failed to delete summary: ${e.message}")
+                _uiState.value =
+                    SummariesListUiState.Error("Failed to delete summary: ${e.message}")
 
             }
         }

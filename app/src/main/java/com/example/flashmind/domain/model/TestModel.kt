@@ -6,7 +6,7 @@ data class TestModel(
     val testId: Int,
     val lessonId: Int,
     val title: String,
-    val creationDate: Long
+    val creationDate: Long,
 )
 
 fun TestEntity.toDomain(): TestModel {

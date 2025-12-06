@@ -8,7 +8,7 @@ data class SummaryModel(
     val lessonId: Int,
     val generatedSummary: String,
     val title: String,
-    val creationDate: Long
+    val creationDate: Long,
 )
 
 fun SummaryEntity.toDomain(): SummaryModel {

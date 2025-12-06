@@ -1,19 +1,19 @@
 package com.example.flashmind.data.repository
 
+
+import androidx.work.Constraints
+import androidx.work.ExistingWorkPolicy
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import com.example.flashmind.data.local.dao.SummaryDao
+import com.example.flashmind.data.local.entities.SummaryEntity
+import com.example.flashmind.data.network.dto.SummaryFirestore
 import com.example.flashmind.data.worker.SummarySyncWorker
+import com.example.flashmind.domain.model.SummaryModel
 import com.example.flashmind.domain.model.toDomain
 import com.example.flashmind.domain.model.toEntity
 import com.example.flashmind.domain.reposotory.SummaryRepository
-
-
-import android.util.Log
-import androidx.work.*
-import com.example.flashmind.data.local.dao.SummaryDao
-import com.example.flashmind.data.local.entities.SummaryEntity
-
-import com.example.flashmind.data.network.dto.SummaryFirestore
-import com.example.flashmind.domain.model.SummaryModel
-
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
@@ -25,12 +25,11 @@ class SummaryRepositoryImpl @Inject constructor(
     private val dao: SummaryDao,
     private val auth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
 ) : SummaryRepository {
 
     private val userId: String
         get() = auth.currentUser?.uid ?: "anonymous_user"
-
 
 
     override suspend fun createSummary(originalText: String, summaryToSave: SummaryModel): Long {
@@ -60,8 +59,6 @@ class SummaryRepositoryImpl @Inject constructor(
     }
 
 
-
-
     private fun scheduleSync() {
         val syncRequest = OneTimeWorkRequestBuilder<SummarySyncWorker>()
             .setConstraints(
@@ -77,7 +74,6 @@ class SummaryRepositoryImpl @Inject constructor(
             ExistingWorkPolicy.KEEP,
             syncRequest
         )
-        Log.d("SummaryRepositoryImpl", "Summary sync scheduled.")
     }
 
     // --- Internal API for Worker ---

@@ -1,6 +1,5 @@
 package com.example.flashmind.presentation.ui.main
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashmind.data.local.preferences.UserPreferencesRepository
@@ -21,9 +20,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getDarkModeUseCase: GetDarkModeUseCase,
-    private val authClient: AuthClient,
-    private val userPreferencesRepository: UserPreferencesRepository
+    getDarkModeUseCase: GetDarkModeUseCase,
+     authClient: AuthClient,
+    private val userPreferencesRepository: UserPreferencesRepository,
 ) : ViewModel() {
 
     val isDarkMode = getDarkModeUseCase()
@@ -41,7 +40,6 @@ class MainViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             combine(isAuthenticated, isOnboardingCompleted) { auth, onboarding ->
-                Log.d("MainViewModel", "Initial state loaded: Auth=$auth, Onboarding=$onboarding")
             }.first()
             _isLoading.value = false
         }

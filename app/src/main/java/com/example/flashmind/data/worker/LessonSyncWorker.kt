@@ -12,7 +12,7 @@ import dagger.assisted.AssistedInject
 class LessonSyncWorker @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val repository: LessonRepository // Hilt inyectará LessonRepositoryImpl
+    private val repository: LessonRepository, // Hilt inyectará LessonRepositoryImpl
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {

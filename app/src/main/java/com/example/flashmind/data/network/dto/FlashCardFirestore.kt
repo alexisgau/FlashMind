@@ -12,5 +12,5 @@ data class FlashCardFirestore(
     val color: String = "",
 
     @ServerTimestamp
-    val timestamp: Date? = null
+    val timestamp: Date? = null,
 )

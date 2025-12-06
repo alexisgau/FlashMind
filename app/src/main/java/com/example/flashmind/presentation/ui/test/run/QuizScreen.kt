@@ -1,6 +1,5 @@
 package com.example.flashmind.presentation.ui.test.run
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -75,16 +74,12 @@ fun QuizScreen(
     testId: Int? = null,
     lessonId: Int? = null,
     onClickBack: () -> Unit,
-    viewModel: QuizViewModel = hiltViewModel()
+    viewModel: QuizViewModel = hiltViewModel(),
 ) {
 
     val testUiState by viewModel.quizState.collectAsStateWithLifecycle()
     val defaultTitle = stringResource(id = R.string.quiz_generate_title)
     val finalTestTitle = testTittle ?: defaultTitle
-    Log.i(
-        "QuizScreen",
-        "QuizScreen - contentFile: $contentFile, lessonId: $lessonId, testId: $testId"
-    )
 
     BackHandler(
         enabled = testUiState !is QuizUiState.Loading,
@@ -92,10 +87,8 @@ fun QuizScreen(
     )
 
     LaunchedEffect(key1 = contentFile, key2 = lessonId, key3 = testId) {
-        Log.i("QuizScreen", "LaunchedEffect triggered")
         when {
             contentFile != null && lessonId != null -> {
-                Log.i("QuizScreen", "Starting test generation with content file")
                 viewModel.generateAndSaveTest(
                     contentFile,
                     lessonId,
@@ -104,12 +97,10 @@ fun QuizScreen(
             }
 
             testId != null -> {
-                Log.i("QuizScreen", "Loading existing test with ID: $testId")
                 viewModel.loadTest(testId)
             }
 
             else -> {
-                Log.e("QuizScreen", "Invalid navigation arguments")
             }
         }
     }
@@ -217,7 +208,7 @@ fun QuizScreen(
 
 @Composable
 fun PulsingRobotLogo(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
 
@@ -245,7 +236,7 @@ fun PulsingRobotLogo(
 fun QuizLoadingScreen(
     modifier: Modifier = Modifier,
     generateName: String = "Quiz",
-    generatingName: String = "Questions"
+    generatingName: String = "Questions",
 ) {
     val colorAzul = Color(0xFF2196F3)
     Column(
@@ -382,7 +373,7 @@ fun ErrorGenerator(
     errorTitle: String,
     errorMessage: String,
     onRetry: () -> Unit,
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -399,7 +390,7 @@ fun ErrorGenerator(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = errorTitle ,
+            text = errorTitle,
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )
@@ -437,7 +428,7 @@ fun QuizQuestionUi(
     onNextQuestion: () -> Unit,
     isCorrect: Boolean?,
     selectedAnswerIndex: Int?,
-    correctAnswerIndex: Int
+    correctAnswerIndex: Int,
 ) {
     val colorPrimario = MaterialTheme.colorScheme.primary
     val scrollState = rememberScrollState()
@@ -523,7 +514,7 @@ fun ModernOptionSurface(
     isSelected: Boolean,
     isCorrect: Boolean?,
     correctAnswerIndex: Int,
-    isEnabled: Boolean
+    isEnabled: Boolean,
 ) {
     val shape = RoundedCornerShape(12.dp)
 
@@ -536,9 +527,11 @@ fun ModernOptionSurface(
         isCorrect != null && index == correctAnswerIndex -> {
             Triple(correctColor, correctColor, Color.White)
         }
+
         isCorrect == false && isSelected -> {
             Triple(incorrectColor, incorrectColor, Color.White)
         }
+
         isCorrect != null && !isSelected -> {
 
             Triple(
@@ -547,6 +540,7 @@ fun ModernOptionSurface(
                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
             )
         }
+
         isSelected -> {
             Triple(
                 MaterialTheme.colorScheme.surface,
@@ -554,6 +548,7 @@ fun ModernOptionSurface(
                 MaterialTheme.colorScheme.onSurface
             )
         }
+
         else -> {
             Triple(
                 MaterialTheme.colorScheme.surface,
@@ -585,11 +580,12 @@ fun ModernOptionSurface(
         }
     }
 }
+
 @Composable
 fun QuizProgress(
     questionNumber: Int,
     totalQuestions: Int,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     val progressColor = Color(0xFF03A9F4)
     val trackColor = MaterialTheme.colorScheme.surfaceVariant
@@ -601,7 +597,11 @@ fun QuizProgress(
             .padding(top = 16.dp, start = 16.dp, end = 16.dp)
     ) {
         Text(
-            text = stringResource(id = R.string.quiz_question_counter, questionNumber, totalQuestions),
+            text = stringResource(
+                id = R.string.quiz_question_counter,
+                questionNumber,
+                totalQuestions
+            ),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 8.dp)

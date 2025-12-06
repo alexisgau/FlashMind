@@ -11,7 +11,7 @@ sealed interface HomeUiState {
         val lessonsMap: Map<Int, List<Lesson>>,
         val expandedCategoryIds: Set<Int>,
         val lessonCounts: Map<Int, Int>,
-        val userData: UserData
+        val userData: UserData,
     ) : HomeUiState
 
     data class Error(val message: String) : HomeUiState
@@ -27,7 +27,6 @@ sealed interface AddCategoryState {
 sealed interface LessonsState {
 
     object Loading : LessonsState
-    object IsEmpty : LessonsState
     data class Success(val lessons: List<Lesson>) : LessonsState
     data class Error(val message: String) : LessonsState
 
