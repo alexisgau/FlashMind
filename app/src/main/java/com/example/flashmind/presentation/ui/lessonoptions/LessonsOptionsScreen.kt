@@ -44,7 +44,6 @@ import com.example.flashmind.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LessonOptionsScreen(
-    lessonId: Int,
     lessonTitle: String,
     onNavigateBack: () -> Unit,
     onStudyFlashcards: () -> Unit,
@@ -224,7 +223,6 @@ private fun OptionCard(
 fun LessonOptionsScreenPreview() {
     MaterialTheme {
         LessonOptionsScreen(
-            lessonId = 0,
             lessonTitle = "Primera Guerra Mundial",
             onNavigateBack = {},
             onStudyFlashcards = {},

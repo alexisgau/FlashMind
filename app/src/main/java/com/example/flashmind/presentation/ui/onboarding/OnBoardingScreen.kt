@@ -110,16 +110,6 @@ fun OnboardingFlowScreen(
             val page = onboardingPages[pageIndex]
             OnboardingScreenContent(
                 page = page,
-                isLastPage = pageIndex == totalPages - 1,
-                onNextClick = {
-                    coroutineScope.launch {
-                        if (pagerState.currentPage < totalPages - 1) {
-                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                        } else {
-                            onFinishOnboarding()
-                        }
-                    }
-                },
                 onSkipClick = onFinishOnboarding
             )
         }
@@ -174,8 +164,6 @@ fun OnboardingFlowScreen(
 @Composable
 fun OnboardingScreenContent(
     page: OnboardingPage,
-    isLastPage: Boolean,
-    onNextClick: () -> Unit,
     onSkipClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {

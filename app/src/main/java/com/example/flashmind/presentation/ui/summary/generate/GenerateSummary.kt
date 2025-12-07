@@ -58,7 +58,6 @@ fun GenerateSummaryScreen(
     modifier: Modifier = Modifier,
     navigateToSummaryScreen: (String, String) -> Unit,
     onClickBack: () -> Unit,
-    lessonId: Int,
 ) {
     var selectedFileUri by remember { mutableStateOf<Uri?>(null) }
     var fileName by remember { mutableStateOf("") }

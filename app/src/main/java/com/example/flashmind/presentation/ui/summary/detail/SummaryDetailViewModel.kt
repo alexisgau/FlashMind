@@ -6,7 +6,6 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
-import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.Layout
@@ -205,7 +204,7 @@ class SummaryViewModel @Inject constructor(
             }
 
             // Draw the line on the current page
-            currentCanvas!!.withSave {
+            currentCanvas.withSave {
                 translate(margin, currentY)
                 lineLayout.draw(this)
             }

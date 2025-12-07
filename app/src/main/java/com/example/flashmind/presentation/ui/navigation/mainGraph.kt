@@ -69,7 +69,6 @@ fun NavGraphBuilder.mainGraph(
             val args = backStackEntry.toRoute<LessonOptions>()
 
             LessonOptionsScreen(
-                lessonId = args.lessonId,
                 lessonTitle = args.lessonName,
                 onNavigateBack = { navController.popBackStack() },
                 onStudyFlashcards = {
@@ -262,8 +261,6 @@ fun NavGraphBuilder.mainGraph(
         composable<GenerateSummaryRoute> { backStackEntry ->
             val args = backStackEntry.toRoute<GenerateSummaryRoute>()
             GenerateSummaryScreen(
-                lessonId = args.lessonId,
-                onClickBack = { navController.popBackStack() },
                 navigateToSummaryScreen = { contentFile, summaryTitle ->
                     navController.navigate(
                         SummaryDetailRoute(
@@ -278,7 +275,7 @@ fun NavGraphBuilder.mainGraph(
                         }
                     }
                 }
-            )
+            ) { navController.popBackStack() }
         }
 
 

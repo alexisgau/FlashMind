@@ -26,13 +26,12 @@ android {
 
     defaultConfig {
         applicationId = "com.example.flashmind"
-        minSdk = 34
+        minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // Cargar propiedades desde local.properties
         val localProperties = Properties().apply {
             val localPropertiesFile = rootProject.file("local.properties")
             if (localPropertiesFile.exists()) {
@@ -40,7 +39,6 @@ android {
             }
         }
 
-        // Obtener la clave API - IMPORTANTE: sin comillas adicionales
         val geminiApiKey = localProperties.getProperty("GEMINI_API_KEY", "")
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }

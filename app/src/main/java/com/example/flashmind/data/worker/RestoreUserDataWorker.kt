@@ -132,7 +132,7 @@ class RestoreUserDataWorker @AssistedInject constructor(
                         generatedSummary = data.generatedSummary,
                         title = data.title,
                         originalText = "",
-                        creationDate = data.creationDate ?: 0L,
+                        creationDate = data.creationDate,
                         userId = userId,
                         isSynced = true,
                         isDeleted = false
@@ -153,7 +153,7 @@ class RestoreUserDataWorker @AssistedInject constructor(
                         testId = data.testId,
                         lessonId = data.lessonId,
                         title = data.title,
-                        creationDate = data.creationDate ?: 0L,
+                        creationDate = data.creationDate,
                         userId = userId,
                         isSynced = true,
                         isDeleted = false
