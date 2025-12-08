@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
+import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.text.Layout
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
 
@@ -146,8 +148,8 @@ class SummaryViewModel @Inject constructor(
 
     private fun generateAndSavePdf(context: Context, summary: SummaryModel): String {
         val pdfDocument = PdfDocument()
-        val pageHeight = 1120 // A4 Height approx.
-        val pageWidth = 792  // A4 Width approx.
+        val pageHeight = 1120
+        val pageWidth = 792
         val margin = 72f
         val contentWidth = pageWidth - 2 * margin.toInt()
 
@@ -165,87 +167,99 @@ class SummaryViewModel @Inject constructor(
         var pageNumber = 1
         var currentPage: PdfDocument.Page? = null
         var currentCanvas: Canvas? = null
-        var currentY = margin // Start Y position below top margin
+        var currentY = margin
 
         fun startNewPage() {
-            currentPage?.let { pdfDocument.finishPage(it) } // Finish previous page if exists
-            val pageInfo =
-                PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber++).create()
+            currentPage?.let { pdfDocument.finishPage(it) }
+            val pageInfo = PdfDocument.PageInfo.Builder(pageWidth, pageHeight, pageNumber++).create()
             currentPage = pdfDocument.startPage(pageInfo)
             currentCanvas = currentPage!!.canvas
-            currentY = margin // Reset Y for new page
+            currentY = margin
         }
 
-        // --- Start Drawing ---
-        startNewPage() // Start the first page
-
-        // Draw Title on the first page
+        // --- 1. DIBUJAR EL PDF (Igual que antes) ---
+        startNewPage()
         currentCanvas!!.drawText(summary.title, (pageWidth / 2).toFloat(), currentY, titlePaint)
-        currentY += 40f // Space after title
+        currentY += 40f
 
-        // Split summary into lines or paragraphs to draw sequentially
         val lines = summary.generatedSummary.lines()
 
         lines.forEach { line ->
-            // Create a StaticLayout for the current line/paragraph
+            // Nota: StaticLayout.Builder requiere API 23+, como tu minSdk es 24, esto es seguro.
             val lineLayout = StaticLayout.Builder.obtain(
                 line.trim(), 0, line.trim().length, textPaint, contentWidth
             )
-                // Use START alignment for regular text
                 .setAlignment(Layout.Alignment.ALIGN_NORMAL)
                 .build()
 
             val lineHeight = lineLayout.height
 
-            // Check if this line fits on the current page
             if (currentY + lineHeight > pageHeight - margin) {
-                // Doesn't fit, start a new page
                 startNewPage()
             }
 
-            // Draw the line on the current page
-            currentCanvas.withSave {
+            currentCanvas?.withSave {
                 translate(margin, currentY)
                 lineLayout.draw(this)
             }
-            currentY += lineHeight // Move Y position down
+            currentY += lineHeight.toFloat()
         }
 
-        // Finish the last page
         currentPage?.let { pdfDocument.finishPage(it) }
 
-        // --- Saving Logic (MediaStore) ---
-        // (The MediaStore saving code remains the same as before)
-        val resolver = context.contentResolver
-        val contentValues = ContentValues().apply {
-            val safeTitle = summary.title.replace(Regex("[^a-zA-Z0-9.-]"), "_").take(50)
-            put(MediaStore.MediaColumns.DISPLAY_NAME, "${safeTitle}_Summary.pdf")
-            put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
-            put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
-            put(MediaStore.MediaColumns.IS_PENDING, 1)
-        }
 
-        val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
-            ?: throw Exception("Failed to create MediaStore entry")
+        // --- 2. GUARDAR EL ARCHIVO (Lógica Híbrida) ---
+
+        // Limpiamos el título para que sea un nombre de archivo válido
+        val safeTitle = summary.title.replace(Regex("[^a-zA-Z0-9.-]"), "_").take(50)
+        val fileName = "${safeTitle}_Summary.pdf"
 
         try {
-            resolver.openOutputStream(uri).use { outputStream ->
-                if (outputStream == null) throw Exception("Failed to open output stream")
-                pdfDocument.writeTo(outputStream as FileOutputStream)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // === OPCIÓN A: Android 10 (API 29) en adelante (Moderno) ===
+                val resolver = context.contentResolver
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "application/pdf")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                    put(MediaStore.MediaColumns.IS_PENDING, 1) // Marcar como pendiente
+                }
+
+                val uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                    ?: throw Exception("No se pudo crear entrada en MediaStore")
+
+                resolver.openOutputStream(uri)?.use { outputStream ->
+                    // ERROR CORREGIDO: No casteamos a FileOutputStream, solo usamos writeTo(outputStream)
+                    pdfDocument.writeTo(outputStream)
+                }
+
+                // Finalizar: Marcar como ya no pendiente
+                contentValues.clear()
+                contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
+                resolver.update(uri, contentValues, null, null)
+
+            } else {
+                // === OPCIÓN B: Android 7, 8, 9 (Legado) ===
+                // Requiere permiso WRITE_EXTERNAL_STORAGE en el Manifest
+                val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+
+                // Asegurarnos que la carpeta existe
+                if (!downloadsDir.exists()) downloadsDir.mkdirs()
+
+                val file = File(downloadsDir, fileName)
+
+                FileOutputStream(file).use { outputStream ->
+                    pdfDocument.writeTo(outputStream)
+                }
             }
-            contentValues.clear()
-            contentValues.put(MediaStore.MediaColumns.IS_PENDING, 0)
-            resolver.update(uri, contentValues, null, null)
+
             pdfDocument.close()
-            return "Resumen guardado en Descargas"
+            return "PDF guardado exitosamente"
 
         } catch (e: Exception) {
-            try {
-                resolver.delete(uri, null, null)
-            } catch (deleteEx: Exception) { /* Ignore */
-            }
             pdfDocument.close()
-            throw e
+            e.printStackTrace()
+            throw Exception("Error al guardar PDF: ${e.message}")
         }
     }
 

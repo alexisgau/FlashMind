@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.flashmind.data.network.AuthClient
 import com.example.flashmind.domain.model.AuthResponse
+import com.example.flashmind.domain.reposotory.AuthRepository
 import com.example.flashmind.domain.usecase.auth.SignOutUseCase
 import com.example.flashmind.domain.usecase.auth.UpdateProfilePictureUseCase
 import com.example.flashmind.domain.usecase.preference.GetDarkModeUseCase
@@ -22,7 +23,7 @@ class AccountViewModel @Inject constructor(
     private val signOutUseCase: SignOutUseCase,
     private val getDarkModeUseCase: GetDarkModeUseCase,
     private val updateProfilePictureUseCase: UpdateProfilePictureUseCase,
-    private val authClient: AuthClient,
+    private val authClient: AuthRepository,
 ) : ViewModel() {
 
     val isUserAnonymous: Boolean
@@ -38,6 +39,9 @@ class AccountViewModel @Inject constructor(
 
     private val _isUploadingPhoto = MutableStateFlow(false)
     val isUploadingPhoto: StateFlow<Boolean> = _isUploadingPhoto.asStateFlow()
+
+    private val _deleteAccountState = MutableStateFlow<Result<Unit>?>(null)
+    val deleteAccountState = _deleteAccountState.asStateFlow()
 
     init {
         val user = authClient.getCurrentUser()
@@ -73,6 +77,14 @@ class AccountViewModel @Inject constructor(
                         AuthResponse.Error(exception.message ?: "Error al cerrar sesión.")
                 }
             )
+        }
+    }
+
+    fun deleteAccount() {
+        viewModelScope.launch {
+            _deleteAccountState.value = null
+            val result = authClient.deleteAccount()
+            _deleteAccountState.value = result
         }
     }
 

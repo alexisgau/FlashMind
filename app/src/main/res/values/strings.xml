@@ -26,9 +26,11 @@
     <string name="generate_summary_topbar">Smart summarizer</string>
 
 
-
+    <string name="auth_error_field_required">Required field</string>
     <string name="auth_sign_in_guest">Sign in as Guest</string>
     <string name="home_guest_name">Guest</string>
+    <string name="auth_error_password_mismatch">Passwords do not match</string>
+    <string name="auth_error_password_too_short">The password must be at least 6 characters</string>
     <string name="auth_error_null_user"> User is null. Please try again.</string>
     <string name="auth_error_weak_password">Password is too weak (minimum 6 characters).</string>
     <string name="auth_error_invalid_email">The email format is invalid.</string>
@@ -214,6 +216,9 @@
     <string name="account_dark_mode_label">Dark mode</string>
     <string name="account_section">Account</string>
     <string name="account_sign_out">Sign out</string>
+    <string name="delete_account">Delete account</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="delete_account_text">"This action is irreversible. All your data will be deleted."</string>
     <string name="account_app_version">App version: 1.0.0</string>
     <string name="account_feedback">Send us your feedback</string>
     <string name="are_you_sure_title">Are you sure?</string>

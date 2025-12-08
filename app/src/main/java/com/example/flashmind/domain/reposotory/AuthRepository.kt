@@ -20,4 +20,6 @@ interface AuthRepository {
     suspend fun upgradeAnonymousAccount(email: String, password: String): Result<String>
 
     fun isUserAnonymous(): Boolean
+
+    suspend fun deleteAccount(): Result<Unit>
 }

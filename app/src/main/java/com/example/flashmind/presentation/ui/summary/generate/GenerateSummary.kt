@@ -98,7 +98,6 @@ fun GenerateSummaryScreen(
                 } catch (e: Exception) {
                     Log.e("TestScreen", "Error al extraer texto", e)
                 }
-            } else {
             }
         }
     )

@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.userProfileChangeRequest
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageMetadata
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -41,6 +42,7 @@ class AuthClient @Inject constructor(
     @ApplicationContext private val context: Context,
     private val auth: FirebaseAuth,
     private val storage: FirebaseStorage,
+    private val firestore: FirebaseFirestore
 ) {
 
     fun getAuthState(): Flow<Boolean> = callbackFlow {
@@ -273,6 +275,32 @@ class AuthClient @Inject constructor(
         val digest = md.digest(bytes)
         return digest.fold("") { str, it ->
             str + "%02x".format(it)
+        }
+    }
+
+
+    suspend fun deleteAccount(): Result<Unit> {
+        val user = auth.currentUser ?: return Result.failure(Exception("No user logged in"))
+        val userId = user.uid
+
+        return try {
+            try {
+                storage.reference.child("profile_images/$userId").delete().await()
+            } catch (e: Exception) {
+                Log.e("DeleteAccount", "Error borrando imagen: ${e.message}")
+            }
+
+            // 2. Borrar datos de usuario en Firestore
+            // (Esto borra el documento raíz, las subcolecciones quedan huérfanas pero inaccesibles, suficiente para MVP)
+            firestore.collection("users").document(userId).delete().await()
+
+            // 3. Borrar el usuario de Authentication (Lo más importante)
+            user.delete().await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            // Si falla (ej. requiere re-autenticación), devolvemos el error
+            Result.failure(e)
         }
     }
 }

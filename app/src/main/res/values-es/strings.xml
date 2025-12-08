@@ -27,9 +27,11 @@
 
 
 
-
+        <string name="auth_error_field_required">Campo requerido</string>
         <string name="auth_sign_in_guest">Entrar como Invitado</string>
         <string name="home_guest_name">Invitado</string>
+        <string name="auth_error_password_mismatch">Las contraseñas no coinciden</string>
+        <string name="auth_error_password_too_short">La contraseña debe tener al menos 6 caracteres</string>
         <string name="auth_error_null_user">Usuario nulo. Por favor, intenta de nuevo.</string>
         <string name="auth_error_weak_password">La contraseña es demasiado débil (mínimo 6 caracteres).</string>
         <string name="auth_error_invalid_email">El formato del email no es válido.</string>
@@ -215,6 +217,9 @@
         <string name="account_dark_mode_label">Modo oscuro</string>
         <string name="account_section">Cuenta</string>
         <string name="account_sign_out">Cerrar sesión</string>
+        <string name="delete_account">Eliminar cuenta</string>
+        <string name="privacy_policy">Política de Privacidad</string>
+        <string name="delete_account_text">"Esta acción es irreversible. Se borrarán todos tus datos."</string>
         <string name="account_app_version">Versión de la app: 1.0.0</string>
         <string name="account_feedback">Envíanos tu feedback</string>
         <string name="are_you_sure_title">¿Estás seguro?</string>

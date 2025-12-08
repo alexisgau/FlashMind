@@ -1,3 +1,4 @@
+import com.android.build.api.dsl.AndroidResources
 import java.io.FileInputStream
 import java.util.Properties
 
@@ -11,7 +12,7 @@ plugins {
 
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
-    id ("dagger.hilt.android.plugin")
+    id("dagger.hilt.android.plugin")
     id("com.google.gms.google-services")
 
 }
@@ -43,12 +44,13 @@ android {
         buildConfigField("String", "GEMINI_API_KEY", "\"$geminiApiKey\"")
     }
 
-    aaptOptions {
+    fun AndroidResources.() {
         noCompress.add("txt")
     }
 
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
@@ -82,7 +84,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.pdf.viewer)
+//    implementation(libs.androidx.pdf.viewer)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -90,6 +92,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    implementation("androidx.core:core-splashscreen:1.2.0")
 
     implementation("com.google.android.libraries.mapsplatform.secrets-gradle-plugin:secrets-gradle-plugin:2.0.1")
 
@@ -118,12 +122,12 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
 
     // Manejo de credenciales (Authentication API)
-    implementation ("androidx.credentials:credentials:1.3.0-alpha05")
-    implementation ("androidx.credentials:credentials-play-services-auth:1.3.0-alpha05")
+    implementation("androidx.credentials:credentials:1.3.0-alpha05")
+    implementation("androidx.credentials:credentials-play-services-auth:1.3.0-alpha05")
 
 // Google Identity
-    implementation ("com.google.android.libraries.identity.googleid:googleid:1.1.1")
-    implementation ("com.google.firebase:firebase-auth-ktx:22.3.1")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+    implementation("com.google.firebase:firebase-auth-ktx:22.3.1")
 
     implementation("io.coil-kt:coil-compose:2.4.0")
 
@@ -143,11 +147,9 @@ dependencies {
 
     //retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0") 
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3") // O la versión que uses
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0")
-
-
 
 
 }

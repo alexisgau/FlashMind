@@ -59,4 +59,8 @@ class AuthRepositoryImpl @Inject constructor(private val authClient: AuthClient)
     override fun isUserAnonymous(): Boolean {
         return authClient.isUserAnonymous()
     }
+
+    override suspend fun deleteAccount(): Result<Unit> {
+        return authClient.deleteAccount()
+    }
 }

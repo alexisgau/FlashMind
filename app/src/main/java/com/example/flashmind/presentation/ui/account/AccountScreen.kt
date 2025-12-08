@@ -1,8 +1,11 @@
 package com.example.flashmind.presentation.ui.account
 
+import android.content.Intent
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,10 +21,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialog
@@ -35,7 +41,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -50,8 +55,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -59,6 +66,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.AuthResponse
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException
+import androidx.core.net.toUri
 
 
 @Composable
@@ -88,20 +97,32 @@ fun AccountScreenImpl(
     val currentImageUrl by viewModel.currentImageUrl.collectAsStateWithLifecycle()
     val isUploading by viewModel.isUploadingPhoto.collectAsStateWithLifecycle()
 
+    var showDeleteDialog by remember { mutableStateOf(false) }
+    val deleteState by viewModel.deleteAccountState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     val isAnonymous = viewModel.isUserAnonymous
 
     val photoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = { uri ->
-            if (uri != null) {
-                viewModel.updateProfilePicture(uri)
-            }
-        }
+        onResult = { uri -> if (uri != null) viewModel.updateProfilePicture(uri) }
     )
 
     LaunchedEffect(signOutState) {
-        if (signOutState is AuthResponse.Success) {
+        if (signOutState is AuthResponse.Success) navigateToLogin()
+    }
+
+    LaunchedEffect(deleteState) {
+        deleteState?.onSuccess {
+            Toast.makeText(context, "Cuenta eliminada correctamente.", Toast.LENGTH_SHORT).show()
             navigateToLogin()
+        }?.onFailure { e ->
+            if (e is FirebaseAuthRecentLoginRequiredException || e.message?.contains("sensitive") == true) {
+                Toast.makeText(context, "Por seguridad, inicia sesión nuevamente...", Toast.LENGTH_LONG).show()
+                viewModel.signOut()
+                navigateToLogin()
+            } else {
+                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -129,6 +150,7 @@ fun AccountScreenImpl(
             )
         }
     ) { paddingValues ->
+
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -137,168 +159,81 @@ fun AccountScreenImpl(
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Spacer(Modifier.height(16.dp))
 
+                // FOTO DE PERFIL
                 Box(contentAlignment = Alignment.Center) {
-
                     val imageModifier = Modifier
                         .size(140.dp)
                         .clip(CircleShape)
                         .border(2.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                        .then(
-                            if (!isAnonymous) {
-                                Modifier.clickable {
-                                    photoPickerLauncher.launch(
-                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                    )
-                                }
-                            } else {
-                                Modifier
-                            }
-                        )
+                        .then(if (!isAnonymous) Modifier.clickable { photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) } else Modifier)
 
                     if (currentImageUrl.isNotEmpty()) {
-                        AsyncImage(
-                            model = currentImageUrl,
-                            contentDescription = stringResource(id = R.string.account_profile_picture_cd),
-                            contentScale = ContentScale.Crop,
-                            modifier = imageModifier
-                        )
+                        AsyncImage(model = currentImageUrl, contentDescription = null, contentScale = ContentScale.Crop, modifier = imageModifier)
                     } else {
-                        Image(
-                            painter = painterResource(R.drawable.default_profile_ic),
-                            contentDescription = stringResource(id = R.string.account_default_profile_cd),
-                            contentScale = ContentScale.Crop,
-                            modifier = imageModifier
-                        )
+                        Image(painter = painterResource(R.drawable.default_profile_ic), contentDescription = null, contentScale = ContentScale.Crop, modifier = imageModifier)
                     }
 
-
                     if (isUploading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(48.dp),
-                            color = MaterialTheme.colorScheme.primary,
-                            strokeWidth = 4.dp
-                        )
+                        CircularProgressIndicator(modifier = Modifier.size(48.dp), color = MaterialTheme.colorScheme.primary, strokeWidth = 4.dp)
                     }
 
                     if (!isAnonymous) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Cambiar foto",
-                            tint = Color.White,
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .padding(8.dp)
-                                .background(MaterialTheme.colorScheme.primary, CircleShape)
-                                .padding(6.dp)
-                                .size(16.dp)
-                        )
+                        Icon(imageVector = Icons.Default.Edit, contentDescription = null, tint = Color.White, modifier = Modifier.align(Alignment.BottomEnd).padding(8.dp).background(MaterialTheme.colorScheme.primary, CircleShape).padding(6.dp).size(16.dp))
                     }
                 }
 
+                Spacer(Modifier.height(32.dp))
+
+                // PREFERENCIAS
+                Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = stringResource(id = R.string.account_preferences_section), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.inverseSurface)
+                    Spacer(Modifier.height(12.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        Icon(imageVector = Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.onBackground)
+                        Spacer(Modifier.width(12.dp))
+                        Text(text = stringResource(id = R.string.account_dark_mode_label).uppercase(), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.inverseSurface)
+                        Spacer(Modifier.weight(1f))
+                        Switch(checked = isDarkMode, onCheckedChange = { viewModel.setDarkMode(it) })
+                    }
+                }
 
                 Spacer(Modifier.height(32.dp))
 
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.account_preferences_section),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.inverseSurface
-                    )
-
-                    Spacer(Modifier.height(12.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Info,
-                            contentDescription = stringResource(id = R.string.account_dark_mode_label),
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-
-                        Spacer(Modifier.width(12.dp))
-
-                        Text(
-                            text = stringResource(id = R.string.account_dark_mode_label).uppercase(),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.inverseSurface
-                        )
-
-                        Spacer(Modifier.weight(1f))
-
-                        Switch(
-                            checked = isDarkMode,
-                            onCheckedChange = { viewModel.setDarkMode(it) },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.primary,
-                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        )
-                    }
-
-                    Spacer(Modifier.height(32.dp))
-
-                    Text(
-                        text = stringResource(id = R.string.account_section),
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.inverseSurface
-                    )
-
+                // ACCIONES DE CUENTA
+                Column(horizontalAlignment = Alignment.Start, modifier = Modifier.fillMaxWidth()) {
+                    Text(text = stringResource(id = R.string.account_section), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.inverseSurface)
                     Spacer(Modifier.height(12.dp))
 
                     if (isAnonymous) {
-                        Button(
-                            onClick = { navigateToLogin() },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                        ) {
-                            Text(stringResource(R.string.create_account))
-                        }
-
+                        Button(onClick = { navigateToLogin() }, modifier = Modifier.fillMaxWidth().height(48.dp)) { Text(stringResource(R.string.create_account)) }
                         Spacer(Modifier.height(12.dp))
-
-                        OutlinedButton(
-                            onClick = { showGuestLogoutDialog = true },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                        ) {
-                            Text(stringResource(R.string.account_sign_out))
-                        }
+                        OutlinedButton(onClick = { showGuestLogoutDialog = true }, modifier = Modifier.fillMaxWidth().height(48.dp), colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error)) { Text(stringResource(R.string.account_sign_out)) }
                     } else {
-
-                        Button(
-                            onClick = { viewModel.signOut() },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp),
-                            shape = RoundedCornerShape(50),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = MaterialTheme.colorScheme.onPrimary
-                            )
-                        ) {
-                            Text(stringResource(id = R.string.account_sign_out))
-                        }
+                        Button(onClick = { viewModel.signOut() }, modifier = Modifier.fillMaxWidth().height(48.dp)) { Text(stringResource(id = R.string.account_sign_out)) }
                     }
+                }
 
+                // BOTÓN ELIMINAR CUENTA
+                Spacer(Modifier.height(24.dp))
+                OutlinedButton(
+                    onClick = { showDeleteDialog = true },
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error, containerColor = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.1f)),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
+                ) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.delete_account))
                 }
             }
 
@@ -306,47 +241,60 @@ fun AccountScreenImpl(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(Modifier.height(16.dp))
+
+                // Link de Privacidad (Recomendado por políticas)
+                val privacyUrl = "https://www.google.com" // Pon tu link aquí
                 Text(
-                    text = stringResource(id = R.string.account_app_version),
+                    text = stringResource(R.string.privacy_policy),
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.inverseSurface
+                    textDecoration = TextDecoration.Underline,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable {
+                        val intent = Intent(Intent.ACTION_VIEW, privacyUrl.toUri())
+                        context.startActivity(intent)
+                    }
                 )
+
+                Spacer(Modifier.height(8.dp))
+
+                Text(text = stringResource(id = R.string.account_app_version), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.inverseSurface)
                 Spacer(Modifier.height(4.dp))
-                Text(
-                    text = stringResource(id = R.string.account_feedback),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.inverseSurface
-                )
+                Text(text = stringResource(id = R.string.account_feedback), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.inverseSurface)
                 Spacer(Modifier.height(16.dp))
             }
         }
     }
 
-    if (showGuestLogoutDialog) {
+    if (showDeleteDialog) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text(stringResource(R.string.are_you_sure_title)) },
+            text = { Text(stringResource(R.string.delete_account_text)) },
+            confirmButton = {
+                Button(
+                    onClick = { showDeleteDialog = false; viewModel.deleteAccount() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) { Text(stringResource(R.string.delete_all_and_exit)) }
+            },
+            dismissButton = { TextButton(onClick = { showDeleteDialog = false }) { Text(stringResource(R.string.cancel)) } }
+        )
+    }
 
+    if (showGuestLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showGuestLogoutDialog = false },
             title = { Text(stringResource(R.string.are_you_sure_title)) },
             text = { Text(stringResource(R.string.guest_mode_warning_message)) },
             confirmButton = {
                 TextButton(
-                    onClick = {
-                        showGuestLogoutDialog = false
-                        viewModel.signOut()
-                    },
+                    onClick = { showGuestLogoutDialog = false; viewModel.signOut() },
                     colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
-                ) {
-                    Text(stringResource(R.string.delete_all_and_exit))
-                }
+                ) { Text(stringResource(R.string.delete_all_and_exit)) }
             },
-            dismissButton = {
-                TextButton(onClick = { showGuestLogoutDialog = false }) {
-                    Text(stringResource(R.string.cancel))
-                }
-            }
+            dismissButton = { TextButton(onClick = { showGuestLogoutDialog = false }) { Text(stringResource(R.string.cancel)) } }
         )
     }
-
 }
 
 @Preview(showBackground = true)
