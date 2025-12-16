@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -28,11 +29,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val userPreference by viewModel.isDarkMode.collectAsState()
+            val systemIsDark = isSystemInDarkTheme()
+            val useDarkTheme = userPreference ?: systemIsDark
             val isDarkMode by viewModel.isDarkMode.collectAsState()
             val isLoading by viewModel.isLoading.collectAsState()
             val isOnboardingCompleted by viewModel.isOnboardingCompleted.collectAsStateWithLifecycle()
 
-            FlashMindTheme(darkTheme = isDarkMode) {
+            FlashMindTheme(darkTheme = useDarkTheme, dynamicColor = true) {
 
                 Surface(
                     modifier = Modifier.fillMaxSize(),

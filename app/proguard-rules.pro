@@ -95,3 +95,8 @@
 -keep interface com.example.flashmind.data.network.** { *; }
 
 # --- FIN REGLAS CRÍTICAS ---
+
+# --- ARREGLO PARA CRASH EN ANDROID < 13 ---
+-keep class androidx.core.content.pm.** { *; }
+-keep class android.support.v4.content.pm.** { *; }
+-dontwarn android.content.pm.PackageManager$PackageInfoFlags

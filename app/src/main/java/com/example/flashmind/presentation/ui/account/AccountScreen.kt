@@ -178,7 +178,7 @@ fun AccountScreenImpl(
                         .then(if (!isAnonymous) Modifier.clickable { photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) } else Modifier)
 
                     if (currentImageUrl.isNotEmpty()) {
-                        AsyncImage(model = currentImageUrl, contentDescription = null, contentScale = ContentScale.Crop, modifier = imageModifier)
+                        AsyncImage(model = currentImageUrl, contentDescription = null, contentScale = ContentScale.Crop, modifier = imageModifier,placeholder = painterResource(R.drawable.default_profile_ic))
                     } else {
                         Image(painter = painterResource(R.drawable.default_profile_ic), contentDescription = null, contentScale = ContentScale.Crop, modifier = imageModifier)
                     }

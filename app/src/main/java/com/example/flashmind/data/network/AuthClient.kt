@@ -7,7 +7,9 @@ import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.GetCredentialCancellationException
 import androidx.credentials.exceptions.GetCredentialException
+import androidx.credentials.exceptions.NoCredentialException
 import com.example.flashmind.R
 import com.example.flashmind.domain.model.AuthResponse
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
@@ -201,7 +203,6 @@ class AuthClient @Inject constructor(
             val firebaseCredential = GoogleAuthProvider.getCredential(googleIdToken, null)
             val currentUser = auth.currentUser
 
-
             if (currentUser != null && currentUser.isAnonymous) {
                 try {
                     currentUser.linkWithCredential(firebaseCredential).await()
@@ -209,23 +210,29 @@ class AuthClient @Inject constructor(
                     auth.signInWithCredential(firebaseCredential).await()
                 }
             } else {
-
                 auth.signInWithCredential(firebaseCredential).await()
             }
 
-
             emit(AuthResponse.Success)
 
+        } catch (e: GetCredentialCancellationException) {
+
+            Log.d("AuthClient", "Google Sign-In cancelado por el usuario")
+            emit(AuthResponse.Error(context.getString(R.string.auth_error_google_cancelled)))
+
+        } catch (e: NoCredentialException) {
+            Log.e("AuthClient", "No hay cuentas de Google disponibles: ${e.message}")
+            emit(AuthResponse.Error(context.getString(R.string.auth_error_no_google_account)))
+
         } catch (e: GetCredentialException) {
-            Log.e("AuthClient", "Google Sign-In cancelado o fallido: ${e.message}")
+            Log.e("AuthClient", "Error de Credential Manager: ${e.message}")
             emit(AuthResponse.Error(context.getString(R.string.auth_error_google)))
+
         } catch (e: Exception) {
-            Log.e("AuthClient", "Error en signInWithGoogle: ${e.message}")
-            val errorMsg = e.message ?: context.getString(R.string.auth_error_google)
-            emit(AuthResponse.Error(errorMsg))
+            Log.e("AuthClient", "Error desconocido en signInWithGoogle: ${e.message}")
+            emit(AuthResponse.Error(context.getString(R.string.auth_error_unknown)))
         }
     }
-
     private suspend fun getGoogleIdToken(): String {
         val googleIdOption = GetGoogleIdOption.Builder()
             .setFilterByAuthorizedAccounts(false)

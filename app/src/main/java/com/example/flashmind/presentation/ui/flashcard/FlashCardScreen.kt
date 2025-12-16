@@ -1,5 +1,6 @@
 package com.example.flashmind.presentation.ui.flashcard
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +39,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -152,7 +155,7 @@ fun FlashCardScreen(
                     enabled = flashCards.value.isNotEmpty(),
                     elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
+                        containerColor = Color(0xFF2b4778)
                     )
                 ) {
                     Icon(
@@ -248,13 +251,22 @@ fun FlashcardItem(
     onDeleteClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
+    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
+
+
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
-        )
+        ),
+        border = if (isDark) {
+            BorderStroke(1.dp,  MaterialTheme.colorScheme.onSurfaceVariant)
+        } else {
+            null
+        }
     ) {
         Row(
             modifier = Modifier

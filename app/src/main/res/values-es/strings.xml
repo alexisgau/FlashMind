@@ -43,7 +43,9 @@
         <string name="auth_error_unknown_login">Error desconocido al iniciar sesión.</string>
         <string name="auth_error_user_disabled">Esta cuenta de usuario ha sido deshabilitada.</string>
         <string name="auth_error_too_many_requests">Demasiados intentos. Intenta más tarde.</string>
-
+        <string name="auth_error_google_cancelled">El inicio de sesión fue cancelado.</string>
+        <string name="auth_error_no_google_account">No se detectó ninguna cuenta de Google en este dispositivo. Añade una desde los ajustes del teléfono.</string>
+        <string name="auth_error_unknown">Ocurrió un error inesperado. Por favor, inténtalo de nuevo.</string>
 
         <string name="onboarding_welcome_title">¡Bienvenido/a a FlashMind! 🚀</string>
         <string name="onboarding_welcome_description">Transforma tus apuntes, PDFs o cualquier texto en flashcards, tests y resúmenes para estudiar de forma inteligente.</string>

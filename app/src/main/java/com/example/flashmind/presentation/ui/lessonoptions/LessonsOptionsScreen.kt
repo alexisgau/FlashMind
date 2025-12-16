@@ -1,5 +1,7 @@
 package com.example.flashmind.presentation.ui.lessonoptions
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -90,7 +93,7 @@ fun LessonOptionsScreen(
             ) {
                 Surface(
                     shape = RoundedCornerShape(6.dp),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = Color(0xFF455f91),
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
                     Text(
@@ -150,11 +153,22 @@ private fun OptionCard(
     onButtonClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
+
+    val iconBackgroundBlue = Color(0xFF2b4778)
+    val iconTintLightBlue = Color(0xFFD0E7FF)
+
+    val isDark = MaterialTheme.colorScheme.surface.luminance() < 0.5f
     Card(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = if (isDark) {
+            BorderStroke(1.dp,  MaterialTheme.colorScheme.onSurfaceVariant)
+        } else {
+            null
+        }
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -164,12 +178,12 @@ private fun OptionCard(
             Surface(
                 modifier = Modifier.size(48.dp),
                 shape = CircleShape,
-                color = MaterialTheme.colorScheme.primaryContainer
+                color = iconBackgroundBlue
             ) {
                 Icon(
                     painter = painter,
                     contentDescription = title,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = iconTintLightBlue,
                     modifier = Modifier.padding(12.dp)
                 )
             }
@@ -196,6 +210,10 @@ private fun OptionCard(
 
             Button(
                 onClick = onButtonClick,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF455f91),
+                    contentColor = Color.White
+                ),
                 shape = RoundedCornerShape(8.dp),
                 contentPadding = ButtonDefaults.ContentPadding,
                 modifier = Modifier.height(36.dp)
@@ -217,7 +235,6 @@ private fun OptionCard(
         }
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun LessonOptionsScreenPreview() {

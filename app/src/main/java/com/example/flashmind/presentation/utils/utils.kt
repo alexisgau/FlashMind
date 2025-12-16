@@ -2,6 +2,7 @@ package com.example.flashmind.presentation.utils
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -10,20 +11,27 @@ import java.util.Locale
 fun getSignatureSha1(context: Context): String? {
     try {
         val packageName = context.packageName
-        val packageInfo =
-            context.packageManager.getPackageInfo(
+        val packageManager = context.packageManager
+
+        val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.getPackageInfo(
                 packageName,
                 PackageManager.PackageInfoFlags.of(PackageManager.GET_SIGNING_CERTIFICATES.toLong())
             )
+        } else {
 
-        val signatures =
-            packageInfo.signingInfo?.apkContentsSigners
-
-        val signature = signatures?.first()
+            packageManager.getPackageInfo(
+                packageName,
+                PackageManager.GET_SIGNING_CERTIFICATES
+            )
+        }
+        val signatures = packageInfo.signingInfo?.apkContentsSigners ?: return null
+        val signature = signatures.firstOrNull() ?: return null
         val md = MessageDigest.getInstance("SHA1")
-        md.update(signature?.toByteArray())
-        val digest = md.digest()
+        val digest = md.digest(signature.toByteArray())
+
         return digest.joinToString(separator = ":") { "%02X".format(it) }
+
     } catch (e: Exception) {
         e.printStackTrace()
         return null
@@ -55,15 +63,14 @@ fun Long.formatTime(): String {
 }
 
 fun cleanMarkdownForPreview(text: String): String {
-    return text.lines() // Divide el texto en líneas
+    return text.lines()
         .map { line ->
-            // Elimina prefijos comunes de Markdown y espacios
             line.trim()
                 .removePrefix("## ")
                 .removePrefix("### ")
                 .removePrefix("* ")
                 .removePrefix("- ")
-                .replace("**", "") // Quita negritas
+                .replace("**", "") // Elimina el doble asterisco para negrita
         }
         .filter { it.isNotEmpty() } // Elimina líneas que quedaron vacías
         .take(3) // Toma solo las primeras 3 líneas para la vista previa

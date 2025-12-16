@@ -42,6 +42,10 @@
     <string name="auth_error_unknown_login">An unknown error occurred while signing in.</string>
     <string name="auth_error_user_disabled">This user account has been disabled.</string>
     <string name="auth_error_too_many_requests">Too many requests. Please try again later.</string>
+    <string name="auth_error_google_cancelled">Login was cancelled.</string>
+    <string name="auth_error_no_google_account">No Google account was detected on this device. Please add one in your phone settings.</string>
+    <string name="auth_error_unknown">An unexpected error occurred. Please try again.</string>
+
 
     <string name="onboarding_welcome_title">Welcome to FlashMind! 🚀</string>
     <string name="onboarding_welcome_description">Transform your notes, PDFs, or any text into flashcards, tests, and summaries to study smarter.</string>

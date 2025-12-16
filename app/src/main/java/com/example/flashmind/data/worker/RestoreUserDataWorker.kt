@@ -1,11 +1,18 @@
 package com.example.flashmind.data.worker
 
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
+import com.example.flashmind.R
 import com.example.flashmind.data.local.dao.CategoryDao
 import com.example.flashmind.data.local.dao.FlashCardDao
 import com.example.flashmind.data.local.dao.LessonDao
@@ -41,6 +48,35 @@ class RestoreUserDataWorker @AssistedInject constructor(
     private val summaryDao: SummaryDao,
     private val quizDao: QuizDao,
 ) : CoroutineWorker(appContext, workerParams) {
+
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return createForegroundInfo()
+    }
+
+    private fun createForegroundInfo(): ForegroundInfo {
+        val channelId = "sync_data_channel"
+        val notificationId = 1234
+
+        val notificationManager = applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Sincronización de Datos",
+                NotificationManager.IMPORTANCE_LOW
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notification: Notification = NotificationCompat.Builder(applicationContext, channelId)
+            .setContentTitle("Sincronizando datos")
+            .setContentText("Restaurando tu progreso...")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setOngoing(true)
+            .build()
+
+        return ForegroundInfo(notificationId, notification)
+    }
 
     override suspend fun doWork(): Result {
         val userId = auth.currentUser?.uid ?: return Result.failure()
@@ -142,7 +178,7 @@ class RestoreUserDataWorker @AssistedInject constructor(
             if (summaries.isNotEmpty()) summaryDao.insertAll(summaries)
 
 
-            // C. Restaurar Tests
+            // Restaurar Tests
             val testsSnapshot = firestore.collection("users").document(userId)
                 .collection("tests").get().await()
 

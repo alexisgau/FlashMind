@@ -496,6 +496,7 @@ fun TopBar(
                             model = userData.imageUrl,
                             contentDescription = stringResource(id = R.string.account_profile_picture_cd),
                             contentScale = ContentScale.Crop,
+                            placeholder = painterResource(R.drawable.default_profile_ic),
                             modifier = Modifier
                                 .clip(CircleShape)
                                 .size(40.dp)

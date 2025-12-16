@@ -1,5 +1,6 @@
 package com.example.flashmind.ui.theme
 
+import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -12,21 +13,22 @@ import androidx.compose.ui.platform.LocalContext
 
 
 private val LightColorScheme = lightColorScheme(
-    primary = BluePrimary,
-    secondary = LightBlue,
-    tertiary = OrangeAccent,
-    background = LightBackground,
-    surface = LightBackground,
+    primary = Color(0xFF455f91),
+    primaryContainer = Color(0xFFd8e3ff),
+    onPrimaryContainer =Color(0xFF001a41),
     onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black
+    secondary = SecondaryBlue,
+    onSecondary = Color.White,
+    background = BackgroundWhite,
+    surface = SurfaceWhite,
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BluePrimary,
-    secondary = LightBlue,
-    tertiary = OrangeAccent,
+    primary = PrimaryBlue,
+    primaryContainer = Color(0xFF2b4778),
+    onPrimaryContainer =  Color(0xFFd8e3ff),
+    secondary = Color.White,
+    tertiary = SecondaryBlue,
     background = DarkBackground,
     surface = DarkBackground,
     onPrimary = Color.White,
@@ -42,7 +44,7 @@ fun FlashMindTheme(
     content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
-        dynamicColor -> {
+        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }

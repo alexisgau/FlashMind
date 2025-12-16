@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -267,11 +268,13 @@ fun UploadFileButton(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+
+     val backgroundColor = Color(0xFF2b4778)
     Surface(
         modifier = modifier.clickable(onClick = onClick),
         shape = CircleShape,
-        color = MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.primary
+        color = backgroundColor,
+        contentColor = Color.White
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
