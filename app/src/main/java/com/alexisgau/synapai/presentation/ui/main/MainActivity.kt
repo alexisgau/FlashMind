@@ -32,7 +32,6 @@ class MainActivity : ComponentActivity() {
             val userPreference by viewModel.isDarkMode.collectAsState()
             val systemIsDark = isSystemInDarkTheme()
             val useDarkTheme = userPreference ?: systemIsDark
-            val isDarkMode by viewModel.isDarkMode.collectAsState()
             val isLoading by viewModel.isLoading.collectAsState()
             val isOnboardingCompleted by viewModel.isOnboardingCompleted.collectAsStateWithLifecycle()
 

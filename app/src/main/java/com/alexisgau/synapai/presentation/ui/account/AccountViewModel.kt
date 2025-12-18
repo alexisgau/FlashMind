@@ -3,7 +3,6 @@ package com.alexisgau.synapai.presentation.ui.account
 import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.alexisgau.synapai.data.network.AuthClient
 import com.alexisgau.synapai.domain.model.AuthResponse
 import com.alexisgau.synapai.domain.reposotory.AuthRepository
 import com.alexisgau.synapai.domain.usecase.auth.SignOutUseCase

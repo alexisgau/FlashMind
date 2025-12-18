@@ -18,8 +18,7 @@ interface IaCallService {
         @Body request: GenerateContentRequest,
     ): GenerateContentResponse
 
-    @GET("v1/models")
-    suspend fun listModels(@Query("key") apiKey: String): ModelsResponse
+
 }
 
 @Serializable

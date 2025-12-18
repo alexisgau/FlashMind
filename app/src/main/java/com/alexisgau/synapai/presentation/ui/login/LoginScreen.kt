@@ -3,8 +3,6 @@ package com.alexisgau.synapai.presentation.ui.login
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -77,6 +74,7 @@ fun LoginScreen(
                 snackbarHostState.showSnackbar(state.message)
                 viewModel.resetState()
             }
+
             else -> Unit
         }
     }
@@ -135,7 +133,10 @@ fun LoginScreen(
                     isError = viewModel.emailError != null,
                     supportingText = {
                         viewModel.emailError?.let { msgId ->
-                            Text(stringResource(id = msgId), color = MaterialTheme.colorScheme.error)
+                            Text(
+                                stringResource(id = msgId),
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     },
                     leadingIcon = {
@@ -159,7 +160,10 @@ fun LoginScreen(
                     isError = viewModel.passwordError != null,
                     supportingText = {
                         viewModel.passwordError?.let { msgId ->
-                            Text(stringResource(id = msgId), color = MaterialTheme.colorScheme.error)
+                            Text(
+                                stringResource(id = msgId),
+                                color = MaterialTheme.colorScheme.error
+                            )
                         }
                     },
                     visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -167,9 +171,13 @@ fun LoginScreen(
                         Icon(imageVector = Icons.Default.Lock, contentDescription = null)
                     },
                     trailingIcon = {
-                        val imageRes = if (isPasswordVisible) R.drawable.visibility_icon else R.drawable.visibility_off_icon
+                        val imageRes =
+                            if (isPasswordVisible) R.drawable.visibility_icon else R.drawable.visibility_off_icon
                         IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                            Icon(painter = painterResource(id = imageRes), contentDescription = "Toggle password")
+                            Icon(
+                                painter = painterResource(id = imageRes),
+                                contentDescription = "Toggle password"
+                            )
                         }
                     },
                     keyboardOptions = KeyboardOptions(
@@ -200,7 +208,10 @@ fun LoginScreen(
                     enabled = uiState !is LoginUiState.Loading
                 ) {
                     if (uiState is LoginUiState.Loading) {
-                        CircularProgressIndicator(color = Color.White, modifier = Modifier.size(24.dp))
+                        CircularProgressIndicator(
+                            color = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
                     } else {
                         Text(
                             text = stringResource(id = R.string.auth_sign_in),
@@ -216,14 +227,22 @@ fun LoginScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    HorizontalDivider(modifier = Modifier.weight(1f), thickness = DividerDefaults.Thickness, color = MaterialTheme.colorScheme.outlineVariant)
+                    HorizontalDivider(
+                        modifier = Modifier.weight(1f),
+                        thickness = DividerDefaults.Thickness,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
                     Text(
                         text = stringResource(id = R.string.auth_or_continue_with),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(horizontal = 8.dp)
                     )
-                    HorizontalDivider(modifier = Modifier.weight(1f), thickness = DividerDefaults.Thickness, color = MaterialTheme.colorScheme.outlineVariant)
+                    HorizontalDivider(
+                        modifier = Modifier.weight(1f),
+                        thickness = DividerDefaults.Thickness,
+                        color = MaterialTheme.colorScheme.outlineVariant
+                    )
                 }
 
                 Spacer(Modifier.height(16.dp))

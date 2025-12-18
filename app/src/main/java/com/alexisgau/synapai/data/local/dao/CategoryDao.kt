@@ -25,18 +25,35 @@ interface CategoryDao {
     suspend fun deleteCategoryById(categoryId: Int)
 
 
-    @Query("UPDATE category SET isDeleted = 1, isSynced = 0 WHERE id = :categoryId")
-    suspend fun markCategoryForDeletion(categoryId: Int)
+    @Query("""
+    UPDATE category 
+    SET isDeleted = :isDeleted, isSynced = :isSynced 
+    WHERE id = :categoryId
+""")
+    suspend fun markCategoryForDeletion(
+        categoryId: Int,
+        isDeleted: Boolean = true,
+        isSynced: Boolean = false
+    )
+
 
     @Query("SELECT * FROM category WHERE isDeleted = 0 AND userId = :userId")
     fun getAllCategories(userId: String): Flow<List<CategoryEntity>>
 
-    @Query("SELECT * FROM category WHERE isSynced = false AND userId = :userId")
+    @Query("SELECT * FROM category WHERE isSynced = 0 AND userId = :userId")
     suspend fun getUnsyncedCategories(userId: String): List<CategoryEntity>
 
 
-    @Query("UPDATE category SET isSynced = true WHERE id = :categoryId")
-    fun markAsSynced(categoryId: Int)
+    @Query("""
+    UPDATE category 
+    SET isSynced = :isSynced 
+    WHERE id = :categoryId
+""")
+    suspend fun markAsSynced(
+        categoryId: Int,
+        isSynced: Boolean = true
+    )
+
 
     @Query("SELECT COUNT(*) FROM lessons WHERE categoryId = :categoryId")
     fun getLessonCountByCategory(categoryId: Int): Flow<Int>
