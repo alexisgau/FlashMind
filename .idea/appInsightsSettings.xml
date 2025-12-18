@@ -8,8 +8,8 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="com.example.flashmind" />
-                  <option name="mobileSdkAppId" value="1:28956986741:android:8240ac8adf5820faad973c" />
+                  <option name="appId" value="com.alexisgau.synapai" />
+                  <option name="mobileSdkAppId" value="1:28956986741:android:9284ae4d24063f80ad973c" />
                   <option name="projectId" value="flashmind-14014" />
                   <option name="projectNumber" value="28956986741" />
                 </ConnectionSetting>

@@ -51,11 +51,11 @@
 # Evita que R8 renombre las clases y sus campos (a, b, c...)
 # y evita que elimine el constructor vacío necesario para la deserialización.
 
-# Asegúrate de que esta ruta sea correcta: com.example.flashmind.data.network.dto
--keep class com.example.flashmind.data.network.dto.** { *; }
+# Asegúrate de que esta ruta sea correcta: com.alexisgau.synapai.data.network.dto
+-keep class com.alexisgau.synapai.data.network.dto.** { *; }
 
 # También es buena práctica mantener los modelos de dominio si los usas en algún lugar con reflexión
--keep class com.example.flashmind.domain.model.** { *; }
+-keep class com.alexisgau.synapai.domain.model.** { *; }
 
 # --- RETROFIT & GSON/SERIALIZATION ---
 
@@ -76,8 +76,8 @@
 -keep interface okhttp3.** { *; }
 
 # 4. Asegurar que tus DTOs (Data classes) no sean renombrados (ya lo tenías, pero verifica)
--keep class com.example.flashmind.data.network.dto.** { *; }
--keep class com.example.flashmind.data.network.model.** { *; }
+-keep class com.alexisgau.synapai.data.network.dto.** { *; }
+-keep class com.alexisgau.synapai.data.network.model.** { *; }
 
 
 # --- REGLAS CRÍTICAS PARA KOTLIN Y RETROFIT ---
@@ -92,7 +92,7 @@
 
 # Protege explícitamente tu interfaz de la API (Ajusta el paquete si es diferente)
 # Esto es vital: obliga a mantener los métodos 'generateSummary' y sus tipos de retorno.
--keep interface com.example.flashmind.data.network.** { *; }
+-keep interface com.alexisgau.synapai.data.network.** { *; }
 
 # --- FIN REGLAS CRÍTICAS ---
 

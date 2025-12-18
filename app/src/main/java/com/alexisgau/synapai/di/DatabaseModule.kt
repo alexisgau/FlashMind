@@ -1,0 +1,146 @@
+package com.alexisgau.synapai.di
+
+import android.content.Context
+import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.work.WorkManager
+import com.alexisgau.synapai.data.local.AppDatabase
+import com.alexisgau.synapai.data.local.dao.CategoryDao
+import com.alexisgau.synapai.data.local.dao.FlashCardDao
+import com.alexisgau.synapai.data.local.dao.LessonDao
+import com.alexisgau.synapai.data.local.dao.QuizDao
+import com.alexisgau.synapai.data.local.dao.SummaryDao
+import com.alexisgau.synapai.data.repository.CategoryRepositoryImpl
+import com.alexisgau.synapai.data.repository.FlashCardRepositoryImpl
+import com.alexisgau.synapai.data.repository.LessonRepositoryImpl
+import com.alexisgau.synapai.data.repository.QuizRepositoryImpl
+import com.alexisgau.synapai.data.repository.SummaryRepositoryImpl
+import com.alexisgau.synapai.domain.reposotory.CategoryRepository
+import com.alexisgau.synapai.domain.reposotory.FlashCardRepository
+import com.alexisgau.synapai.domain.reposotory.LessonRepository
+import com.alexisgau.synapai.domain.reposotory.QuizRepository
+import com.alexisgau.synapai.domain.reposotory.SummaryRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("ALTER TABLE tests ADD COLUMN creationDate INTEGER NOT NULL DEFAULT 0")
+            db.execSQL("ALTER TABLE summaries ADD COLUMN creationDate INTEGER NOT NULL DEFAULT 0")
+        }
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
+        return Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "flash_mind"
+        )
+            .addMigrations(MIGRATION_3_4)
+            .build()
+    }
+
+    @Provides
+    fun provideUserDao(database: AppDatabase): CategoryDao {
+        return database.categoryDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(@ApplicationContext context: Context): WorkManager {
+        return WorkManager.getInstance(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCategoryRepository(
+        auth: FirebaseAuth,
+        categoryDao: CategoryDao,
+        firestore: FirebaseFirestore,
+        workManager: WorkManager,
+    ): CategoryRepository {
+        return CategoryRepositoryImpl(auth, categoryDao, firestore, workManager)
+    }
+
+
+    @Provides
+    fun provideLessonDao(database: AppDatabase): LessonDao {
+        return database.lessonDao()
+    }
+
+    @Provides
+    fun provideLessonRepository(
+        dao: LessonDao,
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        workManager: WorkManager,
+    ): LessonRepository {
+        return LessonRepositoryImpl(dao, auth, firestore, workManager)
+    }
+
+    @Provides
+    fun provideFlashDao(database: AppDatabase): FlashCardDao {
+        return database.flashCardDao()
+    }
+
+    @Provides
+    fun provideFlashCardRepository(
+        auth: FirebaseAuth,
+        dao: FlashCardDao,
+        firestore: FirebaseFirestore,
+        workManager: WorkManager,
+    ): FlashCardRepository {
+        return FlashCardRepositoryImpl(
+            auth = auth,
+            dao = dao,
+            firestore = firestore,
+            workManager = workManager
+        )
+    }
+
+    @Provides
+    fun provideQuizDao(database: AppDatabase): QuizDao {
+        return database.quizDao()
+    }
+
+
+    @Provides
+    fun provideQuizRepository(
+        dao: QuizDao,
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        workManager: WorkManager,
+    ): QuizRepository {
+        return QuizRepositoryImpl(dao, auth, firestore, workManager)
+    }
+
+    @Provides
+    fun provideSummeryDao(database: AppDatabase): SummaryDao {
+        return database.summaryDao()
+    }
+
+    @Provides
+    fun provideSummeryRepository(
+        dao: SummaryDao,
+        auth: FirebaseAuth,
+        firestore: FirebaseFirestore,
+        workManager: WorkManager,
+    ): SummaryRepository {
+
+        return SummaryRepositoryImpl(dao, auth, firestore, workManager)
+    }
+
+}

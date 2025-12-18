@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FlashMind</string>
+    <string name="app_name">SynapAI</string>
     <string name="web_client_id">28956986741-r4gu1hijq3kfjevbm34795pjlb3lr8mm.apps.googleusercontent.com</string>
 
     <string name="back">Back</string>
@@ -228,6 +228,9 @@
     <string name="are_you_sure_title">Are you sure?</string>
     <string name="guest_mode_warning_message">You are in guest mode. If you log out, you will LOSE all your summaries, tests, and created categories. This action cannot be undone.</string>
     <string name="delete_all_and_exit">Delete all and exit</string>
+    <string name="account_deleted_success">Account deleted successfully.</string>
+    <string name="relogin_required">For security reasons, please sign in again.</string>
+    <string name="generic_error">Error: %1$s</string>
 
 
     <string name="file_selection_cancelled">User cancelled file selection</string>
