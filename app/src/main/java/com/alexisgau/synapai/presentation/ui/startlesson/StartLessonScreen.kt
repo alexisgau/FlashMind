@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -28,10 +30,12 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
@@ -50,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -73,7 +78,6 @@ fun StartLessonScreen(
     navigateToFlashCardScreen: (Int) -> Unit,
     viewModel: FlashCardListViewModel = hiltViewModel(),
 ) {
-
     val flashCards by viewModel.flashCards.collectAsStateWithLifecycle()
 
     var currentIndex by rememberSaveable { mutableIntStateOf(0) }
@@ -83,16 +87,35 @@ fun StartLessonScreen(
         viewModel.loadFlashCardsByLesson(lessonId)
     }
 
-    Scaffold(topBar = {
-        MediumTopAppBar(title = {}, navigationIcon = {
-            IconButton(onClick = { navigateToFlashCardScreen(lessonId) }) {
-                Icon(
-                    Icons.Default.Close,
-                    contentDescription = stringResource(id = R.string.close)
+    Scaffold(
+        topBar = {
+            Column {
+                CenterAlignedTopAppBar(
+                    title = {},
+                    navigationIcon = {
+                        IconButton(onClick = { navigateToFlashCardScreen(lessonId) }) {
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = stringResource(id = R.string.close)
+                            )
+                        }
+                    }
                 )
+                if (flashCards.isNotEmpty()) {
+                    val progress by animateFloatAsState(
+                        targetValue = (currentIndex + 1).toFloat() / flashCards.size,
+                        label = "progress"
+                    )
+                    LinearProgressIndicator(
+                        progress = { progress },
+                        modifier = Modifier.fillMaxWidth(),
+                        color = MaterialTheme.colorScheme.primary,
+                        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+                    )
+                }
             }
-        })
-    }) { paddingValues ->
+        }
+    ) { paddingValues ->
         if (flashCards.isNotEmpty()) {
 
             val currentCard = flashCards.getOrNull(currentIndex)
@@ -104,137 +127,129 @@ fun StartLessonScreen(
                         flipped = false
                     },
                     onFinish = { navigateToFlashCardScreen(lessonId) },
+                    modifier = Modifier.padding(paddingValues)
                 )
-
                 return@Scaffold
             }
 
             if (currentCard == null) return@Scaffold
 
-            val animatedRotationY by animateFloatAsState(
-                targetValue = if (flipped) 180f else 0f,
-                animationSpec = tween(durationMillis = 500),
-                label = "flip"
-            )
+            val rotation = remember { Animatable(0f) }
+
+            LaunchedEffect(flipped) {
+                rotation.animateTo(
+                    targetValue = if (flipped) 180f else 0f,
+                    animationSpec = tween(durationMillis = 500)
+                )
+            }
 
             val scope = rememberCoroutineScope()
             val offsetX = remember { Animatable(0f) }
             val configuration = LocalConfiguration.current
             val density = LocalDensity.current
             val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
-            val swipeThreshold = screenWidthPx * 0.5f
+            val swipeThreshold = screenWidthPx * 0.3f
 
             val goToNextCard = {
-                if (currentIndex <= flashCards.lastIndex) {
-                    currentIndex++
-                    flipped = false
+                scope.launch {
+                    offsetX.animateTo(-screenWidthPx * 1.2f, tween(300))
+                    if (currentIndex < flashCards.size) {
+                        currentIndex++
+                        flipped = false
+                        rotation.snapTo(0f)
+                        offsetX.snapTo(0f)
+                    }
                 }
             }
+
+            val cardColor = parseColorSafe(currentCard.color)
+            val contentColor = if (cardColor.luminance() > 0.5f) Color.Black else Color.White
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background)
                     .padding(paddingValues)
                     .padding(24.dp),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.SpaceBetween,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+
+                Spacer(modifier = Modifier.weight(1f))
+
                 Box(
                     modifier = Modifier
                         .offset { IntOffset(offsetX.value.roundToInt(), 0) }
                         .fillMaxWidth()
-                        .height(250.dp)
+                        .aspectRatio(1f)
                         .draggable(
                             orientation = Orientation.Horizontal,
                             state = rememberDraggableState { delta ->
-                                scope.launch {
-                                    offsetX.snapTo(offsetX.value + delta)
-                                }
+                                scope.launch { offsetX.snapTo(offsetX.value + delta) }
                             },
                             onDragStopped = {
-                                scope.launch {
-                                    val currentOffset = offsetX.value
-                                    if (currentOffset < -swipeThreshold) {
-                                        offsetX.animateTo(-screenWidthPx * 1.2f, tween(300))
-                                        goToNextCard()
-                                        offsetX.snapTo(0f)
-                                    } else {
-                                        offsetX.animateTo(0f, tween(300))
-                                    }
+                                if (offsetX.value < -swipeThreshold) {
+                                    goToNextCard()
+                                } else {
+                                    scope.launch { offsetX.animateTo(0f, tween(300)) }
                                 }
                             }
                         )
                         .graphicsLayer {
-                            rotationY = animatedRotationY
+                            rotationY = rotation.value
                             cameraDistance = 12 * density.density
                         }
                         .background(
-                            color = parseColorSafe(currentCard.color),
-                            shape = RoundedCornerShape(16.dp)
+                            color = cardColor,
+                            shape = RoundedCornerShape(24.dp)
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+                            shape = RoundedCornerShape(24.dp)
                         )
                         .clickable { flipped = !flipped }
-                        .padding(24.dp),
+                        .padding(32.dp),
                     contentAlignment = Alignment.Center
                 ) {
-
-                    val scrollState = rememberScrollState()
-
-                    LaunchedEffect(flipped) {
-                        scrollState.scrollTo(0)
-                    }
-
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(scrollState),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        if (animatedRotationY <= 90f) {
-                            Text(
-                                text = currentCard.question,
-                                color = Color.Black,
-                                fontSize = 20.sp,
-                                textAlign = TextAlign.Center
-                            )
-                        } else {
-                            val textToShow = if (flipped) {
-                                currentCard.answer
-                            } else {
-                                currentCard.question
-                            }
-                            Text(
-                                text = textToShow,
-                                color = Color.Black,
-                                fontSize = 20.sp,
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.graphicsLayer {
-                                    rotationY = 180f
-                                }
-                            )
-                        }
+                    if (rotation.value <= 90f) {
+                        Text(
+                            text = currentCard.question,
+                            color = contentColor,
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold,
+                            textAlign = TextAlign.Center
+                        )
+                    } else {
+                        Text(
+                            text = currentCard.answer,
+                            color = contentColor,
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.graphicsLayer { rotationY = 180f }
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.weight(1f))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                Button(
+                    onClick = { goToNextCard() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Button(onClick = {
-                        goToNextCard()
-                    }) {
-                        Text(stringResource(id = R.string.next))
-                    }
+                    Text(stringResource(id = R.string.next), fontSize = 18.sp)
                 }
+                Spacer(modifier = Modifier.height(16.dp))
             }
         } else {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues), contentAlignment = Alignment.Center
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
             ) {
                 CircularProgressIndicator()
             }
@@ -335,6 +350,8 @@ fun LessonCompleteScreen(
         Spacer(modifier = Modifier.height(16.dp))
     }
 }
+
+
 
 fun parseColorSafe(colorString: String): Color {
     return try {

@@ -226,7 +226,7 @@ class AuthClient @Inject constructor(
 
         } catch (e: GetCredentialException) {
             Log.e("AuthClient", "Error de Credential Manager: ${e.message}")
-            emit(AuthResponse.Error(context.getString(R.string.auth_error_google)))
+            emit(AuthResponse.Error(context.getString(R.string.auth_error_no_google_account)))
 
         } catch (e: Exception) {
             Log.e("AuthClient", "Error desconocido en signInWithGoogle: ${e.message}")

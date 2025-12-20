@@ -23,7 +23,7 @@ plugins {
 
 android {
     namespace = "com.alexisgau.synapai"
-    compileSdk = 35
+    compileSdk = 36
 
 
     defaultConfig {

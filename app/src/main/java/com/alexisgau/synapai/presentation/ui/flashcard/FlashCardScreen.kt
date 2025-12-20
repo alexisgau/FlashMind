@@ -28,14 +28,19 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,14 +53,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.alexisgau.synapai.R
+import com.alexisgau.synapai.domain.model.FlashCard
 import com.alexisgau.synapai.presentation.ui.addflashcardai.AddFlashCardFab
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlashCardScreen(
     lessonId: Int,
@@ -67,15 +75,23 @@ fun FlashCardScreen(
     navigateToLessons: () -> Unit,
     viewModel: FlashCardListViewModel = hiltViewModel(),
 ) {
-    val flashCards = viewModel.flashCards.collectAsStateWithLifecycle()
-
+    val flashCards by viewModel.flashCards.collectAsStateWithLifecycle()
 
     LaunchedEffect(key1 = lessonId) {
         viewModel.loadFlashCardsByLesson(lessonId)
     }
 
-
     Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = { Text(stringResource(id = R.string.flashcards_title, lessonName)) },
+                navigationIcon = {
+                    IconButton(onClick = navigateToLessons) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Atrás")
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             AddFlashCardFab(
                 onManualClick = { navigateToAddFlashCardManual(lessonId) },
@@ -86,107 +102,134 @@ fun FlashCardScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
         ) {
 
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.flashcards_title, lessonName),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.playing_cards),
-                        contentDescription = stringResource(
-                            id = R.string.flashcards_counter,
-                            flashCards.value.size
-                        ),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = stringResource(
-                            id = R.string.flashcards_counter,
-                            flashCards.value.size
-                        ),
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                OutlinedButton(
-                    onClick = { navigateToLessons() },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.primary
+                Column {
+                    Text(
+                        text = lessonName,
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold
                     )
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = stringResource(id = R.string.back),
-                        modifier = Modifier.size(20.dp)
+                    Text(
+                        text = "${flashCards.size} Cartas",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
-                    Spacer(Modifier.width(8.dp))
-                    Text(text = stringResource(id = R.string.back))
                 }
 
                 Button(
                     onClick = { navigateToStartGame(lessonId) },
                     shape = RoundedCornerShape(12.dp),
-                    enabled = flashCards.value.isNotEmpty(),
-                    elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
+                    enabled = flashCards.isNotEmpty(),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF2b4778)
-                    )
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.PlayArrow,
-                        contentDescription = stringResource(id = R.string.start),
-                        modifier = Modifier.size(20.dp)
-                    )
+                    Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(20.dp))
                     Spacer(Modifier.width(8.dp))
-                    Text(text = stringResource(id = R.string.start))
+                    Text(text = stringResource(id = R.string.start), style = MaterialTheme.typography.titleMedium)
                 }
             }
 
-            if (flashCards.value.isEmpty()) {
+            Divider(color = MaterialTheme.colorScheme.outlineVariant)
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (flashCards.isEmpty()) {
                 EmptyFlashcardList()
+
+            } else {
+                LazyColumn(
+                    contentPadding = PaddingValues(bottom = 80.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    items(flashCards) { flashcard ->
+                        FlashcardItemDesign(
+                            flashcard = flashcard,
+                            onEditClick = { navigateToEditFlashCard(flashcard.id) },
+                            onDeleteClick = { viewModel.deleteFlashCard(flashcard) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun FlashcardItemDesign(
+    flashcard: FlashCard,
+    onEditClick: () -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    Card(
+        shape = RoundedCornerShape(16.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface,
+        ),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                // Icono tipo libro/carta
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.secondaryContainer,
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Icon(
+                            painter = painterResource(R.drawable.flashcard), // Tu icono
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Texto de la pregunta
+                Text(
+                    text = flashcard.question,
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
 
-            LazyColumn(
-                modifier = Modifier.padding(26.dp),
-                contentPadding = PaddingValues(
-                    top = 0.dp,
-                    bottom = 80.dp,
-                ),
-                verticalArrangement = Arrangement.spacedBy(15.dp)
-            ) {
-                items(flashCards.value) { flashcard ->
-                    FlashcardItem(
-                        categoryName = "a",
-                        question = flashcard.question,
-                        imagePainter = painterResource(R.drawable.flashcard),
-                        onEditClick = { navigateToEditFlashCard(flashcard.id) },
-                        onDeleteClick = { viewModel.deleteFlashCard(flashcard) },
+            Row {
+                IconButton(onClick = onEditClick) {
+                    Icon(
+                        Icons.Default.Edit,
+                        contentDescription = "Editar",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = "Borrar",
+                        tint = MaterialTheme.colorScheme.error
                     )
                 }
             }

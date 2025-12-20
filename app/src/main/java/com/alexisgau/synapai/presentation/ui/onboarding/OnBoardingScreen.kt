@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
@@ -118,6 +119,7 @@ fun OnboardingFlowScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0xFF1AA7C1))
+                .navigationBarsPadding()
                 .padding(bottom = 32.dp, top = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -159,7 +161,6 @@ fun OnboardingFlowScreen(
         }
     }
 }
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnboardingScreenContent(
@@ -196,7 +197,7 @@ fun OnboardingScreenContent(
                 .padding(innerPadding)
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceEvenly
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = stringResource(id = page.title),
@@ -207,14 +208,18 @@ fun OnboardingScreenContent(
                 modifier = Modifier.fillMaxWidth()
             )
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             Image(
                 painter = painterResource(id = page.imageResId),
                 contentDescription = stringResource(id = page.imageContentDescription),
                 modifier = Modifier
-                    .height(400.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .weight(1f),
                 contentScale = ContentScale.Fit
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Text(
                 text = stringResource(id = page.bodyText),
@@ -227,7 +232,6 @@ fun OnboardingScreenContent(
         }
     }
 }
-
 @Composable
 fun PageIndicator(
     numberOfPages: Int,

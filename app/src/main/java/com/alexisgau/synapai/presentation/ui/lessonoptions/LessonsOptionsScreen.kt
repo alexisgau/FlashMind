@@ -59,7 +59,8 @@ fun LessonOptionsScreen(
                 title = {
                     Text(
                         stringResource(id = R.string.lesson_options_title),
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge
                     )
                 },
                 navigationIcon = {
@@ -75,38 +76,42 @@ fun LessonOptionsScreen(
                 )
             )
         },
-
-        ) { innerPadding ->
+    ) { innerPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.Start
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Start
             ) {
                 Surface(
-                    shape = RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = Color(0xFF455f91),
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = Color.White
                 ) {
                     Text(
                         text = stringResource(id = R.string.lesson_options_subtitle),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                     )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+
+                Spacer(modifier = Modifier.width(12.dp))
+
                 Text(
                     text = lessonTitle,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
