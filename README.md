@@ -1,76 +1,95 @@
-# FlashMind 🧠
-FlashMind is a modern Android application designed to revolutionize the way you study. It transforms any text, from class notes to article summaries, into interactive flashcards using the power of AI. With a clean, intuitive interface and robust offline capabilities, FlashMind is your perfect partner for effective learning.
+# SynapAi 🧠
+SynapAi is a comprehensive, modern Android application designed to revolutionize the way you study. Going beyond simple flashcards, it transforms your study materials—whether raw text, PDFs, or DOCX files—into interactive learning tools using the power of **Generative AI**.
+With a clean, intuitive interface built with Jetpack Compose and a robust offline-first architecture, SynapAi is your perfect partner for mastering any subject through active recall, summarization, and self-testing.
 
 <br>
 
 <table>
-<tr>
-<td align="center"><b>Login Screen</b></td>
-<td align="center"><b>Home Screen</b></td>
-</tr>
-<tr>
-<td><img src="https://github.com/user-attachments/assets/e8f47703-32f3-4a8f-9ee7-b5858956d486" width="500"/></td>
-<td><img src="https://github.com/user-attachments/assets/c1603684-0086-4f82-9586-43cc3f68e0d7" width="500"/></td>
-</tr>
-<tr>
-<td align="center"><b>Manual Flashcard</b></td>
-<td align="center"><b>AI Card Generation</b></td>
-</tr>
-<tr>
-<td><img src="https://github.com/user-attachments/assets/4ca2e9bf-6da9-4d8f-b803-c40b2ad24aba" width="500"/></td>
-<td><img src="https://github.com/user-attachments/assets/57ef1f0c-28ad-4a2c-974c-63f7f8ff5d98" width="500"/></td>
-</tr>
+  <tr>
+    <td align="center"><b>Login Screen</b></td>
+    <td align="center"><b>Home Screen</b></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/cff0172d-389f-4108-8c2c-792ddfdffb3f" width="500" />
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/ac4ab688-a0dd-471f-ad36-b24613674a89" width="500" />
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center"><b>Manual Flashcard</b></td>
+    <td align="center"><b>AI Card Generation</b></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/4ca2e9bf-6da9-4d8f-b803-c40b2ad24aba" width="500" />
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/57ef1f0c-28ad-4a2c-974c-63f7f8ff5d98" width="500" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><b>Test Generation</b></td>
+    <td align="center"><b>Test Screen</b></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/d065da35-5137-4565-b5d4-e7b177fb0ef9" width="500" />
+    </td>
+    <td align="center">
+      <img src="https://github.com/user-attachments/assets/8d3a89d9-226d-42f1-ad4a-cddf584fa3dc" width="500" />
+    </td>
+  </tr>
 </table>
 
+
 ## ✨ Key Features
-AI-Powered Flashcard Generation: Simply paste any text or summary, and FlashMind's integrated Gemini AI will automatically generate question-and-answer flashcards for you.
 
-Manual Card Creation: Full control to create, edit, and manage your own custom flashcards.
+### 🤖 AI-Powered Content Generation
+* **Multi-Format Support:** Upload **PDFs**, **DOCX files**, or paste raw text directly. SynapAi processes "dirty" text (headers, footers) to extract only the relevant concepts.
+* **Smart Summaries:** Instantly generate structured, Markdown-formatted summaries of long documents to grasp key concepts quickly.
+* **Auto-Generated Flashcards:** The AI automatically extracts Q&A pairs from your materials for active recall practice.
+* **AI Quizzes & Tests:** Generate multiple-choice questions (JSON-parsed) to test your knowledge and track your score.
 
-Interactive Study Sessions: Engage in focused learning sessions where cards are presented one by one. A simple tap triggers a smooth flip animation to reveal the answer.
+### 📚 Study & Organization
+* **Interactive Study Sessions:**
+    * *Flashcards:* Smooth flip animations and intuitive navigation.
+    * *Quizzes:* Take tests with immediate feedback and score tracking.
+* **Hierarchical Organization:** Keep materials organized by **Categories** (e.g., "Biology") and **Lessons** (e.g., "Cell Structure").
+* **Manual Creation:** Full control to manually create, edit, and manage custom flashcards alongside AI-generated ones.
 
-Hierarchical Organization: Keep your study materials neatly organized by creating Categories (e.g., "World War II") and then breaking them down into Lessons (e.g., "Unit 1: The European Theater").
+### ☁️ Sync & Persistence
+* **Robust Offline-First Support:** Study anytime, anywhere. All data (cards, summaries, quiz results) is saved locally via Room Database.
+* **Cross-Device Synchronization:** Never lose progress. A powerful background service using **WorkManager** automatically syncs your local changes with **Cloud Firestore** when an internet connection is available. Start studying on your phone and continue on another device seamlessly.
+* **Google Sign-In:** Secure and quick authentication using Firebase Auth.
 
-Robust Offline-First Support: Study anytime, anywhere. All your data is saved locally to your device and seamlessly synchronized with the cloud via a WorkManager-powered background service when an internet connection is available.
-
-Google Sign-In: Quick and secure authentication using your Google account.
-
-Dark Mode: A beautifully implemented dark theme for comfortable study sessions at night.
+### 🎨 User Experience
+* **Modern UI:** 100% Jetpack Compose interface with Material Design 3.
+* **Dark Mode:** Fully supported dark theme for comfortable late-night study sessions
 
 ## 🛠️ Tech Stack & Architecture
-This project is built with modern Android development practices and a robust architecture.
+This project is built with industry-standard Android development practices, focusing on scalability, testability, and performance.
 
-Architecture:
+### Architecture
+* **Clean Architecture:** Strict separation of concerns into Data, Domain, and Presentation layers.
+* **MVVM (Model-View-ViewModel):** Decouples UI logic from business rules and state management.
+* **SOLID Principles:** Adherence to modular design patterns.
 
-Clean Architecture: The codebase is structured in layers (data, domain, presentation) for a clear separation of concerns, making it scalable and easy to maintain.
+### Tech Stack
+* **Language:** Kotlin (100%).
+* **UI:** Jetpack Compose (Declarative UI), Material 3.
+* **AI Integration:** **Google Gemini API** (Generative AI for text processing, JSON parsing, and summarization).
+* **Asynchronous Programming:** Kotlin Coroutines & Flow (StateFlow/SharedFlow) for reactive data streams.
+* **Dependency Injection:** Hilt (Dagger).
+* **Local Persistence:** Room Database (SQLite) for offline capability.
+* **Remote Backend:** Firebase Cloud Firestore (NoSQL).
+* **Background Processing:** **WorkManager** (For reliable, deferrable data synchronization).
+* **Authentication:** Firebase Authentication (Google Sign-In).
+* **Monitoring:** Firebase Crashlytics & Analytics.
 
-MVVM (Model-View-ViewModel): A modern architectural pattern to separate UI logic from business logic.
-
-SOLID: Adherence to SOLID principles to ensure the code is modular, testable, and extensible.
-
-Tech Stack:
-
-UI: Jetpack Compose is used for building the entire user interface with a declarative and reactive approach.
-
-Asynchronous Programming: Kotlin Coroutines & Flow are used extensively for managing background threads and handling streams of data, ensuring a responsive UI.
-
-Dependency Injection: Hilt is used to manage dependencies throughout the application, simplifying object lifecycle and improving testability.
-
-Local Database: Room provides a local SQLite database to persist all categories, lessons, and flashcards, enabling the offline-first experience.
-
-Remote Database: Cloud Firestore is used as the cloud backend to store user data and sync flashcards across sessions.
-
-Background Sync: WorkManager ensures that any data created or modified offline is reliably uploaded to Firestore once the device reconnects to the internet.
-
-Authentication: Firebase Authentication handles user sign-up and sign-in, including support for Google Sign-In.
-
-Crash & Analytics Reporting: Firebase Crashlytics and Analytics are integrated to monitor app stability and user engagement.
-
-## 🚀 Future Features
-While the current version is fully functional, here are some features planned for the future:
-
-File Upload: Allow users to upload documents (.pdf, .txt) for AI to process directly.
-
-Multiple Choice Quizzes: Automatically generate quizzes based on the flashcards in a lesson.
-
-Spaced Repetition System (SRS): Implement an algorithm to schedule flashcard reviews at optimal intervals for long-term retention.
+## 🚀 Future Roadmap
+* **Spaced Repetition System (SRS):** Implement an algorithm (like SM-2) to schedule flashcards based on user performance.
+* **Text-to-Speech (TTS):** Audio playback for flashcards and summaries for auditory learning.
+* **Community Market:** Share and download card decks from other users.
